@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  - pull_request
+
+jobs:
+  lint:
+    name: Code formatting & linting
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+          cache-dependency-path: web/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check formatting with Prettier
+        run: yarn format:check
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Check Typescript
+        run: yarn typecheck

@@ -778,6 +778,11 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
+"@stitches/react@^1.2.8":
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/@stitches/react/-/react-1.2.8.tgz#954f8008be8d9c65c4e58efa0937f32388ce3a38"
+  integrity sha512-9g9dWI4gsSVe8bNLlb+lMkBYsnIKCZTmvqvDG+Avnn69XfmHZKiaMrx7cgTaddq7aTPPmXiTsbFcUy0xgI4+wA==
+
 "@swc/helpers@0.4.14":
   version "0.4.14"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.14.tgz#1352ac6d95e3617ccb7c1498ff019654f1e12a74"
@@ -1212,10 +1217,10 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@worldcoin/idkit@0.4.0-alpha.5":
-  version "0.4.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.0-alpha.5.tgz#f7b2a03d8ef5fdc077d6dbffdf96960c720cb268"
-  integrity sha512-ykICokE1rcOWVi5Bw7h6uYUcssQHzVjyPI9LN7LCRhE9oCnHjokG0FAxfRlx2S1N5sLsfVOw3wUg/ETkmQDVdA==
+"@worldcoin/idkit@0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.1.tgz#0dad683af75c469de1c252a15cd6aa970fbc4ac7"
+  integrity sha512-PTgGxp7MP4zP/m+cUaMpXz9wWBh9LMIAHRgza37OuyGCWTzOCpewdt+9ltPhUJ3p4COkfeRMpZUQCm4Po026KQ==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/solidity" "^5.7.0"
@@ -1225,6 +1230,7 @@
     "@radix-ui/react-scroll-area" "^1.0.2"
     "@radix-ui/react-select" "^1.1.2"
     "@radix-ui/react-toast" "^1.1.2"
+    "@stitches/react" "^1.2.8"
     "@tailwindcss/forms" "^0.5.3"
     "@walletconnect/client" "^1.8.0"
     "@walletconnect/sign-client" "^2.2.0"
@@ -3427,6 +3433,11 @@ prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
+
+prettier@^2.8.4:
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.4.tgz#34dd2595629bfbb79d344ac4a91ff948694463c3"
+  integrity sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==
 
 process-warning@^1.0.0:
   version "1.0.0"

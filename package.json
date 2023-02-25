@@ -6,14 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier -w ./",
+    "format:check": "prettier --check ./",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@next/font": "13.1.6",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "@worldcoin/idkit": "0.4.0-alpha.5",
+    "@worldcoin/idkit": "0.4.1",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
     "next": "13.1.6",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.21",
+    "prettier": "^2.8.4",
     "tailwindcss": "^3.2.7"
   }
 }
