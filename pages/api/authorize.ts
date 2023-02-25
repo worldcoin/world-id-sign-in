@@ -6,7 +6,7 @@ import {
 import { OIDCResponseTypeMapping } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const SUPPORTED_SCOPES = ["openid", "profile"];
+const SUPPORTED_SCOPES = ["openid", "profile", "email"];
 
 /**
  * Receives an authorization request from a third-party app and renders the authentication page
@@ -64,7 +64,7 @@ export default async function handler(
       if (!SUPPORTED_SCOPES.includes(_scope)) {
         return errorValidation(
           "invalid_scope",
-          "The requested scope is invalid, unknown, or malformed",
+          `The requested scope is invalid, unknown, or malformed. ${_scope} is not supported.`,
           "scope",
           res
         );
