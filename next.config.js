@@ -9,6 +9,14 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "https://docs.worldcoin.org", // move to World ID landing page
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
