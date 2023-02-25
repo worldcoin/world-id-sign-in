@@ -1,8 +1,7 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  name: string;
+  code: string;
 };
 
 export default async function handleAuth(
@@ -19,21 +18,24 @@ export default async function handleAuth(
     {
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),
-      body: req.body,
+      body: JSON.stringify(req.body),
     }
   );
 
-  console.log(response.status, await response.json()); // DEBUG
+  console.log(response.status); // DEBUG
+  console.log(await response.json()); // DEBUG
 
   // Request was valid, return the auth code to the redirect_uri
-  if (response.status === 200) {
+  if (response.ok) {
     const code = await response.json();
+    console.log(code); // DEBUG
+
     res.redirect(
       302,
-      `${req.body.redirect_uri}?code=${code}&state=${req.body.state}`
+      `${req.body.redirect_uri}?code=${code.code}&state=${req.body.state}`
     );
   }
 
   // Request was invalid, re-prompt the user to authenticate
-  res.redirect(500, "/");
+  res.status(500).json({ code: "error" });
 }

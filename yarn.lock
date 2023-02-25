@@ -1212,10 +1212,10 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@worldcoin/idkit@0.4.0-alpha.4":
-  version "0.4.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.0-alpha.4.tgz#28c3cac1aa35cbfb86f1b869d4c0cc9b596ad39b"
-  integrity sha512-+V3TmxEYcEkV2n02/8In7Zl5qFapb7fEiuppxxq3GqsPr8IOAMB3773R50o69WQsAzk1f6CimVDjJBqPswePqA==
+"@worldcoin/idkit@0.4.0-alpha.5":
+  version "0.4.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.0-alpha.5.tgz#f7b2a03d8ef5fdc077d6dbffdf96960c720cb268"
+  integrity sha512-ykICokE1rcOWVi5Bw7h6uYUcssQHzVjyPI9LN7LCRhE9oCnHjokG0FAxfRlx2S1N5sLsfVOw3wUg/ETkmQDVdA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/solidity" "^5.7.0"
@@ -3104,6 +3104,11 @@ next@13.1.6:
     "@next/swc-win32-arm64-msvc" "13.1.6"
     "@next/swc-win32-ia32-msvc" "13.1.6"
     "@next/swc-win32-x64-msvc" "13.1.6"
+
+nextjs-redirect@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/nextjs-redirect/-/nextjs-redirect-6.0.1.tgz#29416d11f130511e12dbe93ca0c4fa0778bfbae6"
+  integrity sha512-SScRdqhGwbD9HbATM+6KMoRyW5QdsPtBBknPPUBxeItnv3wOrhII4pW+0TrvglWNxeRUwI2GsnrDHCV/6juBtQ==
 
 node-releases@^2.0.8:
   version "2.0.10"
