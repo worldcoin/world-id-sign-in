@@ -13,6 +13,7 @@ const nextConfig = {
     return [
       {
         source: "/",
+        permanent: false,
         destination: "https://docs.worldcoin.org", // move to World ID landing page
       },
     ];
