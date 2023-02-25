@@ -1,7 +1,7 @@
 import { IAuthorizeRequest } from "@/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { SignInWithWorldID, ISuccessResult } from "@worldcoin/idkit";
+import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 
 export default function Login() {
   const router = useRouter();
@@ -29,8 +29,8 @@ export default function Login() {
     setParams({ client_id, nonce, response_type, redirect_uri, scope, state });
   }, [router]);
 
-  const handleVerify = async (result: ISuccessResult) => {
-    const url = new URL("/api/authenticate");
+  const handleIDKitSuccess = async (result: ISuccessResult) => {
+    const url = new URL("/api/authenticate", window.location.origin);
     url.search = new URLSearchParams({ ...params, ...result }).toString();
     window.location.href = url.toString();
   };
@@ -51,18 +51,18 @@ export default function Login() {
           minHeight: "100vh",
         }}
       >
-        <SignInWithWorldID
+        <IDKitWidget
           app_id={params.client_id}
-          nonce={params.nonce}
+          action=""
+          signal={params.nonce}
           walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
           enableTelemetry
-          handleVerify={(_) => {
-            // TODO: Do a preverification with dev portal to provide a better UX
-          }}
-          onSuccess={handleVerify}
+          // TODO: Do a preverification with dev portal to provide a better UX
+          handleVerify={undefined}
+          onSuccess={handleIDKitSuccess}
         >
           {({ open }) => <button onClick={open}>Verify me</button>}
-        </SignInWithWorldID>
+        </IDKitWidget>
       </div>
     </div>
   );

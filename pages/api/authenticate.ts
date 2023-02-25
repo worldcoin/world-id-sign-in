@@ -27,7 +27,7 @@ export default async function handleAuth(
   }
 
   for (const attr of params) {
-    if (!req.body[attr]) {
+    if (!req.query[attr]) {
       return errorRequiredAttribute(attr, res);
     }
   }
@@ -49,21 +49,55 @@ export default async function handleAuth(
     {
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),
-      body: JSON.stringify(filteredParams),
+      body: JSON.stringify({
+        response_type,
+        app_id: client_id,
+        redirect_uri,
+        nonce,
+        merkle_root,
+        proof,
+        credential_type,
+        nullifier_hash,
+      }),
     }
   );
 
-  // Request was valid, return the auth code to the redirect_uri
-  if (response.ok) {
-    const code = await response.json();
-    console.log(code); // DEBUG
-
-    res.redirect(
-      302,
-      `${req.body.redirect_uri}?code=${code.code}&state=${req.body.state}`
+  if (!response.ok) {
+    let errorResponse;
+    try {
+      errorResponse = await response.json();
+    } catch {
+      errorResponse = await response.text();
+    }
+    console.error(
+      `Could not authenticate OIDC user: ${response.statusText}`,
+      errorResponse
     );
+    const detail = Object.hasOwn(errorResponse, "detail")
+      ? errorResponse.detail
+      : "We could not complete your authentication. Please try again.";
+    return res.redirect(`/error?code=authentication_failed&detail=${detail}`);
   }
 
-  // Request was invalid, re-prompt the user to authenticate
-  res.status(500).json({ code: "error" });
+  const responseAuth = await response.json();
+
+  const url = new URL(redirect_uri!.toString());
+  if (responseAuth.code) {
+    url.searchParams.append("code", responseAuth.code);
+  }
+
+  if (responseAuth.token) {
+    url.searchParams.append("token", responseAuth.token);
+  }
+
+  if (responseAuth.id_token) {
+    url.searchParams.append("id_token", responseAuth.id_token);
+  }
+
+  if (state) {
+    // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
+    url.searchParams.append("state", state.toString());
+  }
+
+  res.redirect(302, url.toString());
 }

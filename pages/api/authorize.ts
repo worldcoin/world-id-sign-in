@@ -6,7 +6,7 @@ import {
 import { OIDCResponseTypeMapping } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const SUPPORTED_SCOPES = ["openid"];
+const SUPPORTED_SCOPES = ["openid", "profile"];
 
 /**
  * Receives an authorization request from a third-party app and renders the authentication page
@@ -14,6 +14,8 @@ const SUPPORTED_SCOPES = ["openid"];
  * @param res
  * @returns
  */
+
+// FIXME: should we add a CSRF token to the request?
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -23,14 +25,17 @@ export default async function handler(
     return errorNotAllowed(req.method, res);
   }
 
+  const inputParams = { ...req.body, ...req.query };
+
   for (const attr of ["response_type", "client_id", "redirect_uri"]) {
-    if (!req.body[attr]) {
+    if (!inputParams[attr]) {
+      // FIXME: These errors should be rendered in the `/error` screen
       return errorRequiredAttribute(attr, res);
     }
   }
 
   const { response_type, client_id, redirect_uri, scope, state, nonce } =
-    req.body;
+    inputParams;
 
   // FIXME: Verify the client_id & redirect_uri
 
@@ -93,5 +98,5 @@ export default async function handler(
     ready: "true", // for UX purposes, to avoid users getting to the login page without verifying their request
   });
 
-  res.redirect(`/login?${params.toString()}`);
+  res.redirect(302, `/login?${params.toString()}`);
 }
