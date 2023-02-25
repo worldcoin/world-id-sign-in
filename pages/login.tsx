@@ -1,6 +1,8 @@
 import { IAuthorizeRequest } from "@/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+// FIXME
+// @ts-ignore package is temporarily broken
 import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 
 export default function Login() {
@@ -61,6 +63,8 @@ export default function Login() {
           handleVerify={undefined}
           onSuccess={handleIDKitSuccess}
         >
+          {/* // FIXME
+              // @ts-ignore package is temporarily broken */}
           {({ open }) => <button onClick={open}>Verify me</button>}
         </IDKitWidget>
       </div>
