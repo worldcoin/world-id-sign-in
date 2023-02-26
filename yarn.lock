@@ -1217,10 +1217,10 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@worldcoin/idkit@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.1.tgz#0dad683af75c469de1c252a15cd6aa970fbc4ac7"
-  integrity sha512-PTgGxp7MP4zP/m+cUaMpXz9wWBh9LMIAHRgza37OuyGCWTzOCpewdt+9ltPhUJ3p4COkfeRMpZUQCm4Po026KQ==
+"@worldcoin/idkit@0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@worldcoin/idkit/-/idkit-0.4.2.tgz#59e43e37e700d364d3d117f7fbedae426538a2d5"
+  integrity sha512-5bG4kVqtrkyhhkBk3DYKm0wNCItTnh3E/CPIUkEA5rx0hxhI2JX3QRbAHHryDZFRMMN8hNKKlkxcTrPxhXhhCw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/solidity" "^5.7.0"
