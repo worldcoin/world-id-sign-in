@@ -43,7 +43,7 @@ export default async function handleAuth(
     credential_type,
     nullifier_hash,
     state,
-  } = req.query;
+  } = req.query as Record<string, string>;
 
   const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
     method: "POST",
@@ -74,7 +74,17 @@ export default async function handleAuth(
     const detail = Object.hasOwn(errorResponse, "detail")
       ? errorResponse.detail
       : "We could not complete your authentication. Please try again.";
-    return res.redirect(`/error?code=authentication_failed&detail=${detail}`);
+
+    const searchParams = new URLSearchParams({
+      code: "authentication_failed",
+      detail,
+      response_type,
+      client_id,
+      redirect_uri,
+      nonce,
+      state,
+    });
+    return res.redirect(`/error?code=${searchParams.toString()}`);
   }
 
   const responseAuth = await response.json();

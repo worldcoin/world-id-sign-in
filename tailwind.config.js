@@ -22,6 +22,9 @@ module.exports = {
           200: "#EBECEF",
           400: "#9BA3AE",
         },
+        code: {
+          DEFAULT: "#CF5834",
+        },
       },
     },
   },

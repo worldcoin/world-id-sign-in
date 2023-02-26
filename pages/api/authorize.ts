@@ -1,8 +1,4 @@
-import {
-  errorNotAllowed,
-  errorRequiredAttribute,
-  errorValidation,
-} from "@/api-helpers/errors";
+import { errorNotAllowed, errorValidationClient } from "@/api-helpers/errors";
 import { OIDCResponseTypeMapping } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -29,8 +25,12 @@ export default async function handler(
 
   for (const attr of ["response_type", "client_id", "redirect_uri"]) {
     if (!inputParams[attr]) {
-      // FIXME: These errors should be rendered in the `/error` screen
-      return errorRequiredAttribute(attr, res);
+      return errorValidationClient(
+        "invalid_request",
+        "This attribute is required.",
+        attr,
+        res
+      );
     }
   }
 
@@ -42,7 +42,7 @@ export default async function handler(
   try {
     const url = new URL(redirect_uri);
     if (url.protocol !== "https:") {
-      return errorValidation(
+      return errorValidationClient(
         "invalid_request",
         "The redirect URI must be served over HTTPs.",
         "redirect_uri",
@@ -50,7 +50,7 @@ export default async function handler(
       );
     }
   } catch (err) {
-    return errorValidation(
+    return errorValidationClient(
       "invalid_request",
       "The redirect URI provided is missing or malformed.",
       "redirect_uri",
@@ -62,7 +62,7 @@ export default async function handler(
     const scopes = decodeURIComponent((scope as any).toString()).split(" ");
     for (const _scope of scopes) {
       if (!SUPPORTED_SCOPES.includes(_scope)) {
-        return errorValidation(
+        return errorValidationClient(
           "invalid_scope",
           `The requested scope is invalid, unknown, or malformed. ${_scope} is not supported.`,
           "scope",
@@ -78,7 +78,7 @@ export default async function handler(
 
   for (const response_type of response_types) {
     if (!Object.keys(OIDCResponseTypeMapping).includes(response_type)) {
-      return errorValidation(
+      return errorValidationClient(
         "invalid",
         `Invalid response type: ${response_type}.`,
         "response_type",
