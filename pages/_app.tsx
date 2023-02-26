@@ -8,7 +8,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Sign in with World ID • Worldcoin</title>
       </Head>
-      <Component {...pageProps} />
+      <div className="bg-background h-screen">
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }
