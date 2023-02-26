@@ -1,4 +1,5 @@
 import { errorNotAllowed, errorRequiredAttribute } from "@/api-helpers/errors";
+import { DEVELOPER_PORTAL } from "@/consts";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const params = [
@@ -44,23 +45,20 @@ export default async function handleAuth(
     state,
   } = req.query;
 
-  const response = await fetch(
-    "https://developer.worldcoin.org/api/v1/oidc/authorize",
-    {
-      method: "POST",
-      headers: new Headers({ "content-type": "application/json" }),
-      body: JSON.stringify({
-        response_type,
-        app_id: client_id,
-        redirect_uri,
-        nonce,
-        merkle_root,
-        proof,
-        credential_type,
-        nullifier_hash,
-      }),
-    }
-  );
+  const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
+    method: "POST",
+    headers: new Headers({ "content-type": "application/json" }),
+    body: JSON.stringify({
+      response_type,
+      app_id: client_id,
+      redirect_uri,
+      nonce,
+      merkle_root,
+      proof,
+      credential_type,
+      nullifier_hash,
+    }),
+  });
 
   if (!response.ok) {
     let errorResponse;
