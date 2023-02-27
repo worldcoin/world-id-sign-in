@@ -41,11 +41,18 @@ export function errorRequiredAttribute(
   );
 }
 
-export function errorValidation(
+/**
+ * Sends a client side validation error (i.e. renders frontend)
+ */
+export function errorValidationClient(
   code: string,
   detail: string = "This attribute is invalid.",
   attribute: string | null,
   res: NextApiResponse
 ): void {
-  return errorOIDCResponse(res, 400, code, detail, attribute);
+  const params = new URLSearchParams({ code, detail });
+  if (attribute) {
+    params.append("attribute", attribute);
+  }
+  res.redirect(`/error?${params.toString()}`);
 }
