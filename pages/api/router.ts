@@ -19,7 +19,7 @@ export default async function handleRouter(
 
   const destUrl = new URL(
     target === "/jwks.json"
-      ? `${DEVELOPER_PORTAL}/api/jwks`
+      ? `${DEVELOPER_PORTAL}/api/v1/jwks`
       : `${DEVELOPER_PORTAL}/api/v1/oidc${target}`
   );
 
@@ -38,7 +38,7 @@ export default async function handleRouter(
   const response = await fetch(destUrl, {
     method: req.method,
     headers,
-    body: JSON.stringify(req.body),
+    body: req.method === "POST" ? JSON.stringify(req.body) : undefined,
   });
 
   console.log(destUrl);
