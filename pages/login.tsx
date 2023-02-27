@@ -70,6 +70,7 @@ export default function Login() {
               client_id={params.client_id}
               nonce={params.nonce}
               toggleHeader={(visible) => setHeaderShown(visible)}
+              onSuccess={handleIDKitSuccess}
             />
           )}
         </div>

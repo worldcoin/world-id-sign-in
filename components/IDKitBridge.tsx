@@ -10,12 +10,14 @@ interface IIDKitBridge {
   client_id: string;
   nonce: string;
   toggleHeader: (visible: boolean) => void;
+  onSuccess: (result: ISuccessResult) => void;
 }
 
 export const IDKitBridge = ({
   client_id,
   nonce,
   toggleHeader,
+  onSuccess,
 }: IIDKitBridge): JSX.Element => {
   const { reset, qrData, result, errorCode, verificationState } =
     IDKitInternal.useAppConnection(
@@ -52,7 +54,14 @@ export const IDKitBridge = ({
     if (verificationState === IDKitInternal.VerificationState.Failed) {
       reset();
     }
-  }, [verificationState, reset, toggleHeader]);
+
+    if (
+      verificationState === IDKitInternal.VerificationState.Confirmed &&
+      result
+    ) {
+      onSuccess(result);
+    }
+  }, [verificationState, reset, toggleHeader, onSuccess, result]);
 
   return (
     <div className="mt-8">
@@ -69,12 +78,19 @@ export const IDKitBridge = ({
           )}
         </>
       )}
-      {verificationState ===
-        IDKitInternal.VerificationState.AwaitingVerification && (
+      {verificationState !==
+        IDKitInternal.VerificationState.AwaitingConnection && (
         <>
           <Spinner />
-          <h1 className="font-medium text-xl mt-6">Confirm in World App</h1>
-          <div className="text-text-muted mt-2">Waiting for your response</div>
+          {verificationState ===
+            IDKitInternal.VerificationState.AwaitingVerification && (
+            <>
+              <h1 className="font-medium text-xl mt-6">Confirm in World App</h1>
+              <div className="text-text-muted mt-2">
+                Waiting for your response
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
