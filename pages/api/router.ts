@@ -35,10 +35,17 @@ export default async function handleRouter(
     headers.append("Authorization", req.headers.authorization);
   }
 
+  const body =
+    req.headers["content-type"] === "application/x-www-form-urlencoded"
+      ? new URLSearchParams(req.body)
+      : JSON.stringify(req.body);
+
+  console.log(req.body);
+
   const response = await fetch(destUrl, {
     method: req.method,
     headers,
-    body: req.method === "POST" ? JSON.stringify(req.body) : undefined,
+    body: req.method === "POST" ? body : undefined,
   });
 
   console.log(destUrl);
