@@ -1,15 +1,16 @@
 import { IAuthorizeRequest } from "@/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
+import { ISuccessResult } from "@worldcoin/idkit";
 import { IconArrowRight, IconWorldcoin } from "@/components/icons";
-import { Button } from "@/components/Button";
 import { Footer } from "@/components/Footer";
 import { Spinner } from "@/components/Spinner";
+import { IDKitBridge } from "@/components/IDKitBridge";
 
 export default function Login() {
   const router = useRouter();
   const [params, setParams] = useState<IAuthorizeRequest>();
+  const [headerShown, setHeaderShown] = useState(true);
 
   useEffect(() => {
     const {
@@ -48,35 +49,28 @@ export default function Login() {
     <div className="flex justify-center items-center h-full">
       <div>
         <div className="bg-white py-8 px-12 rounded-xl text-center max-w-sm">
-          <div className="flex justify-center">
-            <IconWorldcoin className="text-2xl" />
-          </div>
-          <h1 className="font-medium text-xl mt-6">Sign in with Worldcoin</h1>
-          <div className="text-text-muted mt-2">
-            Scan with the app to continue
-          </div>
+          {headerShown && (
+            <>
+              <div className="flex justify-center">
+                <IconWorldcoin className="text-2xl" />
+              </div>
+              <h1 className="font-medium text-xl mt-6">
+                Sign in with Worldcoin
+              </h1>
+              <div className="text-text-muted mt-2">
+                Scan with the app to continue
+              </div>
+            </>
+          )}
 
           {!params && <Spinner />}
 
           {params && (
-            <IDKitWidget
-              app_id={params.client_id}
-              action=""
-              signal={params.nonce}
-              walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
-              enableTelemetry
-              // TODO: Do a preverification with dev portal to provide a better UX
-              handleVerify={undefined}
-              onSuccess={handleIDKitSuccess}
-              autoClose
-            >
-              {/* FIXME: The actual thing should be shown thing */}
-              {({ open }) => (
-                <Button onClick={open} className="mt-6">
-                  Verify me
-                </Button>
-              )}
-            </IDKitWidget>
+            <IDKitBridge
+              client_id={params.client_id}
+              nonce={params.nonce}
+              toggleHeader={(visible) => setHeaderShown(visible)}
+            />
           )}
         </div>
         <div className="text-center text-gray-400 mt-2">or</div>
