@@ -32,6 +32,7 @@ export default function Login() {
         code: "invalid_request",
         detail:
           "Please call the /authorize endpoint with the required parameters.",
+        ...router.query,
       });
       router.push(`/error?${urlParams}`);
     }
