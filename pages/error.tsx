@@ -6,6 +6,7 @@ import {
   IconDanger,
   IconReload,
 } from "@/components/icons";
+import { Spinner } from "@/components/Spinner";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -60,8 +61,7 @@ export default function Error(): JSX.Element {
     <div className="flex justify-center items-center h-full">
       <div>
         <div className="bg-white py-8 px-12 rounded-xl text-center max-w-sm">
-          {/* // TODO: Nice loading state */}
-          {errorState === ErrorState.Loading && <>Loading...</>}
+          {errorState === ErrorState.Loading && <Spinner />}
           {errorState !== ErrorState.Loading && (
             <>
               <div className="flex justify-center">

@@ -5,6 +5,7 @@ import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 import { IconArrowRight, IconWorldcoin } from "@/components/icons";
 import { Button } from "@/components/Button";
 import { Footer } from "@/components/Footer";
+import { Spinner } from "@/components/Spinner";
 
 export default function Login() {
   const router = useRouter();
@@ -43,11 +44,6 @@ export default function Login() {
     window.location.href = url.toString();
   };
 
-  if (!params) {
-    // TODO: Nice loading state
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="flex justify-center items-center h-full">
       <div>
@@ -59,24 +55,29 @@ export default function Login() {
           <div className="text-text-muted mt-2">
             Scan with the app to continue
           </div>
-          <IDKitWidget
-            app_id={params.client_id}
-            action=""
-            signal={params.nonce}
-            walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
-            enableTelemetry
-            // TODO: Do a preverification with dev portal to provide a better UX
-            handleVerify={undefined}
-            onSuccess={handleIDKitSuccess}
-            autoClose
-          >
-            {/* FIXME: The actual thing should be shown thing */}
-            {({ open }) => (
-              <Button onClick={open} className="mt-6">
-                Verify me
-              </Button>
-            )}
-          </IDKitWidget>
+
+          {!params && <Spinner />}
+
+          {params && (
+            <IDKitWidget
+              app_id={params.client_id}
+              action=""
+              signal={params.nonce}
+              walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
+              enableTelemetry
+              // TODO: Do a preverification with dev portal to provide a better UX
+              handleVerify={undefined}
+              onSuccess={handleIDKitSuccess}
+              autoClose
+            >
+              {/* FIXME: The actual thing should be shown thing */}
+              {({ open }) => (
+                <Button onClick={open} className="mt-6">
+                  Verify me
+                </Button>
+              )}
+            </IDKitWidget>
+          )}
         </div>
         <div className="text-center text-gray-400 mt-2">or</div>
         <a
