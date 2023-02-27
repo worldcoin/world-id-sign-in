@@ -51,8 +51,6 @@ export default async function handleRouter(
     body: req.method === "POST" ? body : undefined,
   });
 
-  console.log(destUrl);
-
   if (response.status === 404) {
     return res.status(404).end();
   }
