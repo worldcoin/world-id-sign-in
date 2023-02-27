@@ -1,6 +1,11 @@
 import { DEVELOPER_PORTAL } from "@/consts";
 import { NextApiRequest, NextApiResponse } from "next";
 
+const SPECIAL_MAPPING: Record<string, string> = {
+  "/jwks.json": "/api/v1/jwks",
+  "/.well-known/openid-configuration": "/api/v1/oidc/openid-configuration",
+};
+
 /**
  * Routes OIDC requests to the Developer Portal
  * @param req
@@ -18,8 +23,8 @@ export default async function handleRouter(
   }
 
   const destUrl = new URL(
-    target === "/jwks.json"
-      ? `${DEVELOPER_PORTAL}/api/v1/jwks`
+    target in SPECIAL_MAPPING
+      ? `${DEVELOPER_PORTAL}${SPECIAL_MAPPING[target]}`
       : `${DEVELOPER_PORTAL}/api/v1/oidc${target}`
   );
 
@@ -39,8 +44,6 @@ export default async function handleRouter(
     req.headers["content-type"] === "application/x-www-form-urlencoded"
       ? new URLSearchParams(req.body)
       : JSON.stringify(req.body);
-
-  console.log(req.body);
 
   const response = await fetch(destUrl, {
     method: req.method,

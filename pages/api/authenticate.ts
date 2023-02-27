@@ -43,6 +43,7 @@ export default async function handleAuth(
     credential_type,
     nullifier_hash,
     state,
+    scope,
   } = req.query as Record<string, string>;
 
   const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
@@ -57,6 +58,7 @@ export default async function handleAuth(
       proof,
       credential_type,
       nullifier_hash,
+      scope,
     }),
   });
 
