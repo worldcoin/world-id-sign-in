@@ -40,6 +40,7 @@ export default function Error(): JSX.Element {
         scope,
         state,
         nonce,
+        ready,
       } = router.query as Record<string, string>;
       if (code === "invalid_request") {
         setErrorState(ErrorState.DevError);
@@ -54,6 +55,7 @@ export default function Error(): JSX.Element {
         scope,
         state,
         nonce,
+        ready,
       });
     }
   }, [router]);
