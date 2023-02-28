@@ -51,8 +51,10 @@ export const IDKitBridge = ({
   useEffect(() => {
     const isMobile = true;
     if (isMobile && qrData?.mobile) {
-      // window.open(qrData.mobile, "_blank", "noopener,noreferrer");
-      console.log(qrData.mobile);
+      setTimeout(
+        () => window.open(qrData.mobile, "_blank", "noopener,noreferrer"),
+        400
+      );
       setDeeplink(qrData.mobile);
     }
   }, [qrData, setDeeplink]);
