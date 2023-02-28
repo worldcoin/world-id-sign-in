@@ -30,9 +30,9 @@ export const IDKitBridge = ({
     if (
       verificationState === IDKitInternal.VerificationState.AwaitingConnection
     ) {
-      setInProgress(true);
-    } else {
       setInProgress(false);
+    } else {
+      setInProgress(true);
     }
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
