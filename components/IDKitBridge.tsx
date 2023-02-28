@@ -58,7 +58,7 @@ export const IDKitBridge = ({
       {verificationState ===
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
-          {!qrData?.default && <Spinner />}
+          {!qrData?.default && !qrData?.mobile && <Spinner />}
           {qrData?.default && !isMobile && (
             <IDKitInternal.QRCode
               data={qrData?.default}
@@ -86,25 +86,3 @@ export const IDKitBridge = ({
     </div>
   );
 };
-
-{
-  /* <IDKitWidget
-app_id={params.client_id}
-action=""
-signal={params.nonce}
-walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
-enableTelemetry
-// TODO: Do a preverification with dev portal to provide a better UX
-handleVerify={undefined}
-onSuccess={handleIDKitSuccess}
-autoClose
->
-{/* FIXME: The actual thing should be shown thing */
-}
-// {({ open }) => (
-//   <Button onClick={open} className="mt-6">
-//     Verify me
-//   </Button>
-// )}
-// </IDKitWidget>
-// */}
