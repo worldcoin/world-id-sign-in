@@ -1,4 +1,5 @@
 import { ISuccessResult, internal as IDKitInternal } from "@worldcoin/idkit";
+import { isMobile } from "react-device-detect";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
 
@@ -25,16 +26,6 @@ export const IDKitBridge = ({
     );
 
   useEffect(() => {
-    console.log("result", result);
-  }, [result]);
-
-  useEffect(() => {
-    console.log("errorCode", errorCode);
-  }, [errorCode]);
-
-  useEffect(() => {
-    console.log("verificationState", verificationState);
-
     if (
       verificationState === IDKitInternal.VerificationState.AwaitingConnection
     ) {
@@ -44,6 +35,7 @@ export const IDKitBridge = ({
     }
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
+      console.warn("Sign in with World ID failed.", errorCode);
       reset();
     }
 
@@ -53,7 +45,13 @@ export const IDKitBridge = ({
     ) {
       onSuccess(result);
     }
-  }, [verificationState, reset, toggleHeader, onSuccess, result]);
+  }, [verificationState, reset, toggleHeader, onSuccess, result, errorCode]);
+
+  useEffect(() => {
+    if (isMobile && qrData?.mobile) {
+      window.open(qrData.mobile, "_blank", "noopener,noreferrer");
+    }
+  }, [qrData]);
 
   return (
     <div className="mt-8">
@@ -61,7 +59,7 @@ export const IDKitBridge = ({
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
           {!qrData?.default && <Spinner />}
-          {qrData?.default && (
+          {qrData?.default && !isMobile && (
             <IDKitInternal.QRCode
               data={qrData?.default}
               logoSize={0}
