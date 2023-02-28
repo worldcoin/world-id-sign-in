@@ -1,5 +1,4 @@
 import { ISuccessResult, internal as IDKitInternal } from "@worldcoin/idkit";
-import { isMobile } from "react-device-detect";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
 
@@ -8,6 +7,7 @@ interface IIDKitBridge {
   nonce: string;
   toggleHeader: (visible: boolean) => void;
   onSuccess: (result: ISuccessResult) => void;
+  setDeeplink: (deeplink: string) => void;
 }
 
 export const IDKitBridge = ({
@@ -15,6 +15,7 @@ export const IDKitBridge = ({
   nonce,
   toggleHeader,
   onSuccess,
+  setDeeplink,
 }: IIDKitBridge): JSX.Element => {
   const { reset, qrData, result, errorCode, verificationState } =
     IDKitInternal.useAppConnection(
@@ -48,23 +49,36 @@ export const IDKitBridge = ({
   }, [verificationState, reset, toggleHeader, onSuccess, result, errorCode]);
 
   useEffect(() => {
+    const isMobile = true;
     if (isMobile && qrData?.mobile) {
-      window.open(qrData.mobile, "_blank", "noopener,noreferrer");
+      // window.open(qrData.mobile, "_blank", "noopener,noreferrer");
+      console.log(qrData.mobile);
+      setDeeplink(qrData.mobile);
     }
-  }, [qrData]);
+  }, [qrData, setDeeplink]);
 
   return (
-    <div className="mt-12">
+    <div className="md:mt-12">
       {verificationState ===
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
           {!qrData?.default && !qrData?.mobile && <Spinner />}
-          {qrData?.default && !isMobile && (
-            <IDKitInternal.QRCode
-              data={qrData?.default}
-              logoSize={0}
-              size={280}
-            />
+          {qrData?.default && (
+            <>
+              <div className="hidden md:block">
+                <IDKitInternal.QRCode
+                  data={qrData?.default}
+                  logoSize={0}
+                  size={280}
+                />
+              </div>
+              <div className="md:hidden">
+                <Spinner />
+                <div className="text-text-muted pt-4">
+                  Wait a few seconds, automatically opening World App
+                </div>
+              </div>
+            </>
           )}
         </>
       )}
