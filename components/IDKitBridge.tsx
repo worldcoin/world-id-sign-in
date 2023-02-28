@@ -1,4 +1,4 @@
-import { internal as IDKitInternal, ISuccessResult } from "@worldcoin/idkit";
+import { ISuccessResult, internal as IDKitInternal } from "@worldcoin/idkit";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
 
@@ -7,6 +7,7 @@ interface IIDKitBridge {
   nonce: string;
   toggleHeader: (visible: boolean) => void;
   onSuccess: (result: ISuccessResult) => void;
+  setDeeplink: (deeplink: string) => void;
 }
 
 export const IDKitBridge = ({
@@ -14,6 +15,7 @@ export const IDKitBridge = ({
   nonce,
   toggleHeader,
   onSuccess,
+  setDeeplink,
 }: IIDKitBridge): JSX.Element => {
   const { reset, qrData, result, errorCode, verificationState } =
     IDKitInternal.useAppConnection(
@@ -25,16 +27,6 @@ export const IDKitBridge = ({
     );
 
   useEffect(() => {
-    console.log("result", result);
-  }, [result]);
-
-  useEffect(() => {
-    console.log("errorCode", errorCode);
-  }, [errorCode]);
-
-  useEffect(() => {
-    console.log("verificationState", verificationState);
-
     if (
       verificationState === IDKitInternal.VerificationState.AwaitingConnection
     ) {
@@ -44,6 +36,7 @@ export const IDKitBridge = ({
     }
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
+      console.warn("Sign in with World ID failed.", errorCode);
       reset();
     }
 
@@ -53,20 +46,39 @@ export const IDKitBridge = ({
     ) {
       onSuccess(result);
     }
-  }, [verificationState, reset, toggleHeader, onSuccess, result]);
+  }, [verificationState, reset, toggleHeader, onSuccess, result, errorCode]);
+
+  useEffect(() => {
+    const isMobile = true;
+    if (isMobile && qrData?.mobile) {
+      // window.open(qrData.mobile, "_blank", "noopener,noreferrer");
+      console.log(qrData.mobile);
+      setDeeplink(qrData.mobile);
+    }
+  }, [qrData, setDeeplink]);
 
   return (
-    <div className="mt-12">
+    <div className="md:mt-12">
       {verificationState ===
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
-          {!qrData?.default && <Spinner />}
+          {!qrData?.default && !qrData?.mobile && <Spinner />}
           {qrData?.default && (
-            <IDKitInternal.QRCode
-              data={qrData?.default}
-              logoSize={0}
-              size={280}
-            />
+            <>
+              <div className="hidden md:block">
+                <IDKitInternal.QRCode
+                  data={qrData?.default}
+                  logoSize={0}
+                  size={280}
+                />
+              </div>
+              <div className="md:hidden">
+                <Spinner />
+                <div className="text-text-muted pt-4">
+                  Wait a few seconds, automatically opening World App
+                </div>
+              </div>
+            </>
           )}
         </>
       )}
@@ -107,25 +119,3 @@ export const IDKitBridge = ({
     </div>
   );
 };
-
-{
-  /* <IDKitWidget
-app_id={params.client_id}
-action=""
-signal={params.nonce}
-walletConnectProjectId="75694dcb8079a0baafc84a459b3d6524"
-enableTelemetry
-// TODO: Do a preverification with dev portal to provide a better UX
-handleVerify={undefined}
-onSuccess={handleIDKitSuccess}
-autoClose
->
-{/* FIXME: The actual thing should be shown thing */
-}
-// {({ open }) => (
-//   <Button onClick={open} className="mt-6">
-//     Verify me
-//   </Button>
-// )}
-// </IDKitWidget>
-// */}

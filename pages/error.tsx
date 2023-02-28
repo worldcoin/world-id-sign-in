@@ -60,7 +60,7 @@ export default function Error(): JSX.Element {
     }
   }, [router]);
   return (
-    <div className="flex justify-center items-center w-full h-full">
+    <div className="flex justify-center items-center w-full h-full px-6">
       <div className="flex flex-grow flex-col max-w-xl">
         <div className="bg-white p-16 rounded-2xl text-center min-h-fit max-h-[39rem] flex flex-col justify-center items-center">
           {errorState === ErrorState.Loading && <Spinner />}
