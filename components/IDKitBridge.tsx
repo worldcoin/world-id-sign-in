@@ -54,7 +54,7 @@ export const IDKitBridge = ({
   }, [qrData]);
 
   return (
-    <div className="mt-8">
+    <div className="mt-12">
       {verificationState ===
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
@@ -63,7 +63,7 @@ export const IDKitBridge = ({
             <IDKitInternal.QRCode
               data={qrData?.default}
               logoSize={0}
-              size={250}
+              size={280}
             />
           )}
         </>
@@ -73,11 +73,30 @@ export const IDKitBridge = ({
         <>
           <Spinner />
           {verificationState ===
+            IDKitInternal.VerificationState.LoadingWidget && (
+            <>
+              <h1 className="font-medium text-3xl mt-12">Loading...</h1>
+              <div className="text-text-muted text-xl mt-2">
+                Please wait a moment
+              </div>
+            </>
+          )}
+          {verificationState ===
             IDKitInternal.VerificationState.AwaitingVerification && (
             <>
-              <h1 className="font-medium text-xl mt-6">Confirm in World App</h1>
-              <div className="text-text-muted mt-2">
+              <h1 className="font-medium text-3xl mt-12">
+                Confirm in World App
+              </h1>
+              <div className="text-text-muted text-xl mt-2">
                 Waiting for your response
+              </div>
+            </>
+          )}
+          {verificationState === IDKitInternal.VerificationState.Confirmed && (
+            <>
+              <h1 className="font-medium text-3xl mt-12">Identity Confirmed</h1>
+              <div className="text-text-muted text-xl mt-2">
+                Taking you back to your app
               </div>
             </>
           )}

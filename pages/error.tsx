@@ -60,24 +60,24 @@ export default function Error(): JSX.Element {
     }
   }, [router]);
   return (
-    <div className="flex justify-center items-center h-full px-6">
-      <div>
-        <div className="bg-white py-8 px-12 rounded-xl text-center max-w-sm">
+    <div className="flex justify-center items-center w-full h-full px-6">
+      <div className="flex flex-grow flex-col max-w-xl">
+        <div className="bg-white p-16 rounded-2xl text-center min-h-fit max-h-[39rem] flex flex-col justify-center items-center">
           {errorState === ErrorState.Loading && <Spinner />}
           {errorState !== ErrorState.Loading && (
             <>
               <div className="flex justify-center">
-                <div className="bg-danger-light rounded-full w-[72px] h-[72px] flex justify-center items-center">
-                  <IconDanger className="text-danger mt-1" />
+                <div className="bg-danger-light rounded-full flex justify-center items-center">
+                  <IconDanger className="text-danger w-12 h-12" />
                 </div>
               </div>
 
-              <h1 className="font-medium text-xl mt-6">
+              <h1 className="font-medium text-3xl mt-8">
                 {errorState === ErrorState.DevError
                   ? "Application Error"
                   : "Something went wrong"}
               </h1>
-              <div className="text-text-muted mt-2">
+              <div className="text-text-muted text-xl mt-4">
                 {errorState === ErrorState.DevError
                   ? "Something is wrong with this request."
                   : "There was a problem with your sign in request, please try again."}
