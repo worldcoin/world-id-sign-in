@@ -5,7 +5,7 @@ import { Spinner } from "./Spinner";
 interface IIDKitBridge {
   client_id: string;
   nonce: string;
-  toggleHeader: (visible: boolean) => void;
+  setInProgress: (visible: boolean) => void;
   onSuccess: (result: ISuccessResult) => void;
   setDeeplink: (deeplink: string) => void;
 }
@@ -13,7 +13,7 @@ interface IIDKitBridge {
 export const IDKitBridge = ({
   client_id,
   nonce,
-  toggleHeader,
+  setInProgress,
   onSuccess,
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
@@ -30,9 +30,9 @@ export const IDKitBridge = ({
     if (
       verificationState === IDKitInternal.VerificationState.AwaitingConnection
     ) {
-      toggleHeader(true);
+      setInProgress(true);
     } else {
-      toggleHeader(false);
+      setInProgress(false);
     }
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
@@ -46,14 +46,14 @@ export const IDKitBridge = ({
     ) {
       onSuccess(result);
     }
-  }, [verificationState, reset, toggleHeader, onSuccess, result, errorCode]);
+  }, [verificationState, reset, setInProgress, onSuccess, result, errorCode]);
 
   useEffect(() => {
-    const isMobile = true;
+    const isMobile = window.matchMedia("(max-width: 768px)"); // to use the same logic as UI (Tailwind)
     if (isMobile && qrData?.mobile) {
       setTimeout(
         () => window.open(qrData.mobile, "_blank", "noopener,noreferrer"),
-        400
+        1000 // Wait for WalletConnect session to be established
       );
       setDeeplink(qrData.mobile);
     }

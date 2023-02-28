@@ -31,7 +31,7 @@ const Header = ({
 export default function Login() {
   const router = useRouter();
   const [params, setParams] = useState<IAuthorizeRequest>();
-  const [headerShown, setHeaderShown] = useState(true);
+  const [isInProgress, setIsInProgress] = useState(true);
   const [deeplink, setDeeplink] = useState("");
 
   useEffect(() => {
@@ -71,37 +71,41 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-xl">
-        <Header headerShown={headerShown} className="md:hidden" />
+        <Header headerShown={isInProgress} className="md:hidden" />
         <div className="bg-white rounded-2xl w-full h-full min-w-fit min-h-fit max-h-[39rem] p-8 md:p-16 mt-8 text-center flex flex-col justify-center items-center">
-          <Header headerShown={headerShown} className="hidden md:block" />
+          <Header headerShown={isInProgress} className="hidden md:block" />
           {!params && <Spinner />}
 
           {params && (
             <IDKitBridge
               client_id={params.client_id}
               nonce={params.nonce}
-              toggleHeader={(visible) => setHeaderShown(visible)}
+              setInProgress={(inProgress) => setIsInProgress(inProgress)}
               setDeeplink={(deeplink) => setDeeplink(deeplink)}
               onSuccess={handleIDKitSuccess}
             />
           )}
         </div>
-        <div className="text-center text-gray-400 mt-2">or</div>
-        <a
-          href={deeplink ? deeplink : "https://worldcoin.org/download"}
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center">
-            <div className="bg-text rounded p-1 mr-2">
-              <IconWorldcoin className="text-white text-xs" />
-            </div>
-            <div className="flex-grow">
-              {deeplink ? "Manually open app" : "Sign up in the app"}
-            </div>
-            <IconArrowRight className="text-2xl text-gray-400" />
-          </div>
-        </a>
+        {!isInProgress && (
+          <>
+            <div className="text-center text-gray-400 mt-2">or</div>
+            <a
+              href={deeplink ? deeplink : "https://worldcoin.org/download"}
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center">
+                <div className="bg-text rounded p-1 mr-2">
+                  <IconWorldcoin className="text-white text-xs" />
+                </div>
+                <div className="flex-grow">
+                  {deeplink ? "Manually open app" : "Sign up in the app"}
+                </div>
+                <IconArrowRight className="text-2xl text-gray-400" />
+              </div>
+            </a>
+          </>
+        )}
         <Footer />
       </div>
     </div>
