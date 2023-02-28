@@ -101,7 +101,7 @@ export default async function handler(
   }
 
   if (state) {
-    params.append("scope", state.toString());
+    params.append("state", state.toString());
   }
 
   res.redirect(302, `/login?${params.toString()}`);
