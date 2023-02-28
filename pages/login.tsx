@@ -71,9 +71,9 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-xl">
-        <Header headerShown={isInProgress} className="md:hidden" />
+        <Header headerShown={!isInProgress} className="md:hidden" />
         <div className="bg-white rounded-2xl w-full h-full min-w-fit min-h-fit max-h-[39rem] p-8 md:p-16 mt-8 text-center flex flex-col justify-center items-center">
-          <Header headerShown={isInProgress} className="hidden md:block" />
+          <Header headerShown={!isInProgress} className="hidden md:block" />
           {!params && <Spinner />}
 
           {params && (

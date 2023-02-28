@@ -49,7 +49,8 @@ export const IDKitBridge = ({
   }, [verificationState, reset, setInProgress, onSuccess, result, errorCode]);
 
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)"); // to use the same logic as UI (Tailwind)
+    const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
+    console.log(isMobile);
     if (isMobile && qrData?.mobile) {
       setTimeout(
         () => window.open(qrData.mobile, "_blank", "noopener,noreferrer"),
