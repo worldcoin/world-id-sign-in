@@ -37,19 +37,12 @@ export default async function handler(
   const { response_type, client_id, redirect_uri, scope, state, nonce } =
     inputParams;
 
-  // FIXME: Verify the client_id & redirect_uri
-
+  let url: URL | undefined;
   try {
-    const url = new URL(redirect_uri);
-    if (url.protocol !== "https:") {
-      return errorValidationClient(
-        "invalid_request",
-        "The redirect URI must be served over HTTPs.",
-        "redirect_uri",
-        res
-      );
-    }
-  } catch (err) {
+    url = new URL(redirect_uri);
+  } catch (err) {}
+
+  if (!url) {
     return errorValidationClient(
       "invalid_request",
       "The redirect URI provided is missing or malformed.",
@@ -57,6 +50,8 @@ export default async function handler(
       res
     );
   }
+
+  // FIXME: Verify the client_id & redirect_uri
 
   if (scope) {
     const scopes = decodeURIComponent((scope as any).toString()).split(" ");
