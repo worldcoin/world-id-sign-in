@@ -33,7 +33,7 @@ export default function Login() {
   const [params, setParams] = useState<IAuthorizeRequest>();
   const [isInProgress, setIsInProgress] = useState(true);
   const [deeplink, setDeeplink] = useState("");
-  const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const {
@@ -49,6 +49,8 @@ export default function Login() {
     if (!router.isReady) {
       return;
     }
+
+    setIsMobile(window.matchMedia("(max-width: 768px)").matches); // to use the same logic as UI (Tailwind)
 
     if (!ready || !client_id) {
       const urlParams = new URLSearchParams({
