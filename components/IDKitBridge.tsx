@@ -55,6 +55,8 @@ export const IDKitBridge = ({
         () => window.open(qrData.mobile, "_blank", "noopener,noreferrer"),
         1000 // Wait for WalletConnect session to be established
       );
+    }
+    if (qrData?.mobile) {
       setDeeplink(qrData.mobile);
     }
   }, [qrData, setDeeplink]);

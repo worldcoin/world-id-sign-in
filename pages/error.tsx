@@ -61,6 +61,7 @@ export default function Error(): JSX.Element {
         nonce,
         ready,
       });
+      console.warn(`Error details: ${detail}`);
     }
   }, [router]);
   return (
