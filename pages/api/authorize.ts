@@ -1,4 +1,5 @@
 import { errorNotAllowed, errorValidationClient } from "@/api-helpers/errors";
+import { DEVELOPER_PORTAL } from "@/consts";
 import { OIDCResponseTypeMapping } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -51,7 +52,40 @@ export default async function handler(
     );
   }
 
-  // FIXME: Verify the client_id & redirect_uri
+  // ANCHOR: Verify the client id & redirect URI are valid
+  const validateResponse = await fetch(
+    `${DEVELOPER_PORTAL}/api/v1/oidc/validate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        app_id: client_id,
+        redirect_uri,
+      }),
+    }
+  );
+
+  if (!validateResponse.ok) {
+    const errorDetails = await validateResponse.json();
+    if (errorDetails.code === "not_found") {
+      return errorValidationClient(
+        "invalid_client_id",
+        "Invalid client ID. Is your app registered in the Developer Portal? Please review and try again.",
+        "client_id",
+        res
+      );
+    }
+    return errorValidationClient(
+      errorDetails.code ?? "validation_error",
+      errorDetails.detail ?? "Invalid request. Please review and try again.",
+      errorDetails.attribute === "app_id"
+        ? "client_id"
+        : errorDetails.attribute,
+      res
+    );
+  }
 
   if (scope) {
     const scopes = decodeURIComponent((scope as any).toString()).split(" ");
