@@ -1,4 +1,8 @@
-import { ISuccessResult, internal as IDKitInternal } from "@worldcoin/idkit";
+import {
+  CredentialType,
+  internal as IDKitInternal,
+  ISuccessResult,
+} from "@worldcoin/idkit";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
 
@@ -22,6 +26,7 @@ export const IDKitBridge = ({
       client_id,
       "",
       nonce,
+      [CredentialType.Orb, CredentialType.Phone],
       "Sign in with World ID",
       "4e15bfc7b9842886c4e49d8f8ef04cf1"
     );
@@ -70,11 +75,7 @@ export const IDKitBridge = ({
           {qrData?.default && (
             <>
               <div className="hidden md:block">
-                <IDKitInternal.QRCode
-                  data={qrData?.default}
-                  logoSize={0}
-                  size={280}
-                />
+                <IDKitInternal.QRCode data={qrData?.default} size={280} />
               </div>
               <div className="md:hidden">
                 <Spinner />
