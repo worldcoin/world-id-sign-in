@@ -74,11 +74,7 @@ export const IDKitBridge = ({
           {qrData?.default && (
             <>
               <div className="hidden md:block">
-                <IDKitInternal.QRCode
-                  data={qrData?.default}
-                  logoSize={0}
-                  size={280}
-                />
+                <IDKitInternal.QRCode data={qrData?.default} size={280} />
               </div>
               <div className="md:hidden">
                 <Spinner />
