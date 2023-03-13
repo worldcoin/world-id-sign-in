@@ -33,6 +33,7 @@ export default function Login() {
   const [params, setParams] = useState<IAuthorizeRequest>();
   const [isInProgress, setIsInProgress] = useState(true);
   const [deeplink, setDeeplink] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const {
@@ -49,6 +50,8 @@ export default function Login() {
       return;
     }
 
+    setIsMobile(window.matchMedia("(max-width: 768px)").matches); // to use the same logic as UI (Tailwind)
+
     if (!ready || !client_id) {
       const urlParams = new URLSearchParams({
         code: "invalid_request",
@@ -64,7 +67,14 @@ export default function Login() {
 
   const handleIDKitSuccess = async (result: ISuccessResult) => {
     const url = new URL("/api/authenticate", window.location.origin);
-    url.search = new URLSearchParams({ ...params, ...result }).toString();
+    const rawParams: Record<string, string> = {
+      ...params,
+      ...result,
+    };
+    Object.keys(rawParams).forEach((key) =>
+      rawParams[key] === undefined ? delete rawParams[key] : {}
+    );
+    url.search = new URLSearchParams(rawParams).toString();
     window.location.href = url.toString();
   };
 
@@ -99,7 +109,7 @@ export default function Login() {
                   <IconWorldcoin className="text-white text-xs" />
                 </div>
                 <div className="flex-grow">
-                  {deeplink ? "Manually open app" : "Sign up in the app"}
+                  {isMobile ? "Manually open app" : "Sign up in the app"}
                 </div>
                 <IconArrowRight className="text-2xl text-gray-400" />
               </div>

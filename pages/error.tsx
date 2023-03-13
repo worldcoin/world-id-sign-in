@@ -42,7 +42,11 @@ export default function Error(): JSX.Element {
         nonce,
         ready,
       } = router.query as Record<string, string>;
-      if (code === "invalid_request") {
+      if (
+        code === "invalid_request" ||
+        code === "invalid_redirect_uri" ||
+        attribute === "client_id"
+      ) {
         setErrorState(ErrorState.DevError);
       } else {
         setErrorState(ErrorState.UserError);
@@ -57,6 +61,7 @@ export default function Error(): JSX.Element {
         nonce,
         ready,
       });
+      console.warn(`Error details: ${detail}`);
     }
   }, [router]);
   return (

@@ -69,10 +69,12 @@ export default async function handleAuth(
     } catch {
       errorResponse = await response.text();
     }
+
     console.error(
       `Could not authenticate OIDC user: ${response.statusText}`,
       errorResponse
     );
+
     const detail = Object.hasOwn(errorResponse, "detail")
       ? errorResponse.detail
       : "We could not complete your authentication. Please try again.";
@@ -83,10 +85,17 @@ export default async function handleAuth(
       response_type,
       client_id,
       redirect_uri,
-      nonce,
-      state,
     });
-    return res.redirect(`/error?code=${searchParams.toString()}`);
+
+    if (state) {
+      searchParams.append("state", state.toString());
+    }
+
+    if (nonce) {
+      searchParams.append("nonce", nonce.toString());
+    }
+
+    return res.redirect(`/error?${searchParams.toString()}`);
   }
 
   const responseAuth = await response.json();
