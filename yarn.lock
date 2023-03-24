@@ -37,6 +37,26 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@datadog/browser-core@4.36.0":
+  version "4.36.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.36.0.tgz#840789b9b9c42a1a48d8c737605c843bee1d6248"
+  integrity sha512-eJIygwTOfkeWN/+V7DcQzSQCZM0Bu7zXXbTkWrgYyWU9a4u/6op1LJtF7ZP/nD7yXg18Tvxx9INPN9ikzjoiiQ==
+
+"@datadog/browser-rum-core@4.36.0":
+  version "4.36.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum-core/-/browser-rum-core-4.36.0.tgz#e7ccd83dfdd179ad72d557e8abbceb213c8013b2"
+  integrity sha512-8Sq5NJ6FpHJ4OsuBx2FSCY5N6C6774EG4QLK48hK4D9Dcb7zEgwBS2KZ7g9DC+yYdnTLxhUo4JV2/XIdZ4SP0g==
+  dependencies:
+    "@datadog/browser-core" "4.36.0"
+
+"@datadog/browser-rum@^4.36.0":
+  version "4.36.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-rum/-/browser-rum-4.36.0.tgz#66c777bae2f0cdd3e82c83c57794c61ad3ce26a1"
+  integrity sha512-bS+4qlDouYgFjuMdYKH2xrqwClQm+kiwSEuaaRPlj2eYLffsVWlOuOrMupp7MqfSvFy9RhOCudiHtk+bdYQ83A==
+  dependencies:
+    "@datadog/browser-core" "4.36.0"
+    "@datadog/browser-rum-core" "4.36.0"
+
 "@datadog/native-appsec@2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@datadog/native-appsec/-/native-appsec-2.0.0.tgz#ad65ba19bfd68e6b6c6cf64bb8ef55d099af8edc"

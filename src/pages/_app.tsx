@@ -1,9 +1,21 @@
+import { usePostHog } from "@/hooks/usePostHog";
 import "@/styles/globals.css";
+import { datadogRum } from "@datadog/browser-rum";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import posthog from "posthog-js";
-import { usePostHog } from "@/hooks/usePostHog";
 import { useEffect } from "react";
+
+datadogRum.init({
+  applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID as string,
+  clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN as string,
+  site: process.env.NEXT_PUBLIC_DATADOG_SITE,
+  env: process.env.NODE_ENV,
+  service: "world-id-sign-in",
+  version: "1.0.0",
+  sessionSampleRate: 100,
+  defaultPrivacyLevel: "mask-user-input",
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   usePostHog();
