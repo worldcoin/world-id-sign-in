@@ -41,7 +41,7 @@ export const IDKitBridge = ({
     }
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
-      console.warn("Sign in with World ID failed.", errorCode);
+      console.error("Sign in with World ID failed.", errorCode);
       reset();
     }
 

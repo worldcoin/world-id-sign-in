@@ -35,10 +35,6 @@ export default function Login() {
   const [deeplink, setDeeplink] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
-  console.log("This is a client-side test log.");
-  console.warn("This is a client-side test warning.");
-  console.error("This is a client-side test error.");
-
   useEffect(() => {
     const {
       client_id,
@@ -63,7 +59,6 @@ export default function Login() {
           "Please call the /authorize endpoint with the required parameters.",
         ...router.query,
       });
-      console.error(`Invalid request: ${urlParams}`);
       router.push(`/error?${urlParams}`);
     }
 

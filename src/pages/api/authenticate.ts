@@ -23,10 +23,6 @@ export default async function handleAuth(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("This is a server-side test log.");
-  console.warn("This is a server-side test warning.");
-  console.error("This is a server-side test error.");
-
   if (!["GET"].includes(req.method!)) {
     return errorNotAllowed(req.method, res);
   }
