@@ -2,9 +2,28 @@ import { usePostHog } from "@/hooks/usePostHog";
 import "@/styles/globals.css";
 import { datadogRum } from "@datadog/browser-rum";
 import type { AppProps } from "next/app";
+import { IBM_Plex_Mono, Rubik, Sora } from "next/font/google";
 import Head from "next/head";
 import posthog from "posthog-js";
 import { useEffect } from "react";
+
+const sora = Sora({
+  subsets: ["latin"],
+  style: ["normal"],
+  weight: ["400", "600", "700"],
+});
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  style: ["normal"],
+  weight: ["400", "600"],
+});
 
 datadogRum.init({
   applicationId: process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID as string,
@@ -52,6 +71,13 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <div className="bg-background h-screen">
         <Component {...pageProps} />
+        <style jsx global>{`
+          :root {
+            --font-sora: ${sora.style.fontFamily};
+            --font-rubik: ${rubik.style.fontFamily};
+            --font-mono: ${ibmPlexMono.style.fontFamily};
+          }
+        `}</style>
       </div>
     </>
   );
