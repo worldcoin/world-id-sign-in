@@ -6,8 +6,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sora: ["var(--font-sora)", "sans-serif"],
-        rubik: ["var(--font-rubik)", "sans-serif"],
+        sans: ["var(--font-rubik)", ...defaultTheme.fontFamily.sans],
+        rubik: ["var(--font-rubik)", ...defaultTheme.fontFamily.sans],
+        sora: ["var(--font-sora)", ...defaultTheme.fontFamily.sans],
         ibm: ["var(--font-mono)", "monospace"],
       },
       colors: {

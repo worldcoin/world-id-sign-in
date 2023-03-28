@@ -79,7 +79,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center h-full w-full px-6 font-rubik">
+    <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-fit">
         <Header headerShown={!isInProgress} className="md:hidden" />
         <div className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200">
