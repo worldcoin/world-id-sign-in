@@ -11,6 +11,7 @@ export const Footer = () => {
           href="https://worldcoin.org/privacy-statement"
           target="_blank"
           rel="noopener noreferrer"
+          className="cursor-pointer"
         >
           Privacy
         </a>

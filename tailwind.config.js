@@ -6,7 +6,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["GT America", ...defaultTheme.fontFamily.sans],
+        sans: ["var(--font-rubik)", ...defaultTheme.fontFamily.sans],
+        rubik: ["var(--font-rubik)", ...defaultTheme.fontFamily.sans],
+        sora: ["var(--font-sora)", ...defaultTheme.fontFamily.sans],
+        ibm: ["var(--font-mono)", "monospace"],
       },
       colors: {
         background: "#F7F7F7",

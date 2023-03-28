@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@datadog/browser-rum": "^4.36.0",
-    "@next/font": "13.1.6",
     "@types/node": "18.14.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -22,7 +21,7 @@
     "dd-trace": "^3.15.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
-    "next": "13.1.6",
+    "next": "13.2.4",
     "next-logger": "^3.0.1",
     "nextjs-redirect": "^6.0.1",
     "posthog-js": "^1.50.8",

@@ -19,10 +19,10 @@ const Header = ({
       <div className="flex justify-center">
         <IconWorldcoin className="w-12 h-12" />
       </div>
-      <h1 className="font-medium text-3xl mt-8 text-center">
+      <h1 className="text-2xl md:text-3xl mt-8 text-center font-sora font-semibold">
         Sign in with Worldcoin
       </h1>
-      <div className="text-text-muted text-xl mt-2 text-center">
+      <div className="text-text-muted text-lg md:text-xl mt-2 text-center font-rubik">
         Scan with the app to continue
       </div>
     </div>
@@ -80,9 +80,9 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center h-full w-full px-6">
-      <div className="flex flex-grow flex-col max-w-xl">
+      <div className="flex flex-grow flex-col max-w-fit">
         <Header headerShown={!isInProgress} className="md:hidden" />
-        <div className="bg-white rounded-2xl w-full h-full min-w-fit min-h-fit max-h-[39rem] p-8 md:p-16 mt-8 text-center flex flex-col justify-center items-center">
+        <div className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200">
           <Header headerShown={!isInProgress} className="hidden md:block" />
           {!params && <Spinner />}
 
@@ -104,9 +104,9 @@ export default function Login() {
               rel="noreferrer noopener"
               target="_blank"
             >
-              <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center">
+              <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center border border-gray-200 cursor-pointer">
                 <div className="bg-text rounded p-1 mr-2">
-                  <IconWorldcoin className="text-white text-xs" />
+                  <IconWorldcoin className="text-white text-sm" />
                 </div>
                 <div className="flex-grow">
                   {isMobile ? "Manually open app" : "Sign up in the app"}
