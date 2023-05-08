@@ -1,23 +1,24 @@
+import { Spinner } from "./Spinner";
+import { memo, useEffect } from "react";
+import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
 import {
+  ISuccessResult,
   CredentialType,
   internal as IDKitInternal,
-  ISuccessResult,
 } from "@worldcoin/idkit";
-import { useEffect } from "react";
-import { Spinner } from "./Spinner";
 
 interface IIDKitBridge {
-  client_id: string;
   nonce: string;
-  setInProgress: (visible: boolean) => void;
-  onSuccess: (result: ISuccessResult) => void;
+  client_id: string;
   setDeeplink: (deeplink: string) => void;
+  onSuccess: (result: ISuccessResult) => void;
+  setStage: (stage: VerificationState) => void;
 }
 
-export const IDKitBridge = ({
+const IDKitBridge = ({
   client_id,
   nonce,
-  setInProgress,
+  setStage,
   onSuccess,
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
@@ -32,13 +33,7 @@ export const IDKitBridge = ({
     );
 
   useEffect(() => {
-    if (
-      verificationState === IDKitInternal.VerificationState.AwaitingConnection
-    ) {
-      setInProgress(false);
-    } else {
-      setInProgress(true);
-    }
+    setStage(verificationState);
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
       console.error("Sign in with World ID failed.", errorCode);
@@ -51,7 +46,7 @@ export const IDKitBridge = ({
     ) {
       onSuccess(result);
     }
-  }, [verificationState, reset, setInProgress, onSuccess, result, errorCode]);
+  }, [verificationState, reset, setStage, onSuccess, result, errorCode]);
 
   useEffect(() => {
     const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
@@ -61,9 +56,8 @@ export const IDKitBridge = ({
         1000 // Wait for WalletConnect session to be established
       );
     }
-    if (qrData?.mobile) {
-      setDeeplink(qrData.mobile);
-    }
+
+    if (qrData?.mobile) setDeeplink(qrData.mobile);
   }, [qrData, setDeeplink]);
 
   return (
@@ -124,3 +118,5 @@ export const IDKitBridge = ({
     </div>
   );
 };
+
+export default memo(IDKitBridge);

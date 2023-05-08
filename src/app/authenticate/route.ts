@@ -1,6 +1,7 @@
-import { errorNotAllowed, errorRequiredAttribute } from "@/api-helpers/errors";
+import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { errorRequiredAttribute } from "@/api-helpers/errors";
 
 const params = [
   "response_type",
@@ -19,17 +20,10 @@ const params = [
  * @param res
  * @returns
  */
-export default async function handleAuth(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (!["GET"].includes(req.method!)) {
-    return errorNotAllowed(req.method, res);
-  }
-
+export const GET = async (req: NextRequest): Promise<NextResponse> => {
   for (const attr of params) {
-    if (!req.query[attr]) {
-      return errorRequiredAttribute(attr, res);
+    if (!req.nextUrl.searchParams.get(attr)) {
+      return errorRequiredAttribute(attr);
     }
   }
 
@@ -44,7 +38,7 @@ export default async function handleAuth(
     nullifier_hash,
     state,
     scope,
-  } = req.query as Record<string, string>;
+  } = Object.fromEntries(req.nextUrl.searchParams.entries());
 
   const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
     method: "POST",
@@ -87,36 +81,24 @@ export default async function handleAuth(
       redirect_uri,
     });
 
-    if (state) {
-      searchParams.append("state", state.toString());
-    }
+    if (state) searchParams.append("state", state.toString());
+    if (nonce) searchParams.append("nonce", nonce.toString());
 
-    if (nonce) {
-      searchParams.append("nonce", nonce.toString());
-    }
-
-    return res.redirect(`/error?${searchParams.toString()}`);
+    return NextResponse.redirect(
+      new URL(`/error?${searchParams.toString()}`, req.url)
+    );
   }
 
   const responseAuth = await response.json();
 
   const url = new URL(redirect_uri!.toString());
-  if (responseAuth.code) {
-    url.searchParams.append("code", responseAuth.code);
-  }
-
-  if (responseAuth.token) {
-    url.searchParams.append("token", responseAuth.token);
-  }
-
-  if (responseAuth.id_token) {
+  if (responseAuth.code) url.searchParams.append("code", responseAuth.code);
+  if (responseAuth.token) url.searchParams.append("token", responseAuth.token);
+  if (responseAuth.id_token)
     url.searchParams.append("id_token", responseAuth.id_token);
-  }
 
-  if (state) {
-    // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
-    url.searchParams.append("state", state.toString());
-  }
+  // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
+  if (state) url.searchParams.append("state", state.toString());
 
-  res.redirect(302, url.toString());
-}
+  return NextResponse.redirect(url);
+};
