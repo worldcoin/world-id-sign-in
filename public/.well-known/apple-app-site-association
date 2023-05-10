@@ -1,0 +1,23 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["35RXKB6738.org.worldcoin.insight.staging", "35RXKB6738.org.worldcoin.insight"],
+        "components": [
+          {
+            "/": "/verify/*",
+            "comment": "Matches any URL whose path starts with /verify/"
+          },
+          {
+            "/": "/app/*",
+            "comment": "Matches any URL whose path starts with /app/"
+          },
+          {
+            "/": "/login/*",
+            "comment": "Matches any URL whose path starts with /login/"
+          }
+        ]
+      }
+    ]
+  }
+}
