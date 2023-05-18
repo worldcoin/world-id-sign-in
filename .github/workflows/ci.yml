@@ -14,16 +14,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "yarn"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Check formatting with Prettier
-        run: yarn format:check
+        run: pnpm format:check
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
       - name: Check Typescript
-        run: yarn typecheck
+        run: pnpm typecheck
