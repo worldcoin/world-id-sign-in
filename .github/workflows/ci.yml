@@ -15,8 +15,12 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.5.0
+          run_install: |
+            - args: [--frozen-lockfile]
 
       - name: Check formatting with Prettier
         run: pnpm format:check
