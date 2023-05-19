@@ -12,13 +12,9 @@ const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
     return [
-      {
-        source: "/authorize",
-        destination: "/api/authorize",
-      },
       ...OIDC_ROUTES.map((route) => ({
         source: route,
-        destination: "/api/router",
+        destination: "/oidc-route",
       })),
     ];
   },
@@ -27,7 +23,7 @@ const nextConfig = {
       {
         source: "/",
         permanent: false,
-        destination: "https://docs.worldcoin.org", // move to World ID landing page
+        destination: "https://docs.worldcoin.org", // move to World ID docs
       },
     ];
   },
