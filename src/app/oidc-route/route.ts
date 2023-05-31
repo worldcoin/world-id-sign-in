@@ -2,8 +2,7 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 
-/// Routes OIDC requests to the Developer Portal
-export const POST = async (req: NextRequest): Promise<NextResponse> => {
+const handler = async (req: NextRequest): Promise<NextResponse> => {
 	if (!req.url || req.url === "/oidc-route") {
 		return new NextResponse("Not found", { status: 404 });
 	}
@@ -18,8 +17,9 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 		"Content-Type": req.headers.get("content-type") || "application/json",
 	});
 
-	if (req.headers.has("authorization"))
+	if (req.headers.has("authorization")) {
 		headers.append("Authorization", req.headers.get("authorization")!);
+	}
 
 	const body =
 		req.headers.get("content-type") === "application/x-www-form-urlencoded"
@@ -32,8 +32,9 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 		body: req.method === "POST" ? body : undefined,
 	});
 
-	if (response.status === 404)
+	if (response.status === 404) {
 		return new NextResponse("Not found", { status: 404 });
+	}
 
 	if (response.status >= 500) {
 		console.error(
@@ -57,7 +58,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 	const corsHeaders = response.headers.get("allow-control-allow-headers");
 
 	headers = new Headers();
-
 	if (corsOrigin) headers.append("Access-Control-Allow-Origin", corsOrigin);
 	if (corsMethods) headers.append("Access-Control-Allow-Methods", corsMethods);
 	if (corsHeaders) headers.append("Access-Control-Allow-Headers", corsHeaders);
@@ -67,3 +67,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 		status: response.status,
 	});
 };
+
+export const GET = handler;
+export const POST = handler;
