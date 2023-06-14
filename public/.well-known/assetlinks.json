@@ -1,32 +1,32 @@
 [
-	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
-		"target": {
-			"namespace": "android_app",
-			"package_name": "com.worldcoin.dev",
-			"sha256_cert_fingerprints": [
-				"A3:41:6E:DF:DC:AA:AE:CC:5E:59:2B:9C:AA:07:BB:78:EC:C6:F3:1A:EC:44:09:F4:9C:A6:D3:B4:DF:F1:DB:E0"
-			]
-		}
-	},
-	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
-		"target": {
-			"namespace": "android_app",
-			"package_name": "com.worldcoin.staging",
-			"sha256_cert_fingerprints": [
-				"9D:2A:D7:12:7F:09:91:92:97:14:C0:19:5B:43:47:84:34:53:1C:D8:B7:F1:81:36:5C:2B:D5:CD:85:E3:46:EF"
-			]
-		}
-	},
-	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
-		"target": {
-			"namespace": "android_app",
-			"package_name": "com.worldcoin",
-			"sha256_cert_fingerprints": [
-				"9D:2A:D7:12:7F:09:91:92:97:14:C0:19:5B:43:47:84:34:53:1C:D8:B7:F1:81:36:5C:2B:D5:CD:85:E3:46:EF"
-			]
-		}
-	}
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.worldcoin.dev",
+      "sha256_cert_fingerprints": [
+        "A3:41:6E:DF:DC:AA:AE:CC:5E:59:2B:9C:AA:07:BB:78:EC:C6:F3:1A:EC:44:09:F4:9C:A6:D3:B4:DF:F1:DB:E0"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.worldcoin.staging",
+      "sha256_cert_fingerprints": [
+        "9D:2A:D7:12:7F:09:91:92:97:14:C0:19:5B:43:47:84:34:53:1C:D8:B7:F1:81:36:5C:2B:D5:CD:85:E3:46:EF"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.worldcoin",
+      "sha256_cert_fingerprints": [
+        "9D:2A:D7:12:7F:09:91:92:97:14:C0:19:5B:43:47:84:34:53:1C:D8:B7:F1:81:36:5C:2B:D5:CD:85:E3:46:EF"
+      ]
+    }
+  }
 ]
