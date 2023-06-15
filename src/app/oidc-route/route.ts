@@ -30,10 +30,16 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
     headers.append("Authorization", req.headers.get("authorization")!);
   }
 
-  const body =
+  let body: URLSearchParams | string | undefined;
+
+  if (
+    req.body &&
     req.headers.get("content-type") === "application/x-www-form-urlencoded"
-      ? new URLSearchParams(await req.json())
-      : JSON.stringify(req.body);
+  ) {
+    body = new URLSearchParams(await req.text());
+  } else if (req.headers.get("content-type") === "application/json") {
+    body = JSON.stringify(req.body);
+  }
 
   const response = await fetch(destUrl, {
     headers,
