@@ -4,7 +4,7 @@ import { AUTHENTICATE_MOCK } from "./authenticate.mock";
 import { handlerAuthenticate } from "@/app/authenticate/route";
 
 describe("e2e OIDC tests", () => {
-  test("can request and verify token", async () => {
+  test("can request and verify JWT token", async () => {
     // ANCHOR: Generate the token
     const authenticateReq = new NextRequest(
       `http://localhost/authenticate?${new URLSearchParams(
@@ -67,6 +67,56 @@ describe("e2e OIDC tests", () => {
         credential_type: "orb",
       },
     });
+  });
+
+  test("can request and verify auth token", async () => {
+    // ANCHOR: Generate the token
+    const authenticateReq = new NextRequest(
+      `http://localhost/authenticate?${new URLSearchParams({
+        ...AUTHENTICATE_MOCK,
+        response_type: "code",
+      }).toString()}`,
+      {
+        method: "GET",
+      }
+    );
+
+    const authenticateResponse = await handlerAuthenticate(authenticateReq);
+    expect(authenticateResponse.status).toBe(307);
+
+    const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
+    const code = redirectUrl.searchParams.get("code");
+    expect(code).toBeTruthy();
+
+    const auth = Buffer.from(
+      `${AUTHENTICATE_MOCK.client_id}:${process.env.E2E_TEST_APP_CLIENT_SECRET}`
+    ).toString("base64");
+
+    const req = new NextRequest("http://localhost/token", {
+      method: "POST",
+      headers: new Headers({
+        "Content-Type": "application/x-www-form-urlencoded",
+        authorization: `Basic ${auth}`,
+      }),
+      body: new URLSearchParams({
+        code: code!,
+        grant_type: "authorization_code",
+      }),
+    });
+
+    const response = await handlerOIDCRoute(req);
+    expect(response.status).toBe(200);
+
+    const json = await response.json();
+    expect(json).toEqual(
+      expect.objectContaining({
+        access_token: expect.any(String),
+        token_type: "Bearer",
+        expires_in: 3600,
+        scope: expect.any(String),
+        id_token: expect.any(String),
+      })
+    );
   });
 
   test("can fetch OIDC config", async () => {
