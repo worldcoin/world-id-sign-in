@@ -1,7 +1,7 @@
-import { handlerOIDCRoute } from "@/app/oidc-route/route";
+import { POST as handlerOIDCRoute } from "@/app/oidc-route/route";
 import { NextRequest } from "next/server";
 import { AUTHENTICATE_MOCK } from "./authenticate.mock";
-import { handlerAuthenticate } from "@/app/authenticate/route";
+import { GET as handlerAuthenticate } from "@/app/authenticate/route";
 
 describe("e2e OIDC tests", () => {
   test("can request and verify JWT token", async () => {
