@@ -61,11 +61,45 @@ describe("e2e OIDC tests", () => {
 
     const userInfoJson = await userInfoResponse.json();
     expect(userInfoJson).toEqual({
-      sub: expect.stringMatching(/0x[a-f0-9]{64}/),
+      sub: expect.stringMatching(/^0x[a-f0-9]{64}$/),
       "https://id.worldcoin.org/beta": {
         likely_human: "strong",
         credential_type: "orb",
       },
     });
+  });
+
+  test("can fetch OIDC config", async () => {
+    // ANCHOR: Generate the token
+    const req = new NextRequest(
+      "http://localhost/.well-known/openid-configuration"
+    );
+
+    const authenticateResponse = await handlerOIDCRoute(req);
+    expect(authenticateResponse.status).toBe(200);
+
+    const json = await authenticateResponse.json();
+
+    expect(json.issuer).toEqual("https://id.worldcoin.org");
+  });
+
+  test("can fetch JWKs", async () => {
+    // ANCHOR: Generate the token
+    const req = new NextRequest("http://localhost/jwks.json");
+
+    const authenticateResponse = await handlerOIDCRoute(req);
+    expect(authenticateResponse.status).toBe(200);
+
+    const json = await authenticateResponse.json();
+
+    expect(json.keys.length).toBeGreaterThanOrEqual(1);
+    expect(json.keys[0]).toEqual(
+      expect.objectContaining({
+        e: "AQAB",
+        n: expect.any(String),
+        kty: "RSA",
+        kid: expect.stringMatching(/^jwk_/),
+      })
+    );
   });
 });
