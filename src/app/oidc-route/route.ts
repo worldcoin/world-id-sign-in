@@ -7,22 +7,6 @@ const SPECIAL_MAPPING: Record<string, string> = {
   "/.well-known/openid-configuration": "/api/v1/oidc/openid-configuration",
 };
 
-async function parseReadableStream(body: ReadableStream) {
-  const reader = body.getReader();
-  const decoder = new TextDecoder("utf-8");
-  let result = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-
-    if (done) {
-      return result;
-    }
-
-    result += decoder.decode(value);
-  }
-}
-
 /// Routes OIDC requests to the Developer Portal
 const handler = async (req: NextRequest): Promise<NextResponse> => {
   const path = req.nextUrl.pathname;
@@ -52,7 +36,7 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
     req.body &&
     req.headers.get("content-type") === "application/x-www-form-urlencoded"
   ) {
-    body = new URLSearchParams(await parseReadableStream(req.body));
+    body = new URLSearchParams(await req.text());
   } else if (req.headers.get("content-type") === "application/json") {
     body = JSON.stringify(req.body);
   }
