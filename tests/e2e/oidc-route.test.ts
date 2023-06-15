@@ -70,7 +70,6 @@ describe("e2e OIDC tests", () => {
   });
 
   test("can fetch OIDC config", async () => {
-    // ANCHOR: Generate the token
     const req = new NextRequest(
       "http://localhost/.well-known/openid-configuration"
     );
@@ -84,7 +83,6 @@ describe("e2e OIDC tests", () => {
   });
 
   test("can fetch JWKs", async () => {
-    // ANCHOR: Generate the token
     const req = new NextRequest("http://localhost/jwks.json");
 
     const authenticateResponse = await handlerOIDCRoute(req);

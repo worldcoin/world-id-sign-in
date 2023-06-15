@@ -40,7 +40,7 @@ export const handlerOIDCRoute = async (
   ) {
     body = new URLSearchParams(await req.text());
   } else if (req.headers.get("content-type") === "application/json") {
-    body = JSON.stringify(req.body);
+    body = JSON.stringify(await req.json());
   }
 
   const response = await fetch(destUrl, {
