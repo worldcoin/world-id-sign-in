@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 import { OIDCResponseTypeMapping } from "@/types";
-import { errorNotAllowed, errorValidationClient } from "@/api-helpers/errors";
+import { errorValidationClient } from "@/api-helpers/errors";
 
 const SUPPORTED_SCOPES = ["openid", "profile", "email"];
 

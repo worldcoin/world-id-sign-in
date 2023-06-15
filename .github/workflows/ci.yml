@@ -30,3 +30,26 @@ jobs:
 
       - name: Check Typescript
         run: pnpm typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.5.0
+          run_install: |
+            - args: [--frozen-lockfile]
+
+      - name: Test
+        env:
+          E2E_TEST_APP_CLIENT_SECRET: ${{ secrets.E2E_TEST_APP_CLIENT_SECRET }}
+        run: pnpm test
