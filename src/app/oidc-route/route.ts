@@ -8,7 +8,9 @@ const SPECIAL_MAPPING: Record<string, string> = {
 };
 
 /// Routes OIDC requests to the Developer Portal
-const handler = async (req: NextRequest): Promise<NextResponse> => {
+export const handlerOIDCRoute = async (
+  req: NextRequest
+): Promise<NextResponse> => {
   const path = req.nextUrl.pathname;
   if (!path || path === "/oidc-route") {
     return NextResponse.json({ code: "not_found" }, { status: 404 });
@@ -46,8 +48,6 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
     method: req.method,
     body: req.method === "POST" ? body : undefined,
   });
-
-  console.log(req.method, destUrl, response.status);
 
   if (response.status === 404) {
     return NextResponse.json({ code: "not_found" }, { status: 404 });
@@ -94,5 +94,5 @@ const handler = async (req: NextRequest): Promise<NextResponse> => {
   });
 };
 
-export const GET = handler;
-export const POST = handler;
+export const GET = handlerOIDCRoute;
+export const POST = handlerOIDCRoute;

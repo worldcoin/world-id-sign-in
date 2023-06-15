@@ -20,7 +20,9 @@ const params = [
  * @param res
  * @returns
  */
-export const GET = async (req: NextRequest): Promise<NextResponse> => {
+export const handlerAuthenticate = async (
+  req: NextRequest
+): Promise<NextResponse> => {
   for (const attr of params) {
     if (!req.nextUrl.searchParams.get(attr)) {
       return errorRequiredAttribute(attr);
@@ -183,3 +185,5 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   return NextResponse.json({ url });
 };
+
+export const GET = handlerAuthenticate;
