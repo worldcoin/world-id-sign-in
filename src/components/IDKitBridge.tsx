@@ -68,7 +68,8 @@ const IDKitBridge = ({
           {!qrData?.default && !qrData?.mobile && <Spinner />}
           {qrData?.default && (
             <>
-              <div className="hidden md:block">
+              {/* .qr-code className used for remote synthetic tests */}
+              <div className="hidden md:block qr-code">
                 <IDKitInternal.QRCode data={qrData?.default} size={280} />
               </div>
               <div className="md:hidden">
