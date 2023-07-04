@@ -51,6 +51,11 @@ const handlerOIDCRoute = async (req: NextRequest): Promise<NextResponse> => {
     return NextResponse.json({ code: "not_found" }, { status: 404 });
   }
 
+  if (response.status === 429) {
+    console.warn("Received 429 response from Developer Portal", req.url);
+    return NextResponse.json({ code: "rate_limit" }, { status: 429 });
+  }
+
   if (response.status >= 500) {
     console.error(
       `Received 500+ response from Developer Portal`,
