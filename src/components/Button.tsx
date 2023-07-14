@@ -41,17 +41,18 @@ export const ButtonLink = ({
   ...restOfProps
 }: IButtonLink): JSX.Element => {
   return (
-    <Link
-      {...restOfProps}
-      className={clsx(
-        "font-medium bg-gray-100 p-2 rounded-lg border text-sm border-gray-200",
-        className
-      )}
-    >
-      <span className="grid grid-flow-col gap-1 items-center">
-        {icon}
-        {children}
-      </span>
+    <Link {...restOfProps}>
+      <button
+        className={clsx(
+          "font-medium bg-gray-100 p-2 rounded-lg border text-sm border-gray-200",
+          className
+        )}
+      >
+        <div className="grid grid-flow-col gap-1 items-center">
+          {icon}
+          {children}
+        </div>
+      </button>
     </Link>
   );
 };
