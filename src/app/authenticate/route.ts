@@ -58,10 +58,11 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   if (!response.ok) {
     let errorResponse;
+    let responseClone = response.clone();
     try {
       errorResponse = await response.json();
     } catch {
-      errorResponse = await response.text();
+      errorResponse = await responseClone.text();
     }
 
     console.error(
@@ -141,10 +142,11 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   if (!response.ok) {
     let errorResponse;
+    let responseClone = response.clone();
     try {
       errorResponse = await response.json();
     } catch {
-      errorResponse = await response.text();
+      errorResponse = await responseClone.text();
     }
 
     console.error(
