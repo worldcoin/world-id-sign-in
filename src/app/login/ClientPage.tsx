@@ -60,6 +60,7 @@ const IDKitQR: FC<Props> = ({
           ![
             IDKitInternal.VerificationState.AwaitingVerification,
             IDKitInternal.VerificationState.LoadingWidget,
+            IDKitInternal.VerificationState.Confirmed,
           ].includes(wcStage)
         }
         className="md:hidden"
@@ -70,6 +71,7 @@ const IDKitQR: FC<Props> = ({
             ![
               IDKitInternal.VerificationState.AwaitingVerification,
               IDKitInternal.VerificationState.LoadingWidget,
+              IDKitInternal.VerificationState.Confirmed,
             ].includes(wcStage)
           }
           className="hidden md:block"
@@ -86,6 +88,7 @@ const IDKitQR: FC<Props> = ({
       {![
         IDKitInternal.VerificationState.AwaitingVerification,
         IDKitInternal.VerificationState.LoadingWidget,
+        IDKitInternal.VerificationState.Confirmed,
       ].includes(wcStage) && (
         <>
           <div className="text-center text-gray-400 mt-2">or</div>
