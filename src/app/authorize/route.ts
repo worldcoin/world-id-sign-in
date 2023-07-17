@@ -51,7 +51,15 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   );
 
   if (!validateResponse.ok) {
-    const errorDetails = await validateResponse.json();
+    let errorDetails: Record<string, any> = {};
+    try {
+      errorDetails = await validateResponse.json();
+    } catch (e) {
+      console.error(
+        `Error parsing response from Developer Portal (${validateResponse.status})`,
+        e
+      );
+    }
 
     if (errorDetails.code === "not_found") {
       return errorValidationClient(
