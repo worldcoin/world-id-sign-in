@@ -7,7 +7,7 @@ import { FC, PropsWithChildren } from "react";
 import { IBM_Plex_Mono, Rubik, Sora } from "next/font/google";
 
 export const metadata = {
-  title: "Sign in with World ID • Worldcoin",
+  title: "Sign in with Worldcoin",
 } satisfies Metadata;
 
 const sora = Sora({
