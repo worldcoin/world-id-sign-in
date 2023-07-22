@@ -8,6 +8,34 @@ import { IBM_Plex_Mono, Rubik, Sora } from "next/font/google";
 
 export const metadata = {
   title: "Sign in with Worldcoin",
+
+  icons: [
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      url: "/favicon/apple-touch-icon.png",
+    },
+    {
+      url: "/favicon/favicon-32x32.png",
+      type: "image/png",
+      sizes: "32x32",
+      rel: "icon",
+    },
+    {
+      url: "/favicon/favicon-16x16.png",
+      type: "image/png",
+      sizes: "16x16",
+      rel: "icon",
+    },
+    {
+      url: "/favicon/site.webmanifest",
+      rel: "manifest",
+    },
+    {
+      url: "/favicon/safari-pinned-tab.svg",
+      rel: "mask-icon",
+    },
+  ],
 } satisfies Metadata;
 
 const sora = Sora({
