@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 import * as yup from "yup";
-import { validateRequestBodySchema } from "@/api-helpers/utils";
+import { validateRequestSchema } from "@/api-helpers/utils";
 
 const schema = yup.object({
   proof: yup.string().required("This attribute is required."),
@@ -27,9 +27,10 @@ type ParamsType = yup.InferType<typeof schema>;
  */
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const { parsedParams, isValid, errorResponse } =
-    await validateRequestBodySchema<ParamsType>({
+    await validateRequestSchema<ParamsType>({
       schema,
       req,
+      bodySource: "formData",
     });
 
   if (!isValid) {
