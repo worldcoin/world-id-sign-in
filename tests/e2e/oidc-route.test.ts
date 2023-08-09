@@ -16,7 +16,7 @@ describe("e2e OIDC tests", () => {
     );
 
     const authenticateResponse = await handlerAuthenticate(authenticateReq);
-    expect(authenticateResponse.status).toBe(307);
+    expect(authenticateResponse.status).toBe(302);
 
     const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
     const token = redirectUrl.searchParams.get("token");
@@ -82,7 +82,7 @@ describe("e2e OIDC tests", () => {
     );
 
     const authenticateResponse = await handlerAuthenticate(authenticateReq);
-    expect(authenticateResponse.status).toBe(307);
+    expect(authenticateResponse.status).toBe(302);
 
     const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
     const code = redirectUrl.searchParams.get("code");

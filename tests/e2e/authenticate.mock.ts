@@ -2,6 +2,7 @@ export const AUTHENTICATE_MOCK = {
   response_type: "token",
   client_id: "app_staging_cb4113a6f4f9dcd1f6cd6e05377dd614",
   redirect_uri: "http://localhost/hello",
+  scope: "openid",
   nonce: "e2e-tests-1",
   merkle_root:
     "0x07686fdef6cad625b2dca159865b2180c6fef8d665b41dcd9b3da4dc9c9f43d1",
