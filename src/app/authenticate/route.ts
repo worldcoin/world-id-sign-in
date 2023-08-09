@@ -1,30 +1,39 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { errorRequiredAttribute } from "@/api-helpers/errors";
+import { validateRequestSchema } from "@/api-helpers/utils";
+import * as yup from "yup";
 
-const params = [
-  "response_type",
-  "client_id",
-  "redirect_uri",
-  "nonce",
-  "merkle_root",
-  "proof",
-  "credential_type",
-  "nullifier_hash",
-];
+const schema = yup.object({
+  proof: yup.string().required("This attribute is required."),
+  nullifier_hash: yup.string().required("This attribute is required."),
+  merkle_root: yup.string().required("This attribute is required."),
+  credential_type: yup.string().required("This attribute is required."),
+  client_id: yup.string().required("This attribute is required."),
+  nonce: yup.string().required("This attribute is required."), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
+  scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
+  state: yup.string(),
+  response_type: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
+  redirect_uri: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
+});
+type ParamsType = yup.InferType<typeof schema>;
 
 /**
- * Receives the ZKP from the frontend, verifies with Developer Portal and redirects the user
+ * Receives the ZKP from the frontend, verifies with Developer Portal and redirects the user.
+ * NOTE: This is an app internal endpoint (i.e. not called directly from other apps)
  * @param req
  * @param res
  * @returns
  */
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
-  for (const attr of params) {
-    if (!req.nextUrl.searchParams.get(attr)) {
-      return errorRequiredAttribute(attr);
-    }
+  const { parsedParams, isValid, errorResponse } =
+    await validateRequestSchema<ParamsType>({
+      schema,
+      req,
+    });
+
+  if (!isValid) {
+    return errorResponse;
   }
 
   const {
@@ -38,7 +47,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     nullifier_hash,
     state,
     scope,
-  } = Object.fromEntries(req.nextUrl.searchParams.entries());
+  } = parsedParams;
 
   const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
     method: "POST",
@@ -47,7 +56,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       response_type,
       app_id: client_id,
       redirect_uri,
-      nonce,
+      signal: nonce,
       merkle_root,
       proof,
       credential_type,
@@ -80,6 +89,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       response_type,
       client_id,
       redirect_uri,
+      scope,
     });
 
     if (state) searchParams.append("state", state.toString());
@@ -102,86 +112,4 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   if (state) url.searchParams.append("state", state.toString());
 
   return NextResponse.redirect(url);
-};
-
-export const POST = async (req: NextRequest): Promise<NextResponse> => {
-  const args = await req.json();
-
-  for (const attr of params) {
-    if (!args[attr]) return errorRequiredAttribute(attr);
-  }
-
-  const {
-    response_type,
-    client_id,
-    redirect_uri,
-    nonce,
-    merkle_root,
-    proof,
-    credential_type,
-    nullifier_hash,
-    state,
-    scope,
-  } = args;
-
-  const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
-    method: "POST",
-    headers: new Headers({ "content-type": "application/json" }),
-    body: JSON.stringify({
-      response_type,
-      app_id: client_id,
-      redirect_uri,
-      nonce,
-      merkle_root,
-      proof,
-      credential_type,
-      nullifier_hash,
-      scope,
-    }),
-  });
-
-  if (!response.ok) {
-    let errorResponse;
-    let responseClone = response.clone();
-    try {
-      errorResponse = await response.json();
-    } catch {
-      errorResponse = await responseClone.text();
-    }
-
-    console.error(
-      `Could not authenticate OIDC user: ${response.statusText}`,
-      errorResponse
-    );
-
-    const detail = Object.hasOwn(errorResponse, "detail")
-      ? errorResponse.detail
-      : "We could not complete your authentication. Please try again.";
-
-    return NextResponse.json(
-      {
-        code: "authentication_failed",
-        detail,
-        response_type,
-        client_id,
-        redirect_uri,
-        state,
-        nonce,
-      },
-      { status: 400 }
-    );
-  }
-
-  const responseAuth = await response.json();
-
-  const url = new URL(redirect_uri!.toString());
-  if (responseAuth.code) url.searchParams.append("code", responseAuth.code);
-  if (responseAuth.token) url.searchParams.append("token", responseAuth.token);
-  if (responseAuth.id_token)
-    url.searchParams.append("id_token", responseAuth.id_token);
-
-  // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
-  if (state) url.searchParams.append("state", state.toString());
-
-  return NextResponse.json({ url });
 };

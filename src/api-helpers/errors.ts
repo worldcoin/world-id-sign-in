@@ -1,5 +1,9 @@
-import { NextApiResponse } from "next";
 import { NextResponse } from "next/server";
+
+export enum OIDCErrorCodes {
+  ServerError = "server_error",
+  InvalidRequest = "invalid_request",
+}
 
 export function errorOIDCResponse(
   statusCode: number,
