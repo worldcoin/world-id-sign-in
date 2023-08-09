@@ -1,11 +1,39 @@
 "use client";
 
+import useSWR from "swr";
+import Balancer from "react-wrap-balancer";
 import { FC, useCallback, useState } from "react";
-import { ISuccessResult } from "@worldcoin/idkit";
+import { ISuccessResult, internal } from "@worldcoin/idkit";
 import IDKitBridge from "@/components/IDKitBridge";
 import { internal as IDKitInternal } from "@worldcoin/idkit";
-import { IconArrowRight, IconWorldcoin } from "@/components/icons";
+import {
+  IconArrowRight,
+  IconBadge,
+  IconBadgeX,
+  IconWorldcoin,
+} from "@/components/icons";
 import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
+import Image from "next/image";
+
+type Meta = {
+  name: string;
+  is_verified: boolean;
+  verified_app_logo: string;
+};
+
+const fetchMeta = async (client_id: string) => {
+  return fetch(`https://developer.worldcoin.org/api/v1/precheck/${client_id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      action: "",
+      external_nullifier: internal.generateExternalNullifier(client_id, "")
+        .digest,
+    }),
+  }).then((res) => res.json());
+};
 
 type Props = {
   scope: string;
@@ -24,6 +52,7 @@ const IDKitQR: FC<Props> = ({
   redirect_uri,
   response_type,
 }) => {
+  const { data: app_data } = useSWR<Meta>(client_id, fetchMeta);
   const [deeplink, setDeeplink] = useState("");
   const [wcStage, setWCStage] = useState<VerificationState>(
     IDKitInternal.VerificationState.LoadingWidget
@@ -56,6 +85,7 @@ const IDKitQR: FC<Props> = ({
   return (
     <>
       <Header
+        meta={app_data}
         headerShown={
           ![
             IDKitInternal.VerificationState.AwaitingVerification,
@@ -67,6 +97,7 @@ const IDKitQR: FC<Props> = ({
       />
       <div className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200">
         <Header
+          meta={app_data}
           headerShown={
             ![
               IDKitInternal.VerificationState.AwaitingVerification,
@@ -113,22 +144,45 @@ const IDKitQR: FC<Props> = ({
 };
 
 const Header = ({
-  headerShown,
+  meta,
   className,
+  headerShown,
 }: {
+  meta?: Meta;
   headerShown: boolean;
   className?: string;
 }): JSX.Element | null =>
   headerShown ? (
     <div className={className}>
-      <div className="flex justify-center">
-        <IconWorldcoin className="w-12 h-12" />
+      <div className="flex items-center justify-center space-x-4">
+        <div className="w-14 h-14 border p-1 rounded-full relative mb-4 flex items-center justify-center">
+          {meta?.verified_app_logo ? (
+            <Image
+              unoptimized
+              width={60}
+              height={60}
+              alt={meta?.name}
+              src={meta.verified_app_logo}
+            />
+          ) : (
+            <p className="text-xl tracking-wider">
+              {meta?.name
+                .split(" ")
+                .map((word) => word[0])
+                .join("")}
+            </p>
+          )}
+          <div className="absolute -bottom-1 -right-1">
+            {meta?.verified_app_logo ? (
+              <IconBadge className="w-6 h-6" />
+            ) : (
+              <IconBadgeX className="w-6 h-6" />
+            )}
+          </div>
+        </div>
       </div>
-      <h1 className="text-2xl md:text-3xl mt-8 text-center font-sora font-semibold">
-        Sign in with Worldcoin
-      </h1>
-      <div className="text-text-muted text-lg md:text-xl mt-2 text-center font-rubik">
-        Scan with the app to continue
+      <div className="text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Scan with World App to continue to {meta?.name}</Balancer>
       </div>
     </div>
   ) : null;
