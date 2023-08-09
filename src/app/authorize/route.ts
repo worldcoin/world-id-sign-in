@@ -101,9 +101,9 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   // require nonce for implicit flow
   if (
-    response_types.includes("id_token") &&
+    !nonce &&
     !response_types.includes("code") &&
-    !nonce
+    response_types.includes("id_token")
   ) {
     return errorValidationClient(
       "invalid_request",
