@@ -99,6 +99,20 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     (response_type as string | string[]).toString()
   ).split(" ");
 
+  // require nonce for implicit flow
+  if (
+    response_types.includes("id_token") &&
+    !response_types.includes("code") &&
+    !nonce
+  ) {
+    return errorValidationClient(
+      "invalid_request",
+      "A nonce is required when using the OIDC implicit flow.",
+      "nonce",
+      req.url
+    );
+  }
+
   for (const response_type of response_types) {
     if (!Object.keys(OIDCResponseTypeMapping).includes(response_type)) {
       return errorValidationClient(
