@@ -166,7 +166,7 @@ const Header = ({
             />
           ) : (
             <p className="text-xl tracking-wider">
-              {meta!.name
+              {meta?.name
                 .split(" ")
                 .map((word) => word[0])
                 .join("")}
@@ -182,7 +182,7 @@ const Header = ({
         </div>
       </div>
       <div className="text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
-        <Balancer>Scan with World App to continue to {meta!.name}</Balancer>
+        <Balancer>Scan with World App to continue to {meta?.name}</Balancer>
       </div>
     </div>
   ) : null;
