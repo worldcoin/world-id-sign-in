@@ -29,7 +29,7 @@
     "next": "13.4.5",
     "next-logger": "^3.0.1",
     "pino-pretty": "^10.0.0",
-    "posthog-js": "^1.50.8",
+    "posthog-js": "^1.57.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.9.5",
