@@ -33,7 +33,8 @@ export const validateRequestSchema = async <T>({
       return {
         isValid: false,
         errorResponse: NextResponse.redirect(
-          new URL(`/error?${errorParams.toString()}`, req.url)
+          new URL(`/error?${errorParams.toString()}`, req.url),
+          { status: 302 }
         ),
       };
     }
@@ -48,7 +49,8 @@ export const validateRequestSchema = async <T>({
     return {
       isValid: false,
       errorResponse: NextResponse.redirect(
-        new URL(`/error?${errorParams.toString()}`, req.url)
+        new URL(`/error?${errorParams.toString()}`, req.url),
+        { status: 302 }
       ),
     };
   }

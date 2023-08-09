@@ -96,7 +96,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     if (nonce) searchParams.append("nonce", nonce.toString());
 
     return NextResponse.redirect(
-      new URL(`/error?${searchParams.toString()}`, req.url)
+      new URL(`/error?${searchParams.toString()}`, req.url),
+      { status: 302 }
     );
   }
 
@@ -111,5 +112,5 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
   if (state) url.searchParams.append("state", state.toString());
 
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, { status: 302 });
 };
