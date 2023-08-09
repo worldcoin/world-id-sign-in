@@ -15,6 +15,8 @@ const schema = yup.object({
   state: yup.string(),
   response_type: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
   redirect_uri: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
+  code_challenge: yup.string(), // NOTE: Content verified in the Developer Portal
+  code_challenge_method: yup.string(), // NOTE: Content verified in the Developer Portal
 });
 type ParamsType = yup.InferType<typeof schema>;
 
@@ -37,31 +39,35 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   }
 
   const {
-    response_type,
-    client_id,
-    redirect_uri,
-    nonce,
-    merkle_root,
-    proof,
-    credential_type,
-    nullifier_hash,
     state,
+    nonce,
+    proof,
     scope,
+    client_id,
+    merkle_root,
+    redirect_uri,
+    response_type,
+    nullifier_hash,
+    code_challenge,
+    credential_type,
+    code_challenge_method,
   } = parsedParams;
 
   const response = await fetch(`${DEVELOPER_PORTAL}/api/v1/oidc/authorize`, {
     method: "POST",
     headers: new Headers({ "content-type": "application/json" }),
     body: JSON.stringify({
-      response_type,
-      app_id: client_id,
-      redirect_uri,
-      signal: nonce,
-      merkle_root,
       proof,
-      credential_type,
-      nullifier_hash,
       scope,
+      merkle_root,
+      redirect_uri,
+      response_type,
+      signal: nonce,
+      nullifier_hash,
+      code_challenge,
+      credential_type,
+      app_id: client_id,
+      code_challenge_method,
     }),
   });
 
@@ -84,12 +90,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       : "We could not complete your authentication. Please try again.";
 
     const searchParams = new URLSearchParams({
-      code: "authentication_failed",
+      scope,
       detail,
-      response_type,
       client_id,
       redirect_uri,
-      scope,
+      response_type,
+      code: "authentication_failed",
     });
 
     if (state) searchParams.append("state", state.toString());

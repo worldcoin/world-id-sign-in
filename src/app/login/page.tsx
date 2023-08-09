@@ -7,8 +7,17 @@ type Props = {
 };
 
 const LoginPage = ({ searchParams }: Props) => {
-  const { client_id, nonce, response_type, ready, redirect_uri, scope, state } =
-    searchParams;
+  const {
+    nonce,
+    ready,
+    scope,
+    state,
+    client_id,
+    redirect_uri,
+    response_type,
+    code_challenge,
+    code_challenge_method,
+  } = searchParams;
 
   if (!ready || !client_id) {
     const urlParams = new URLSearchParams({
@@ -31,6 +40,8 @@ const LoginPage = ({ searchParams }: Props) => {
           client_id={client_id as string}
           redirect_uri={redirect_uri as string}
           response_type={response_type as string}
+          code_challenge={code_challenge as string}
+          code_challenge_method={code_challenge_method as string}
         />
         <Footer />
       </div>

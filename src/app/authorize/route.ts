@@ -21,8 +21,16 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
-  const { response_type, client_id, redirect_uri, scope, state, nonce } =
-    inputParams;
+  const {
+    response_type,
+    client_id,
+    redirect_uri,
+    scope,
+    state,
+    nonce,
+    code_challenge,
+    code_challenge_method,
+  } = inputParams;
 
   let url: URL | undefined;
   try {
@@ -110,6 +118,15 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
+  if (code_challenge && code_challenge_method !== "S256") {
+    return errorValidationClient(
+      "invalid",
+      `Invalid code challenge method: ${code_challenge_method}.`,
+      "code_challenge_method",
+      req.url
+    );
+  }
+
   const params = new URLSearchParams({
     response_type,
     client_id,
@@ -121,6 +138,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   if (scope) params.append("scope", scope.toString());
   if (state) params.append("state", state.toString());
+  if (code_challenge) {
+    params.append("code_challenge", code_challenge.toString());
+  }
+  if (code_challenge_method) {
+    params.append("code_challenge_method", code_challenge_method.toString());
+  }
 
   return NextResponse.redirect(new URL(`/login?${params.toString()}`, req.url));
 };

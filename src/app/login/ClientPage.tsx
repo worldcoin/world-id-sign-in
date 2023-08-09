@@ -14,6 +14,8 @@ type Props = {
   client_id: string;
   redirect_uri: string;
   response_type: string;
+  code_challenge?: string;
+  code_challenge_method?: string;
 };
 
 const IDKitQR: FC<Props> = ({
@@ -23,6 +25,8 @@ const IDKitQR: FC<Props> = ({
   client_id,
   redirect_uri,
   response_type,
+  code_challenge,
+  code_challenge_method,
 }) => {
   const [deeplink, setDeeplink] = useState("");
   const [wcStage, setWCStage] = useState<VerificationState>(
@@ -33,7 +37,7 @@ const IDKitQR: FC<Props> = ({
     async (result: ISuccessResult) => {
       const url = new URL("/authenticate", window.location.origin);
 
-      const rawParams: Record<string, string> = {
+      const rawParams: Record<string, string | undefined> = {
         ...result,
         scope,
         state,
@@ -41,16 +45,29 @@ const IDKitQR: FC<Props> = ({
         client_id,
         redirect_uri,
         response_type,
+        code_challenge,
+        code_challenge_method,
       };
 
       Object.keys(rawParams).forEach((key) =>
         rawParams[key] === undefined ? delete rawParams[key] : {}
       );
 
-      url.search = new URLSearchParams(rawParams).toString();
+      url.search = new URLSearchParams(
+        rawParams as Record<string, string>
+      ).toString();
       window.location.href = url.toString();
     },
-    [client_id, nonce, redirect_uri, response_type, scope, state]
+    [
+      scope,
+      nonce,
+      state,
+      client_id,
+      redirect_uri,
+      response_type,
+      code_challenge,
+      code_challenge_method,
+    ]
   );
 
   return (
