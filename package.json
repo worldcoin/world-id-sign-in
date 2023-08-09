@@ -28,6 +28,7 @@
     "lokijs": "^1.5.12",
     "next": "13.4.5",
     "next-logger": "^3.0.1",
+    "next-safe": "^3.4.1",
     "pino-pretty": "^10.0.0",
     "posthog-js": "^1.50.8",
     "react": "18.2.0",

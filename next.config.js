@@ -1,3 +1,8 @@
+/** @type {import('next-safe').nextSafe} */
+const nextSafe = require("next-safe");
+
+const isDev = process.env.NODE_ENV !== "production";
+
 // NOTE: /authorize endpoint is processed in this app, so there's no routing
 const OIDC_ROUTES = [
   "/token",
@@ -10,6 +15,31 @@ const OIDC_ROUTES = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: nextSafe({
+          isDev,
+          contentSecurityPolicy: {
+            mergeDefaultDirectives: true,
+            "img-src": [
+              "'self'",
+              "https://world-id-public.s3.amazonaws.com",
+              "https://worldcoin.org",
+            ],
+            "style-src": ["'self'", "'unsafe-inline'"],
+            "prefetch-src": false,
+            "connect-src": ["'self'", "https://app.posthog.com"],
+
+            "script-src": ["'self'", "'unsafe-hashes'", "'unsafe-inline'"],
+            "font-src": ["'self'", "https://world-id-public.s3.amazonaws.com"],
+          },
+        }),
+      },
+    ];
+  },
+
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push({
