@@ -82,8 +82,6 @@ const IDKitQR: FC<Props> = ({
     [client_id, nonce, redirect_uri, response_type, scope, state]
   );
 
-  console.log(app_data);
-
   return (
     <>
       <Header
