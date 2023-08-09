@@ -93,8 +93,8 @@ export const IconBadge = ({ className, style }: IIconType) => (
     />
     <path
       stroke="#fff"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       d="m7.083 10.416 1.47 1.175a.833.833 0 0 0 1.14-.093l3.224-3.582"
     />
   </svg>
@@ -113,9 +113,9 @@ export const IconBadgeX = ({ className, style }: IIconType) => (
     />
     <path
       stroke="#fff"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.25"
       d="m11.768 8.232-3.536 3.536m3.536 0L8.232 8.232"
     />
   </svg>
