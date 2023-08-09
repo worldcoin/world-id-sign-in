@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as yup from "yup";
 import { OIDCErrorCodes } from "./errors";
 
-export const validateRequestSchema = async <T>({
+export const validateRequestBodySchema = async <T>({
   schema,
   req,
 }: {
@@ -13,11 +13,14 @@ export const validateRequestSchema = async <T>({
   | { isValid: false; parsedParams?: null; errorResponse: NextResponse }
 > => {
   let parsedParams: T;
-
-  const rawParams = Object.fromEntries(req.nextUrl.searchParams.entries());
+  let rawParams: Record<string, string> = {};
 
   try {
-    parsedParams = await schema.validate(rawParams);
+    const requestBody = req.body
+      ? JSON.parse(await new Response(req.body).text())
+      : undefined;
+    parsedParams = await schema.validate(requestBody);
+    rawParams = requestBody;
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       const errorParams = new URLSearchParams({
