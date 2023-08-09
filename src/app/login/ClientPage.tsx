@@ -1,11 +1,17 @@
 "use client";
 
 import useSWR from "swr";
+import Balancer from "react-wrap-balancer";
 import { FC, useCallback, useState } from "react";
 import { ISuccessResult, internal } from "@worldcoin/idkit";
 import IDKitBridge from "@/components/IDKitBridge";
 import { internal as IDKitInternal } from "@worldcoin/idkit";
-import { IconArrowRight, IconWorldcoin } from "@/components/icons";
+import {
+  IconArrowRight,
+  IconBadge,
+  IconBadgeX,
+  IconWorldcoin,
+} from "@/components/icons";
 import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
 import Image from "next/image";
 
@@ -151,27 +157,34 @@ const Header = ({
   headerShown ? (
     <div className={className}>
       <div className="flex items-center justify-center space-x-4">
-        <IconWorldcoin className="w-12 h-12" />
-        {meta?.verified_app_logo && (
-          <>
-            <span className="text-lg">&times;</span>
+        <div className="w-14 h-14 border p-1 rounded-full relative mb-4 flex items-center justify-center">
+          {meta?.verified_app_logo ? (
             <Image
-              className="border-2 p-1 rounded-full border-black"
               unoptimized
-              width={50}
-              height={50}
+              width={60}
+              height={60}
               alt={meta?.name}
               src={meta.verified_app_logo}
             />
-          </>
-        )}
+          ) : (
+            <p className="text-xl tracking-wider">
+              {meta!.name
+                .split(" ")
+                .map((word) => word[0])
+                .join("")}
+            </p>
+          )}
+          <div className="absolute -bottom-1 -right-1">
+            {meta?.verified_app_logo ? (
+              <IconBadge className="w-6 h-6" />
+            ) : (
+              <IconBadgeX className="w-6 h-6" />
+            )}
+          </div>
+        </div>
       </div>
-      <h1 className="text-2xl md:text-3xl mt-8 text-center font-sora font-semibold">
-        Sign in with Worldcoin
-      </h1>
-      <div className="text-text-muted text-lg md:text-xl mt-2 text-center font-rubik max-w-[350px]">
-        Scan with the app to continue
-        {meta?.name ? ` to ${meta.name}` : ""}
+      <div className="text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Scan with World App to continue to {meta!.name}</Balancer>
       </div>
     </div>
   ) : null;
