@@ -132,11 +132,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       );
     } else {
       responseMode = response_mode as OIDCResponseMode;
-      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, if the response type is token, the response mode must be fragment
-      if (
-        responseMode === OIDCResponseMode.Query &&
-        response_type !== OIDCResponseType.Code
-      ) {
+      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, if the response type is token, the response mode must be fragment (section 3 & section 5)
+      const responseTypeArray = response_type.split(" ");
+      const responseTypeIncludesCode = responseTypeArray.includes(
+        OIDCResponseType.Code
+      );
+      if (responseMode === OIDCResponseMode.Query && responseTypeIncludesCode) {
         return errorValidationClient(
           "invalid",
           `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
