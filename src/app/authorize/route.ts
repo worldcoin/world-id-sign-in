@@ -137,10 +137,28 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       const responseTypeIncludesCode = responseTypeArray.includes(
         OIDCResponseType.Code
       );
+      const responseTypeIncludesToken = responseTypeArray.includes(
+        OIDCResponseType.JWT
+      );
       if (responseMode === OIDCResponseMode.Query && responseTypeIncludesCode) {
         return errorValidationClient(
           "invalid",
           `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
+          "response_mode",
+          req.url
+        );
+      }
+
+      // To avoid potential access token leakage, we only allow form_post response mode for id_token token response type
+      if (
+        responseTypeIncludesToken &&
+        responseTypeArray.includes("id_token") &&
+        responseTypeArray.includes("token") &&
+        response_mode !== OIDCResponseMode.FormPost
+      ) {
+        return errorValidationClient(
+          "invalid",
+          "For response type 'id_token token', only 'form_post' response mode is allowed.",
           "response_mode",
           req.url
         );
