@@ -32,6 +32,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     await validateRequestSchema<ParamsType>({
       schema,
       req,
+      bodySource: "formData",
     });
 
   if (!isValid) {
@@ -113,6 +114,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   if (responseAuth.token) urlParams.append("token", responseAuth.token);
   if (responseAuth.id_token)
     urlParams.append("id_token", responseAuth.id_token);
+
   // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
   if (state) urlParams.append("state", state.toString());
 
@@ -121,7 +123,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   } else if (response_mode === OIDCResponseMode.Fragment) {
     url.hash = urlParams.toString();
   } else if (response_mode === OIDCResponseMode.FormPost) {
-    // added support for FormPost response mode
     const formHtml = `  
       <!DOCTYPE html>  
       <html>  
@@ -146,8 +147,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     return new NextResponse(formHtml, {
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
-  } else {
-    throw new Error(`Unsupported response_mode: ${response_mode}`);
   }
 
   return NextResponse.redirect(url, { status: 302 });
