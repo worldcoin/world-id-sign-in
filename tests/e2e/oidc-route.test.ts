@@ -1,9 +1,94 @@
 import { POST as handlerOIDCRoute } from "@/app/oidc-route/route";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { AUTHENTICATE_MOCK } from "./authenticate.mock";
 import { POST as handlerAuthenticate } from "@/app/authenticate/route";
+import { GET } from "@/app/authorize/route";
+
+const defaultAuthorizeParams: Record<string, string> = {
+  client_id: AUTHENTICATE_MOCK.client_id,
+  redirect_uri: AUTHENTICATE_MOCK.redirect_uri,
+  nonce: AUTHENTICATE_MOCK.nonce,
+};
+
+const testAuthorize = async (
+  params: Record<string, string>
+): Promise<NextResponse> => {
+  const searchParams = new URLSearchParams({
+    ...defaultAuthorizeParams,
+    ...params,
+  });
+  const authorizeReq = new NextRequest(
+    `http://localhost/authorize?${searchParams.toString()}`
+  );
+  return await GET(authorizeReq);
+};
 
 describe("e2e OIDC tests", () => {
+  const responseTypes = ["code", "id_token", "token", "code id_token"];
+  const responseModes = ["query", "fragment", "form_post"];
+
+  for (const responseType of responseTypes) {
+    for (const responseMode of responseModes) {
+      test(`Authorize request (${responseMode}) with response type: ${responseType}`, async () => {
+        const params = {
+          response_type: responseType,
+          response_mode: responseMode,
+        };
+        const response = await testAuthorize(params);
+
+        // Check if status is 302 Found (redirection)
+        expect(response.status).toBe(302);
+
+        const redirectUrl = new URL(response.headers.get("location")!);
+
+        // Check returned URL has correct search parameters
+        const expectedKeys = responseType
+          .split(" ")
+          .map((type) => (type === "code" ? "code" : "token"));
+        const urlParams = new URLSearchParams(redirectUrl.search);
+        const urlHashParams = new URLSearchParams(redirectUrl.hash.slice(1));
+
+        // Validate the response with the correct search parameters depending on the response mode
+        if (responseMode === "query") {
+          expectedKeys.forEach((key) => {
+            expect(urlParams.has(key)).toBeTruthy();
+          });
+          expect(redirectUrl.hash).toBe("");
+        } else if (responseMode === "fragment") {
+          expectedKeys.forEach((key) => {
+            expect(urlHashParams.has(key)).toBeTruthy();
+          });
+          expect(redirectUrl.search).toBe("");
+        } else if (responseMode === "form_post") {
+          // TODO: Implement a more comprehensive check for form_post response mode
+        }
+      });
+    }
+  }
+
+  const invalidCombinations = [
+    { response_type: "code", response_mode: "fragment" },
+    { response_type: "id_token", response_mode: "query" },
+    { response_type: "token", response_mode: "query" },
+    { response_type: "code id_token", response_mode: "query" },
+  ];
+
+  for (const { response_type, response_mode } of invalidCombinations) {
+    test(`Authorize request with invalid combination response_type: ${response_type}, response_mode: ${response_mode}`, async () => {
+      const params = { response_type, response_mode };
+      const response = await testAuthorize(params);
+
+      // Check if status is 400 Bad Request
+      expect(response.status).toBe(400);
+
+      // Ensure error details are provided for the validation error
+      const errorDetails = await response.json();
+      expect(errorDetails).toHaveProperty("code");
+      expect(errorDetails).toHaveProperty("detail");
+      expect(errorDetails).toHaveProperty("attribute");
+    });
+  }
+
   test("can request and verify JWT token", async () => {
     // ANCHOR: Generate the token
     const authenticateReq = new NextRequest("http://localhost/authenticate", {

@@ -1,7 +1,11 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { OIDCResponseTypeMapping } from "@/types";
+import {
+  OIDCResponseMode,
+  OIDCResponseType,
+  OIDCResponseTypeMapping,
+} from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 
 const SUPPORTED_SCOPES = ["openid", "profile", "email"];
@@ -21,8 +25,15 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
-  const { response_type, client_id, redirect_uri, scope, state, nonce } =
-    inputParams;
+  const {
+    response_type,
+    client_id,
+    redirect_uri,
+    scope,
+    state,
+    nonce,
+    response_mode,
+  } = inputParams;
 
   let url: URL | undefined;
   try {
@@ -110,8 +121,46 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
+  let responseMode: OIDCResponseMode;
+  if (response_mode) {
+    if (!Object.keys(OIDCResponseMode).includes(response_mode as string)) {
+      return errorValidationClient(
+        "invalid",
+        `Invalid response mode: ${response_mode}.`,
+        "response_mode",
+        req.url
+      );
+    } else {
+      responseMode = response_mode as OIDCResponseMode;
+      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, if the response type is token, the response mode must be fragment
+      if (
+        responseMode === OIDCResponseMode.Query &&
+        response_type !== OIDCResponseType.Code
+      ) {
+        return errorValidationClient(
+          "invalid",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
+          "response_mode",
+          req.url
+        );
+      }
+    }
+  } else {
+    switch (response_type) {
+      case OIDCResponseType.Code:
+        responseMode = OIDCResponseMode.Query;
+        break;
+      case OIDCResponseType.JWT:
+        responseMode = OIDCResponseMode.Fragment;
+        break;
+      default:
+        responseMode = OIDCResponseMode.Fragment;
+    }
+  }
+
   const params = new URLSearchParams({
     response_type,
+    response_mode: responseMode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
