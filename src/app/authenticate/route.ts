@@ -5,7 +5,6 @@ import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseMode } from "@/types";
 
-
 const schema = yup.object({
   proof: yup.string().required("This attribute is required."),
   nullifier_hash: yup.string().required("This attribute is required."),

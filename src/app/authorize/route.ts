@@ -102,7 +102,6 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
- 
   const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
   ).split(" ");
