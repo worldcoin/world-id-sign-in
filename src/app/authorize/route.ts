@@ -102,6 +102,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
+ 
   const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
   ).split(" ");
@@ -136,7 +137,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
         responseTypes.includes(OIDCResponseType.IdToken)
       ) {
         return errorValidationClient(
-          "invalid",
+          "invalid_request",
           `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
           "response_mode",
           req.url

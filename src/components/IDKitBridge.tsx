@@ -61,7 +61,7 @@ const IDKitBridge = ({
   }, [qrData, setDeeplink]);
 
   return (
-    <div className="md:mt-12">
+    <div className="md:mt-8">
       {verificationState ===
         IDKitInternal.VerificationState.AwaitingConnection && (
         <>
@@ -72,7 +72,7 @@ const IDKitBridge = ({
               <div className="hidden md:block qr-code">
                 <IDKitInternal.QRCode data={qrData?.default} size={280} />
               </div>
-              <div className="md:hidden">
+              <div className="md:hidden mt-10 md:mt-0">
                 <Spinner />
                 <div className="text-text-muted pt-4">
                   Wait a few seconds, automatically opening World App
