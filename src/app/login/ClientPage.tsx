@@ -60,9 +60,10 @@ const IDKitQR: FC<Props> = ({
 
   const handleIDKitSuccess = useCallback(
     async (result: ISuccessResult) => {
-      const url = new URL("/authenticate", window.location.origin);
-
-      const rawParams: Record<string, string> = {
+      const form = document.getElementById(
+        "authentication-form"
+      ) as HTMLFormElement;
+      const inputs = {
         ...result,
         scope,
         state,
@@ -72,18 +73,28 @@ const IDKitQR: FC<Props> = ({
         response_type,
       };
 
-      Object.keys(rawParams).forEach((key) =>
-        rawParams[key] === undefined ? delete rawParams[key] : {}
-      );
+      Object.entries(inputs).forEach(([key, value]) => {
+        if (!value) return;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = `${value}`;
+        form.appendChild(input);
+      });
 
-      url.search = new URLSearchParams(rawParams).toString();
-      window.location.href = url.toString();
+      form.submit();
     },
     [client_id, nonce, redirect_uri, response_type, scope, state]
   );
 
   return (
     <>
+      <form
+        id="authentication-form"
+        method="post"
+        action="/authenticate"
+        style={{ display: "none" }}
+      ></form>
       <Header
         meta={app_data}
         className="md:hidden"

@@ -1,19 +1,16 @@
 import { POST as handlerOIDCRoute } from "@/app/oidc-route/route";
 import { NextRequest } from "next/server";
 import { AUTHENTICATE_MOCK } from "./authenticate.mock";
-import { GET as handlerAuthenticate } from "@/app/authenticate/route";
+import { POST as handlerAuthenticate } from "@/app/authenticate/route";
 
 describe("e2e OIDC tests", () => {
   test("can request and verify JWT token", async () => {
     // ANCHOR: Generate the token
-    const authenticateReq = new NextRequest(
-      `http://localhost/authenticate?${new URLSearchParams(
-        AUTHENTICATE_MOCK
-      ).toString()}`,
-      {
-        method: "GET",
-      }
-    );
+    const authenticateReq = new NextRequest("http://localhost/authenticate", {
+      method: "POST",
+      headers: new Headers({ "Content-Type": "application/json" }),
+      body: JSON.stringify(AUTHENTICATE_MOCK),
+    });
 
     const authenticateResponse = await handlerAuthenticate(authenticateReq);
     expect(authenticateResponse.status).toBe(302);
@@ -71,15 +68,14 @@ describe("e2e OIDC tests", () => {
 
   test("can request and verify auth token", async () => {
     // ANCHOR: Generate the token
-    const authenticateReq = new NextRequest(
-      `http://localhost/authenticate?${new URLSearchParams({
+    const authenticateReq = new NextRequest("http://localhost/authenticate", {
+      method: "POST",
+      headers: new Headers({ "Content-Type": "application/json" }),
+      body: JSON.stringify({
         ...AUTHENTICATE_MOCK,
         response_type: "code",
-      }).toString()}`,
-      {
-        method: "GET",
-      }
-    );
+      }),
+    });
 
     const authenticateResponse = await handlerAuthenticate(authenticateReq);
     expect(authenticateResponse.status).toBe(302);
