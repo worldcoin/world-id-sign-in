@@ -124,24 +124,27 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     url.hash = urlParams.toString();
   } else if (response_mode === OIDCResponseMode.FormPost) {
     const formHtml = `  
-      <!DOCTYPE html>  
-      <html>  
-        <head>  
-          <script>  
-            function submitForm() {  
-              document.getElementById("formRedirect").submit();  
-            }  
-          </script>  
-        </head>  
-        <body onload="submitForm()">  
-          <form id="formRedirect" method="post" action="${url}">  
-            ${Array.from(urlParams.entries()).map(
-              ([key, value]) =>
-                `<input type="hidden" name="${key}" value="${value}" />`
-            )}  
-          </form>  
-        </body>  
-      </html>  
+    <!DOCTYPE html>    
+    <html>    
+      <head>    
+        <script>    
+          function submitForm() {    
+            document.getElementById("formRedirect").submit();    
+          }    
+        </script>    
+      </head>    
+      <body onload="submitForm()">    
+        <form id="formRedirect" method="post" action="${url}">    
+          ${Array.from(urlParams.entries()).map(
+            ([key, value]) =>
+              `<input type="hidden" name="${key}" value="${value}" />`
+          )}    
+          <noscript>  
+            <button type="submit">Submit</button>  
+          </noscript>  
+        </form>    
+      </body>    
+    </html>
     `;
 
     return new NextResponse(formHtml, {

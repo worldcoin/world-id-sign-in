@@ -1,11 +1,7 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import {
-  OIDCResponseMode,
-  OIDCResponseType,
-  OIDCResponseTypeMapping,
-} from "@/types";
+import { OIDCResponseMode, OIDCResponseType } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 
 const SUPPORTED_SCOPES = ["openid", "profile", "email"];
@@ -106,41 +102,53 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
-  const response_types = decodeURIComponent(
+  const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
   ).split(" ");
 
-  for (const response_type of response_types) {
-    if (!Object.keys(OIDCResponseTypeMapping).includes(response_type)) {
+  const responseTypes = responseTypesRaw.map((responseType) => {
+    if (!Object.keys(OIDCResponseType).includes(responseType)) {
       return errorValidationClient(
-        "invalid",
+        "invalid_request",
         `Invalid response type: ${response_type}.`,
         "response_type",
         req.url
       );
+    } else {
+      return responseType as OIDCResponseType;
     }
-  }
+  });
 
   let responseMode: OIDCResponseMode;
   if (response_mode) {
     if (!Object.keys(OIDCResponseMode).includes(response_mode as string)) {
       return errorValidationClient(
-        "invalid",
+        "invalid_request",
         `Invalid response mode: ${response_mode}.`,
         "response_mode",
         req.url
       );
     } else {
       responseMode = response_mode as OIDCResponseMode;
-      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, if the response type is token, the response mode must be fragment (section 3 & section 5)
-      const responseTypeArray = response_type.split(" ");
-      const responseTypeIncludesCode = responseTypeArray.includes(
-        OIDCResponseType.Code
-      );
-      const responseTypeIncludesToken = responseTypeArray.includes(
-        OIDCResponseType.JWT
-      );
-      if (responseMode === OIDCResponseMode.Query && responseTypeIncludesCode) {
+      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, section 3
+      if (
+        responseMode === OIDCResponseMode.Query &&
+        responseTypes.includes(OIDCResponseType.IdToken)
+      ) {
+        return errorValidationClient(
+          "invalid",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
+          "response_mode",
+          req.url
+        );
+      }
+
+      //  Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc section 5, first statement
+      if (
+        responseMode === OIDCResponseMode.Query &&
+        responseTypes.includes(OIDCResponseType.Code) &&
+        responseTypes.includes(OIDCResponseType.Token)
+      ) {
         return errorValidationClient(
           "invalid",
           `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
@@ -151,9 +159,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
       // To avoid potential access token leakage, we only allow form_post response mode for id_token token response type
       if (
-        responseTypeIncludesToken &&
-        responseTypeArray.includes("id_token") &&
-        responseTypeArray.includes("token") &&
+        responseTypes.includes(OIDCResponseType.IdToken) &&
+        responseTypes.includes(OIDCResponseType.Token) &&
         response_mode !== OIDCResponseMode.FormPost
       ) {
         return errorValidationClient(
@@ -168,9 +175,6 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     switch (response_type) {
       case OIDCResponseType.Code:
         responseMode = OIDCResponseMode.Query;
-        break;
-      case OIDCResponseType.JWT:
-        responseMode = OIDCResponseMode.Fragment;
         break;
       default:
         responseMode = OIDCResponseMode.Fragment;

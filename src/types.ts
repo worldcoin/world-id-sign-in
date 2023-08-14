@@ -1,13 +1,8 @@
 export enum OIDCResponseType {
-  Code = "code", // authorization code
-  JWT = "jwt", // implicit flow
+  Code = "code",
+  IdToken = "id_token",
+  Token = "token",
 }
-
-export const OIDCResponseTypeMapping = {
-  code: OIDCResponseType.Code,
-  id_token: OIDCResponseType.JWT,
-  token: OIDCResponseType.JWT,
-};
 
 export enum OIDCResponseMode {
   Query = "query",
