@@ -151,7 +151,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
         responseTypes.includes(OIDCResponseType.Token)
       ) {
         return errorValidationClient(
-          "invalid",
+          "invalid_request",
           `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
           "response_mode",
           req.url
