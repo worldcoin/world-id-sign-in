@@ -60,7 +60,13 @@ describe("e2e OIDC tests", () => {
           });
           expect(redirectUrl.search).toBe("");
         } else if (responseMode === "form_post") {
-          // TODO: Implement a more comprehensive check for form_post response mode
+          expect(response.headers.get("content-type")).toEqual(
+            "text/html; charset=utf-8"
+          );
+          const formHtml = await response.text();
+          expect(formHtml).toMatch(
+            /<input type="hidden" name=".+?" value=".+?" \/>/
+          );
         }
       });
     }
@@ -71,6 +77,8 @@ describe("e2e OIDC tests", () => {
     { response_type: "id_token", response_mode: "query" },
     { response_type: "token", response_mode: "query" },
     { response_type: "code id_token", response_mode: "query" },
+    { response_type: "code id_token token", response_mode: "query" },
+    { response_type: "id_token code", response_mode: "query" },
   ];
 
   for (const { response_type, response_mode } of invalidCombinations) {
