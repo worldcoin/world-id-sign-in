@@ -1,1 +1,1 @@
-export const DEVELOPER_PORTAL = "http://localhost:3000";
+export const DEVELOPER_PORTAL = "http://developer.worldcoin.org";
