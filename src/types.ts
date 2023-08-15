@@ -17,3 +17,13 @@ export interface IAuthorizeRequest {
   scope?: string;
   state?: string;
 }
+
+export enum ValidationMessage {
+  Required = "This attribute is required",
+}
+
+export enum FlowType {
+  AuthorizationCode,
+  Implicit,
+  Hybrid,
+}

@@ -4,19 +4,19 @@ import { OIDCErrorCodes } from "./errors";
 
 type BodySource = "query" | "body" | "formData";
 
-export const validateRequestSchema = async <T>({
+export const validateRequestSchema = async <T extends yup.Schema>({
   schema,
   req,
   bodySource = "body",
 }: {
-  schema: yup.Schema<any>;
+  schema: T;
   req: NextRequest;
   bodySource?: BodySource;
 }): Promise<
-  | { isValid: true; parsedParams: T; errorResponse?: null }
+  | { isValid: true; parsedParams: yup.InferType<T>; errorResponse?: null }
   | { isValid: false; parsedParams?: null; errorResponse: NextResponse }
 > => {
-  let parsedParams: T;
+  let parsedParams: yup.InferType<typeof schema>;
   let rawParams: Record<string, string> = {};
 
   try {
