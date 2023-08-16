@@ -111,7 +111,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
     schema,
     req,
-    bodySource: "formData",
+    bodySource: "query",
   });
 
   if (!isValid) {
