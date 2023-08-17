@@ -1,4 +1,15 @@
-export const AUTHENTICATE_MOCK = {
+export const AUTHENTICATE_MOCK: {
+  [key: string]: string;
+  response_type: string;
+  client_id: string;
+  redirect_uri: string;
+  scope: string;
+  nonce: string;
+  merkle_root: string;
+  proof: string;
+  credential_type: string;
+  nullifier_hash: string;
+} = {
   response_type: "token",
   client_id: "app_staging_cb4113a6f4f9dcd1f6cd6e05377dd614",
   redirect_uri: "http://localhost/hello",

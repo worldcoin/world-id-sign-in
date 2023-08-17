@@ -1,7 +1,6 @@
 import { POST as handlerOIDCRoute } from "@/app/oidc-route/route";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTHENTICATE_MOCK } from "./authenticate.mock";
-import { POST as handlerAuthenticate } from "@/app/authenticate/route";
 import { GET } from "@/app/authorize/route";
 
 const defaultAuthorizeParams: Record<string, string> = {
@@ -99,16 +98,19 @@ describe("e2e OIDC tests", () => {
 
   test("can request and verify JWT token", async () => {
     // ANCHOR: Generate the token
-    const authenticateReq = new NextRequest("http://localhost/authenticate", {
-      method: "POST",
-      headers: new Headers({ "Content-Type": "application/json" }),
-      body: JSON.stringify(AUTHENTICATE_MOCK),
+    const searchParams = new URLSearchParams({
+      response_type: "token",
     });
+    for (const key in AUTHENTICATE_MOCK) {
+      searchParams.append(key, AUTHENTICATE_MOCK[key]);
+    }
+    const authorizeReq = new NextRequest("http://localhost/authorize", {
+      method: "GET",
+    });
+    const authorizeResponse = await GET(authorizeReq);
+    expect(authorizeResponse.status).toBe(302);
 
-    const authenticateResponse = await handlerAuthenticate(authenticateReq);
-    expect(authenticateResponse.status).toBe(302);
-
-    const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
+    const redirectUrl = new URL(authorizeResponse.headers.get("location")!);
     const token = redirectUrl.searchParams.get("token");
     expect(token).toBeTruthy();
 
@@ -161,19 +163,19 @@ describe("e2e OIDC tests", () => {
 
   test("can request and verify auth token", async () => {
     // ANCHOR: Generate the token
-    const authenticateReq = new NextRequest("http://localhost/authenticate", {
-      method: "POST",
-      headers: new Headers({ "Content-Type": "application/json" }),
-      body: JSON.stringify({
-        ...AUTHENTICATE_MOCK,
-        response_type: "code",
-      }),
+    const searchParams = new URLSearchParams({
+      response_type: "code",
     });
+    for (const key in AUTHENTICATE_MOCK) {
+      searchParams.append(key, AUTHENTICATE_MOCK[key]);
+    }
+    const authorizeReq = new NextRequest("http://localhost/authorize", {
+      method: "GET",
+    });
+    const authorizeResponse = await GET(authorizeReq);
+    expect(authorizeResponse.status).toBe(302);
 
-    const authenticateResponse = await handlerAuthenticate(authenticateReq);
-    expect(authenticateResponse.status).toBe(302);
-
-    const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
+    const redirectUrl = new URL(authorizeReq.headers.get("location")!);
     const code = redirectUrl.searchParams.get("code");
     expect(code).toBeTruthy();
 
