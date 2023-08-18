@@ -24,8 +24,8 @@ export enum ValidationMessage {
   Required = "This attribute is required",
 }
 
-export enum FlowType {
-  AuthorizationCode,
-  Implicit,
-  Hybrid,
+export enum OIDCFlowType {
+  AuthorizationCode = "authorization_code",
+  Implicit = "implicit",
+  Hybrid = "hybrid",
 }

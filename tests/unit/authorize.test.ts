@@ -18,6 +18,7 @@ const defaultAuthorizeParams: Record<string, string> = {
   client_id: AUTHENTICATE_MOCK.client_id,
   redirect_uri: AUTHENTICATE_MOCK.redirect_uri,
   nonce: AUTHENTICATE_MOCK.nonce,
+  scope: AUTHENTICATE_MOCK.scope,
 };
 
 const testAuthorize = async (
@@ -121,6 +122,7 @@ describe("/authorize response_types and response_modes", () => {
       expect(redirectUrl.pathname).toEqual("/error");
 
       expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+      console.log("detail: ", redirectUrl.searchParams.get("detail"));
       expect(redirectUrl.searchParams.get("detail")).toEqual(
         `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`
       );

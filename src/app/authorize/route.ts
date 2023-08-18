@@ -5,55 +5,58 @@ import {
   OIDCResponseMode,
   OIDCResponseType,
   ValidationMessage,
-  FlowType,
+  OIDCFlowType,
 } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
 
-const SUPPORTED_SCOPES = ["openid", "profile", "email"];
+enum OIDCScope {
+  OpenID = "openid",
+  Profile = "profile",
+  Email = "email",
+}
 
-// NOTE: List of valid response types for the code flow
-// Source: https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth:~:text=Authorization%20Code%20Flow%2C-,this%20value%20is%20code.,-client_id
-const CODE_FLOW_RESPONSE_TYPES = ["code"] as const;
-
-// NOTE: List of valid response types for the implicit flow
-// Source: https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth:~:text=this%20value%20is%20id_token%C2%A0token%20or%20id_token
-const IMPLICIT_FLOW_RESPONSE_TYPES = ["id_token token", "id_token"] as const;
-
-// NOTE: List of valid response types for the hybrid flow
-// Source: https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth:~:text=this%20value%20is%20code%C2%A0id_token%2C%20code%C2%A0token%2C%20or%20code%C2%A0id_token%C2%A0token.
-const HYBRID_FLOW_RESPONSE_TYPES = [
-  "code id_token",
-  "code token",
-  "code id_token token",
-] as const;
-
-const RESPONSE_TYPES = [
-  ...CODE_FLOW_RESPONSE_TYPES,
-  ...IMPLICIT_FLOW_RESPONSE_TYPES,
-  ...HYBRID_FLOW_RESPONSE_TYPES,
-];
-
-type ResponseType =
-  | (typeof HYBRID_FLOW_RESPONSE_TYPES)[number]
-  | (typeof IMPLICIT_FLOW_RESPONSE_TYPES)[number]
-  | (typeof CODE_FLOW_RESPONSE_TYPES)[number];
+const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
 
 function checkFlowType(responseType: string) {
-  if (HYBRID_FLOW_RESPONSE_TYPES.some((type) => type === responseType)) {
-    return FlowType.Hybrid;
+  const params = responseType.split(" ");
+
+  const includesAll = (requiredParams: string[]): boolean => {
+    return requiredParams.every((param) => params.includes(param));
+  };
+
+  // NOTE: List of valid response types for the code flow
+  // Source: https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth:~:text=Authorization%20Code%20Flow%2C-,this%20value%20is%20code.,-client_id
+  if (includesAll([OIDCResponseType.Code])) {
+    return OIDCFlowType.AuthorizationCode;
   }
 
-  if (CODE_FLOW_RESPONSE_TYPES.some((type) => type === responseType)) {
-    return FlowType.AuthorizationCode;
+  // NOTE: List of valid response types for the implicit flow
+  // Source: https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth:~:text=this%20value%20is%20id_token%C2%A0token%20or%20id_token
+  if (
+    includesAll([OIDCResponseType.Token]) ||
+    includesAll([OIDCResponseType.IdToken]) ||
+    includesAll([OIDCResponseType.IdToken, OIDCResponseType.Token])
+  ) {
+    return OIDCFlowType.Implicit;
   }
 
-  if (IMPLICIT_FLOW_RESPONSE_TYPES.some((type) => type === responseType)) {
-    return FlowType.Implicit;
+  // NOTE: List of valid response types for the hybrid flow
+  // Source: https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth:~:text=this%20value%20is%20code%C2%A0id_token%2C%20code%C2%A0token%2C%20or%20code%C2%A0id_token%C2%A0token.
+  if (
+    includesAll([OIDCResponseType.Code, OIDCResponseType.IdToken]) ||
+    includesAll([OIDCResponseType.Code, OIDCResponseType.Token]) ||
+    includesAll([
+      OIDCResponseType.Code,
+      OIDCResponseType.IdToken,
+      OIDCResponseType.Token,
+    ])
+  ) {
+    return OIDCFlowType.Hybrid;
   }
 
-  return "Unknown Flow";
+  return null;
 }
 
 const schema = yup.object({
@@ -67,7 +70,7 @@ const schema = yup.object({
       test: (value) => {
         const response_types = decodeURIComponent(value) as ResponseType;
 
-        if (!RESPONSE_TYPES.includes(response_types as ResponseType)) {
+        if (!checkFlowType(response_types)) {
           return false;
         }
 
@@ -81,15 +84,16 @@ const schema = yup.object({
   scope: yup
     .string()
     .strict()
+    .required(ValidationMessage.Required)
     .test({
       name: "is-valid-scope",
       message: "The requested scope is invalid, unknown, or malformed.",
       test: (value) => {
-        if (!value) {
-          return true;
+        if (!value.includes(OIDCScope.OpenID)) {
+          return false;
         }
 
-        const scopes = decodeURIComponent(value).split(" ");
+        const scopes = decodeURIComponent(value).split(" ") as OIDCScope[];
 
         for (const scope of scopes) {
           if (!SUPPORTED_SCOPES.includes(scope)) {
@@ -106,11 +110,33 @@ const schema = yup.object({
   nonce: yup.string().when("response_type", {
     // NOTE: we only require a nonce for the implicit flow
     is: (value: ResponseType) =>
-      checkFlowType(decodeURIComponent(value)) === FlowType.Implicit,
+      checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
     then: (field) => field.required(ValidationMessage.Required),
   }),
 
-  response_mode: yup.string().strict(),
+  response_mode: yup
+    .string<OIDCResponseMode>()
+    .when("response_type", {
+      is: OIDCResponseType.Code,
+      // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
+      then: (schema) => schema.default(OIDCResponseMode.Query),
+      otherwise: (schema) => schema.default(OIDCResponseMode.Fragment),
+    })
+    .test({
+      name: "is-valid-response-mode",
+      message: "Invalid response mode.",
+      test: (value) => {
+        if (!value) {
+          return true;
+        }
+
+        if (!(Object.values(OIDCResponseMode) as string[]).includes(value)) {
+          return false;
+        }
+
+        return true;
+      },
+    }),
 });
 
 // FIXME: should we add a CSRF token to the request?
@@ -191,91 +217,29 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  if (scope) {
-    const scopes = decodeURIComponent((scope as any).toString()).split(" ");
-
-    for (const _scope of scopes) {
-      if (!SUPPORTED_SCOPES.includes(_scope)) {
-        return errorValidationClient(
-          "invalid_scope",
-          `The requested scope is invalid, unknown, or malformed. ${_scope} is not supported.`,
-          "scope",
-          req.url
-        );
-      }
-    }
-  }
-
-  // TODO: Refactor with yup
-  const responseTypesRaw = decodeURIComponent(
+  const responseTypes = decodeURIComponent(
     (response_type as string | string[]).toString()
-  ).split(" ");
-  let responseTypes: OIDCResponseType[];
-  try {
-    responseTypes = responseTypesRaw.map((responseType) => {
-      if (
-        !(Object.values(OIDCResponseType) as string[]).includes(responseType)
-      ) {
-        throw new Error("Invalid response type.");
-      } else {
-        return responseType as OIDCResponseType;
-      }
-    });
-  } catch {
+  ).split(" ") as OIDCResponseType[];
+
+  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+  //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
+  if (
+    response_mode === OIDCResponseMode.Query &&
+    (responseTypes.includes(OIDCResponseType.Token) ||
+      responseTypes.includes(OIDCResponseType.IdToken))
+  ) {
     return errorValidationClient(
       "invalid_request",
-      `Invalid response type`,
-      "response_type",
+      `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
+      "response_mode",
       req.url
     );
   }
 
-  let responseMode: OIDCResponseMode;
-  if (response_mode) {
-    if (
-      !(Object.values(OIDCResponseMode) as string[]).includes(
-        response_mode as string
-      )
-    ) {
-      return errorValidationClient(
-        "invalid_request",
-        `Invalid response mode: ${response_mode}.`,
-        "response_mode",
-        req.url
-      );
-    } else {
-      responseMode = response_mode as OIDCResponseMode;
-
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
-      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
-      if (
-        responseMode === OIDCResponseMode.Query &&
-        (responseTypes.includes(OIDCResponseType.Token) ||
-          responseTypes.includes(OIDCResponseType.IdToken))
-      ) {
-        return errorValidationClient(
-          "invalid_request",
-          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
-          "response_mode",
-          req.url
-        );
-      }
-    }
-  } else {
-    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
-    switch (response_type) {
-      case OIDCResponseType.Code:
-        responseMode = OIDCResponseMode.Query;
-        break;
-      default:
-        responseMode = OIDCResponseMode.Fragment;
-    }
-  }
-
   const params = new URLSearchParams({
     response_type,
-    response_mode: responseMode,
+    response_mode: response_mode as OIDCResponseMode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
