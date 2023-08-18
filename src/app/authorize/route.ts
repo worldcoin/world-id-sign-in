@@ -6,7 +6,6 @@ import { errorValidationClient } from "@/api-helpers/errors";
 
 const SUPPORTED_SCOPES = ["openid", "profile", "email"];
 
-// FIXME: should we add a CSRF token to the request?
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const inputParams = Object.fromEntries(req.nextUrl.searchParams.entries());
 
@@ -102,26 +101,37 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
+  // TODO: Refactor with yup
   const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
   ).split(" ");
-
-  const responseTypes = responseTypesRaw.map((responseType) => {
-    if (!Object.keys(OIDCResponseType).includes(responseType)) {
-      return errorValidationClient(
-        "invalid_request",
-        `Invalid response type: ${response_type}.`,
-        "response_type",
-        req.url
-      );
-    } else {
-      return responseType as OIDCResponseType;
-    }
-  });
+  let responseTypes: OIDCResponseType[];
+  try {
+    responseTypes = responseTypesRaw.map((responseType) => {
+      if (
+        !(Object.values(OIDCResponseType) as string[]).includes(responseType)
+      ) {
+        throw new Error("Invalid response type.");
+      } else {
+        return responseType as OIDCResponseType;
+      }
+    });
+  } catch {
+    return errorValidationClient(
+      "invalid_request",
+      `Invalid response type`,
+      "response_type",
+      req.url
+    );
+  }
 
   let responseMode: OIDCResponseMode;
   if (response_mode) {
-    if (!Object.keys(OIDCResponseMode).includes(response_mode as string)) {
+    if (
+      !(Object.values(OIDCResponseMode) as string[]).includes(
+        response_mode as string
+      )
+    ) {
       return errorValidationClient(
         "invalid_request",
         `Invalid response mode: ${response_mode}.`,
@@ -130,48 +140,25 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       );
     } else {
       responseMode = response_mode as OIDCResponseMode;
-      // Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc, section 3
+
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
       if (
         responseMode === OIDCResponseMode.Query &&
-        responseTypes.includes(OIDCResponseType.IdToken)
+        (responseTypes.includes(OIDCResponseType.Token) ||
+          responseTypes.includes(OIDCResponseType.IdToken))
       ) {
         return errorValidationClient(
           "invalid_request",
-          `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
-          "response_mode",
-          req.url
-        );
-      }
-
-      //  Per https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#toc section 5, first statement
-      if (
-        responseMode === OIDCResponseMode.Query &&
-        responseTypes.includes(OIDCResponseType.Code) &&
-        responseTypes.includes(OIDCResponseType.Token)
-      ) {
-        return errorValidationClient(
-          "invalid_request",
-          `Invalid response mode: ${response_mode}. For response type ${response_type}, only fragment is supported.`,
-          "response_mode",
-          req.url
-        );
-      }
-
-      // To avoid potential access token leakage, we only allow form_post response mode for id_token token response type
-      if (
-        responseTypes.includes(OIDCResponseType.IdToken) &&
-        responseTypes.includes(OIDCResponseType.Token) &&
-        response_mode !== OIDCResponseMode.FormPost
-      ) {
-        return errorValidationClient(
-          "invalid",
-          "For response type 'id_token token', only 'form_post' response mode is allowed.",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
           "response_mode",
           req.url
         );
       }
     }
   } else {
+    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
     switch (response_type) {
       case OIDCResponseType.Code:
         responseMode = OIDCResponseMode.Query;
@@ -194,5 +181,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   if (scope) params.append("scope", scope.toString());
   if (state) params.append("state", state.toString());
 
-  return NextResponse.redirect(new URL(`/login?${params.toString()}`, req.url));
+  return NextResponse.redirect(
+    new URL(`/login?${params.toString()}`, req.url),
+    { status: 302 }
+  );
 };

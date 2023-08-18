@@ -55,5 +55,8 @@ export function errorValidationClient(
     params.append("attribute", attribute);
   }
 
-  return NextResponse.redirect(new URL(`/error?${params.toString()}`, baseUrl));
+  return NextResponse.redirect(
+    new URL(`/error?${params.toString()}`, baseUrl),
+    { status: 302 }
+  );
 }
