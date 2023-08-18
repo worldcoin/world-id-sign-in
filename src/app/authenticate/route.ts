@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
-import { ValidationMessage } from "@/types";
+import { OIDCResponseMode, ValidationMessage } from "@/types";
 
 const schema = yup.object({
   proof: yup.string().required(ValidationMessage.Required),
@@ -15,6 +15,7 @@ const schema = yup.object({
   scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
   state: yup.string(),
   response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
+  response_mode: yup.string().required(ValidationMessage.Required),
   redirect_uri: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
 });
 
@@ -38,6 +39,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   const {
     response_type,
+    response_mode,
     client_id,
     redirect_uri,
     nonce,
@@ -87,6 +89,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       code: "authentication_failed",
       detail,
       response_type,
+      response_mode,
       client_id,
       redirect_uri,
       scope,
@@ -104,13 +107,48 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const responseAuth = await response.json();
 
   const url = new URL(redirect_uri!.toString());
-  if (responseAuth.code) url.searchParams.append("code", responseAuth.code);
-  if (responseAuth.token) url.searchParams.append("token", responseAuth.token);
+  let urlParams = new URLSearchParams();
+  if (responseAuth.code) urlParams.append("code", responseAuth.code);
+  if (responseAuth.token) urlParams.append("token", responseAuth.token);
   if (responseAuth.id_token)
-    url.searchParams.append("id_token", responseAuth.id_token);
+    urlParams.append("id_token", responseAuth.id_token);
 
   // FIXME: pass `state` in a secure cookie (signed) from original request to prevent tampering
-  if (state) url.searchParams.append("state", state.toString());
+  if (state) urlParams.append("state", state.toString());
+
+  if (response_mode === OIDCResponseMode.Query) {
+    url.search = urlParams.toString();
+  } else if (response_mode === OIDCResponseMode.Fragment) {
+    url.hash = urlParams.toString();
+  } else if (response_mode === OIDCResponseMode.FormPost) {
+    const formHtml = `  
+    <!DOCTYPE html>    
+    <html>    
+      <head>    
+        <script>    
+          function submitForm() {    
+            document.getElementById("formRedirect").submit();    
+          }    
+        </script>    
+      </head>    
+      <body onload="submitForm()">    
+        <form id="formRedirect" method="post" action="${url}">    
+          ${Array.from(urlParams.entries()).map(
+            ([key, value]) =>
+              `<input type="hidden" name="${key}" value="${value}" />`
+          )}    
+          <noscript>  
+            <button type="submit">Submit</button>  
+          </noscript>  
+        </form>    
+      </body>    
+    </html>
+    `;
+
+    return new NextResponse(formHtml, {
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
 
   return NextResponse.redirect(url, { status: 302 });
 };

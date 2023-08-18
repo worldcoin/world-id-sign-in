@@ -42,6 +42,7 @@ type Props = {
   client_id: string;
   redirect_uri: string;
   response_type: string;
+  response_mode: string;
 };
 
 const IDKitQR: FC<Props> = ({
@@ -51,6 +52,7 @@ const IDKitQR: FC<Props> = ({
   client_id,
   redirect_uri,
   response_type,
+  response_mode,
 }) => {
   const { data: app_data } = useSWR<Meta>(client_id, fetchMeta);
   const [deeplink, setDeeplink] = useState("");
@@ -71,6 +73,7 @@ const IDKitQR: FC<Props> = ({
         client_id,
         redirect_uri,
         response_type,
+        response_mode,
       };
 
       Object.entries(inputs).forEach(([key, value]) => {
@@ -84,7 +87,7 @@ const IDKitQR: FC<Props> = ({
 
       form.submit();
     },
-    [client_id, nonce, redirect_uri, response_type, scope, state]
+    [client_id, nonce, redirect_uri, response_mode, response_type, scope, state]
   );
 
   return (

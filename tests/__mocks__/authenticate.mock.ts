@@ -1,7 +1,19 @@
-export const AUTHENTICATE_MOCK = {
+export const AUTHENTICATE_MOCK: {
+  [key: string]: string;
+  response_type: string;
+  client_id: string;
+  redirect_uri: string;
+  scope: string;
+  nonce: string;
+  merkle_root: string;
+  proof: string;
+  credential_type: string;
+  nullifier_hash: string;
+} = {
   response_type: "token",
+  response_mode: "fragment", // NOTE: This is not required in /authorize, but after validation for /authenticate endpoint it is required
   client_id: "app_staging_cb4113a6f4f9dcd1f6cd6e05377dd614",
-  redirect_uri: "http://localhost/hello",
+  redirect_uri: "https://test.worldcoin.org/hello",
   scope: "openid",
   nonce: "e2e-tests-1",
   merkle_root:

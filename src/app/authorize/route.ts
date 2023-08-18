@@ -1,7 +1,12 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { ValidationMessage, FlowType, OIDCResponseTypeMapping } from "@/types";
+import {
+  OIDCResponseMode,
+  OIDCResponseType,
+  ValidationMessage,
+  FlowType,
+} from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
@@ -104,6 +109,8 @@ const schema = yup.object({
       checkFlowType(decodeURIComponent(value)) === FlowType.Implicit,
     then: (field) => field.required(ValidationMessage.Required),
   }),
+
+  response_mode: yup.string().strict(),
 });
 
 // FIXME: should we add a CSRF token to the request?
@@ -118,8 +125,15 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     return errorResponse;
   }
 
-  const { response_type, client_id, redirect_uri, scope, state, nonce } =
-    parsedParams;
+  const {
+    response_type,
+    client_id,
+    redirect_uri,
+    scope,
+    state,
+    nonce,
+    response_mode,
+  } = parsedParams;
 
   let url: URL | undefined;
   try {
@@ -192,34 +206,76 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
-  const response_types = decodeURIComponent(
+  // TODO: Refactor with yup
+  const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
-  );
-
-  if (!RESPONSE_TYPES.includes(response_types as ResponseType)) {
+  ).split(" ");
+  let responseTypes: OIDCResponseType[];
+  try {
+    responseTypes = responseTypesRaw.map((responseType) => {
+      if (
+        !(Object.values(OIDCResponseType) as string[]).includes(responseType)
+      ) {
+        throw new Error("Invalid response type.");
+      } else {
+        return responseType as OIDCResponseType;
+      }
+    });
+  } catch {
     return errorValidationClient(
-      "invalid",
-      `Invalid response type: ${response_types}. Available types: ${RESPONSE_TYPES.join(
-        " | "
-      )}`,
+      "invalid_request",
+      `Invalid response type`,
       "response_type",
       req.url
     );
   }
 
-  // NOTE: Require nonce for implicit flow
-  // Source: https://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest:~:text=as%20the%20hostname.-,nonce,REQUIRED,-.%20String%20value%20used
-  if (!nonce && checkFlowType(response_types) === FlowType.Implicit) {
-    return errorValidationClient(
-      "invalid_request",
-      "A nonce is required when using the OIDC implicit flow.",
-      "nonce",
-      req.url
-    );
+  let responseMode: OIDCResponseMode;
+  if (response_mode) {
+    if (
+      !(Object.values(OIDCResponseMode) as string[]).includes(
+        response_mode as string
+      )
+    ) {
+      return errorValidationClient(
+        "invalid_request",
+        `Invalid response mode: ${response_mode}.`,
+        "response_mode",
+        req.url
+      );
+    } else {
+      responseMode = response_mode as OIDCResponseMode;
+
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
+      if (
+        responseMode === OIDCResponseMode.Query &&
+        (responseTypes.includes(OIDCResponseType.Token) ||
+          responseTypes.includes(OIDCResponseType.IdToken))
+      ) {
+        return errorValidationClient(
+          "invalid_request",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
+          "response_mode",
+          req.url
+        );
+      }
+    }
+  } else {
+    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
+    switch (response_type) {
+      case OIDCResponseType.Code:
+        responseMode = OIDCResponseMode.Query;
+        break;
+      default:
+        responseMode = OIDCResponseMode.Fragment;
+    }
   }
 
   const params = new URLSearchParams({
     response_type,
+    response_mode: responseMode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
@@ -230,5 +286,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   if (scope) params.append("scope", scope.toString());
   if (state) params.append("state", state.toString());
 
-  return NextResponse.redirect(new URL(`/login?${params.toString()}`, req.url));
+  return NextResponse.redirect(
+    new URL(`/login?${params.toString()}`, req.url),
+    { status: 302 }
+  );
 };
