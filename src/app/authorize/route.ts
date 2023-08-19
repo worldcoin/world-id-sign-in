@@ -1,12 +1,11 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { OIDCResponseTypeMapping } from "@/types";
+import { OIDCResponseMode, OIDCResponseType } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 
 const SUPPORTED_SCOPES = ["openid", "profile", "email"];
 
-// FIXME: should we add a CSRF token to the request?
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const inputParams = Object.fromEntries(req.nextUrl.searchParams.entries());
 
@@ -28,6 +27,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     scope,
     state,
     nonce,
+    response_mode,
     code_challenge,
     code_challenge_method,
   } = inputParams;
@@ -103,18 +103,70 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     }
   }
 
-  const response_types = decodeURIComponent(
+  // TODO: Refactor with yup
+  const responseTypesRaw = decodeURIComponent(
     (response_type as string | string[]).toString()
   ).split(" ");
+  let responseTypes: OIDCResponseType[];
+  try {
+    responseTypes = responseTypesRaw.map((responseType) => {
+      if (
+        !(Object.values(OIDCResponseType) as string[]).includes(responseType)
+      ) {
+        throw new Error("Invalid response type.");
+      } else {
+        return responseType as OIDCResponseType;
+      }
+    });
+  } catch {
+    return errorValidationClient(
+      "invalid_request",
+      `Invalid response type`,
+      "response_type",
+      req.url
+    );
+  }
 
-  for (const response_type of response_types) {
-    if (!Object.keys(OIDCResponseTypeMapping).includes(response_type)) {
+  let responseMode: OIDCResponseMode;
+  if (response_mode) {
+    if (
+      !(Object.values(OIDCResponseMode) as string[]).includes(
+        response_mode as string
+      )
+    ) {
       return errorValidationClient(
-        "invalid",
-        `Invalid response type: ${response_type}.`,
-        "response_type",
+        "invalid_request",
+        `Invalid response mode: ${response_mode}.`,
+        "response_mode",
         req.url
       );
+    } else {
+      responseMode = response_mode as OIDCResponseMode;
+
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
+      if (
+        responseMode === OIDCResponseMode.Query &&
+        (responseTypes.includes(OIDCResponseType.Token) ||
+          responseTypes.includes(OIDCResponseType.IdToken))
+      ) {
+        return errorValidationClient(
+          "invalid_request",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
+          "response_mode",
+          req.url
+        );
+      }
+    }
+  } else {
+    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
+    switch (response_type) {
+      case OIDCResponseType.Code:
+        responseMode = OIDCResponseMode.Query;
+        break;
+      default:
+        responseMode = OIDCResponseMode.Fragment;
     }
   }
 
@@ -129,6 +181,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   const params = new URLSearchParams({
     response_type,
+    response_mode: responseMode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
@@ -145,5 +198,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     params.append("code_challenge_method", code_challenge_method.toString());
   }
 
-  return NextResponse.redirect(new URL(`/login?${params.toString()}`, req.url));
+  return NextResponse.redirect(
+    new URL(`/login?${params.toString()}`, req.url),
+    { status: 302 }
+  );
 };
