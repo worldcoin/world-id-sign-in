@@ -49,7 +49,7 @@ describe("/authorize response_types and response_modes", () => {
     },
     {
       responseType: "id_token token", // Implicit Flow
-      responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
+      responseModes: [OIDCResponseMode.FormPost],
     },
     {
       responseType: "code id_token", // Hybrid Flow
@@ -61,7 +61,7 @@ describe("/authorize response_types and response_modes", () => {
     },
     {
       responseType: "code id_token token", // Hybrid Flow
-      responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
+      responseModes: [OIDCResponseMode.FormPost],
     },
     {
       responseType: "token", // Not directly part of OIDC (OAuth 2.0)
@@ -98,8 +98,6 @@ describe("/authorize response_types and response_modes", () => {
     // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
     { response_type: "code token", response_mode: "query" },
     { response_type: "code id_token", response_mode: "query" },
-    { response_type: "id_token token", response_mode: "query" },
-    { response_type: "code id_token token", response_mode: "query" },
 
     // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
     { response_type: "id_token", response_mode: "query" },
@@ -123,6 +121,36 @@ describe("/authorize response_types and response_modes", () => {
       expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
       expect(redirectUrl.searchParams.get("detail")).toEqual(
         `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`
+      );
+    });
+  }
+
+  const invalidCombinationsNoFormPost = [
+    // REFERENCE: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#name-access-token-in-browser-his
+    { response_type: "id_token token", response_mode: "query" },
+    { response_type: "id_token token", response_mode: "fragment" },
+    { response_type: "code id_token token", response_mode: "query" },
+    { response_type: "code id_token token", response_mode: "fragment" },
+  ];
+
+  for (const {
+    response_type,
+    response_mode,
+  } of invalidCombinationsNoFormPost) {
+    test(`Authorize request with invalid combination response_type: ${response_type}, response_mode: ${response_mode}`, async () => {
+      const params = { response_type, response_mode };
+      const response = await testAuthorize(params);
+
+      // Check if status is 302 Found (redirection)
+      // NOTE: Errors are rendered to the user in the /error page
+      expect(response.status).toBe(302);
+
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/error");
+
+      expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+      expect(redirectUrl.searchParams.get("detail")).toEqual(
+        `Invalid response mode: ${response_mode}. For response type ${response_type}, form_post is required.`
       );
     });
   }
