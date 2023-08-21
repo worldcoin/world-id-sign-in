@@ -122,7 +122,6 @@ describe("/authorize response_types and response_modes", () => {
       expect(redirectUrl.pathname).toEqual("/error");
 
       expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
-      console.log("detail: ", redirectUrl.searchParams.get("detail"));
       expect(redirectUrl.searchParams.get("detail")).toEqual(
         `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`
       );
