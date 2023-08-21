@@ -141,6 +141,21 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     } else {
       responseMode = response_mode as OIDCResponseMode;
 
+      // REFERENCE: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#name-access-token-in-browser-his
+      // If the response_type value is token id_token, the response_mode value MUST be form_post.
+      if (
+        responseTypes.includes(OIDCResponseType.Token) &&
+        responseTypes.includes(OIDCResponseType.IdToken) &&
+        responseMode != OIDCResponseMode.FormPost
+      ) {
+        return errorValidationClient(
+          "invalid_request",
+          `Invalid response mode: ${response_mode}. For response type ${response_type}, form_post is required.`,
+          "response_mode",
+          req.url
+        );
+      }
+
       //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
       //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
       //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
