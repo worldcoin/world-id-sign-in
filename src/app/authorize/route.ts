@@ -9,7 +9,7 @@ import {
 } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
-import { validateRequestSchema } from "@/api-helpers/utils";
+import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 
 enum OIDCScope {
   OpenID = "openid",
@@ -18,49 +18,6 @@ enum OIDCScope {
 }
 
 const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
-
-export function checkFlowType(responseType: string) {
-  const params = responseType.split(" ");
-
-  const includesAll = (requiredParams: string[]): boolean => {
-    return requiredParams.every((param) => params.includes(param));
-  };
-
-  // NOTE: List of valid response types for the hybrid flow
-  // Source: https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth:~:text=this%20value%20is%20code%C2%A0id_token%2C%20code%C2%A0token%2C%20or%20code%C2%A0id_token%C2%A0token.
-  if (
-    includesAll([OIDCResponseType.Code, OIDCResponseType.IdToken]) ||
-    includesAll([OIDCResponseType.Code, OIDCResponseType.Token]) ||
-    includesAll([
-      OIDCResponseType.Code,
-      OIDCResponseType.IdToken,
-      OIDCResponseType.Token,
-    ])
-  ) {
-    return OIDCFlowType.Hybrid;
-  }
-
-  // NOTE: List of valid response types for the code flow
-  // Source: https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth:~:text=Authorization%20Code%20Flow%2C-,this%20value%20is%20code.,-client_id
-  if (includesAll([OIDCResponseType.Code])) {
-    return OIDCFlowType.AuthorizationCode;
-  }
-
-  // NOTE: List of valid response types for the implicit flow
-  // Source: https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth:~:text=this%20value%20is%20id_token%C2%A0token%20or%20id_token
-  if (
-    includesAll([OIDCResponseType.IdToken]) ||
-    includesAll([OIDCResponseType.IdToken, OIDCResponseType.Token])
-  ) {
-    return OIDCFlowType.Implicit;
-  }
-
-  if (includesAll([OIDCResponseType.Token])) {
-    return OIDCFlowType.Token;
-  }
-
-  return null;
-}
 
 const schema = yup.object({
   response_type: yup

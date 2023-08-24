@@ -1,4 +1,4 @@
-import { checkFlowType } from "@/app/authorize/route";
+import { checkFlowType } from "@/api-helpers/utils";
 import { OIDCFlowType } from "@/types";
 
 describe("Check flow type", () => {
