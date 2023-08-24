@@ -28,4 +28,5 @@ export enum OIDCFlowType {
   AuthorizationCode = "authorization_code",
   Implicit = "implicit",
   Hybrid = "hybrid",
+  Token = "token",
 }
