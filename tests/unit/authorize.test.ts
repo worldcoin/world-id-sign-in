@@ -18,6 +18,7 @@ const defaultAuthorizeParams: Record<string, string> = {
   client_id: AUTHENTICATE_MOCK.client_id,
   redirect_uri: AUTHENTICATE_MOCK.redirect_uri,
   nonce: AUTHENTICATE_MOCK.nonce,
+  scope: AUTHENTICATE_MOCK.scope,
 };
 
 const testAuthorize = async (

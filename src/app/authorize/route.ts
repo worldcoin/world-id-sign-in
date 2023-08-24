@@ -1,23 +1,114 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { OIDCResponseMode, OIDCResponseType } from "@/types";
+import {
+  OIDCResponseMode,
+  OIDCResponseType,
+  ValidationMessage,
+  OIDCFlowType,
+} from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
+import * as yup from "yup";
+import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 
-const SUPPORTED_SCOPES = ["openid", "profile", "email"];
+enum OIDCScope {
+  OpenID = "openid",
+  Profile = "profile",
+  Email = "email",
+}
 
+const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
+
+const schema = yup.object({
+  response_type: yup
+    .string()
+    .strict()
+    .required(ValidationMessage.Required)
+    .test({
+      name: "is-valid-response-type",
+      message: "Invalid response type.",
+      test: (value) => {
+        const response_types = decodeURIComponent(value) as ResponseType;
+
+        if (!checkFlowType(response_types)) {
+          return false;
+        }
+
+        return true;
+      },
+    }),
+
+  client_id: yup.string().strict().required(ValidationMessage.Required),
+  redirect_uri: yup.string().strict().required(ValidationMessage.Required),
+
+  scope: yup
+    .string()
+    .strict()
+    .required(ValidationMessage.Required)
+    .test({
+      name: "is-valid-scope",
+      message: "The requested scope is invalid, unknown, or malformed.",
+      test: (value) => {
+        if (!value.includes(OIDCScope.OpenID)) {
+          return false;
+        }
+
+        const scopes = decodeURIComponent(value).split(" ") as OIDCScope[];
+
+        for (const scope of scopes) {
+          if (!SUPPORTED_SCOPES.includes(scope)) {
+            return false;
+          }
+        }
+
+        return true;
+      },
+    }),
+
+  state: yup.string(),
+
+  nonce: yup.string().when("response_type", {
+    // NOTE: we only require a nonce for the implicit flow
+    is: (value: ResponseType) =>
+      checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
+    then: (field) => field.required(ValidationMessage.Required),
+  }),
+
+  response_mode: yup
+    .string<OIDCResponseMode>()
+    .when("response_type", {
+      is: OIDCResponseType.Code,
+      // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
+      then: (schema) => schema.default(OIDCResponseMode.Query),
+      otherwise: (schema) => schema.default(OIDCResponseMode.Fragment),
+    })
+    .test({
+      name: "is-valid-response-mode",
+      message: "Invalid response mode.",
+      test: (value) => {
+        if (!value) {
+          return true;
+        }
+
+        if (!(Object.values(OIDCResponseMode) as string[]).includes(value)) {
+          return false;
+        }
+
+        return true;
+      },
+    }),
+});
+
+// FIXME: should we add a CSRF token to the request?
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
-  const inputParams = Object.fromEntries(req.nextUrl.searchParams.entries());
+  const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
+    schema,
+    req,
+    bodySource: "query",
+  });
 
-  for (const attr of ["response_type", "client_id", "redirect_uri"]) {
-    if (!inputParams[attr]) {
-      return errorValidationClient(
-        "invalid_request",
-        "This attribute is required.",
-        attr,
-        req.url
-      );
-    }
+  if (!isValid) {
+    return errorResponse;
   }
 
   const {
@@ -28,7 +119,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     state,
     nonce,
     response_mode,
-  } = inputParams;
+  } = parsedParams;
 
   let url: URL | undefined;
   try {
@@ -86,91 +177,29 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  if (scope) {
-    const scopes = decodeURIComponent((scope as any).toString()).split(" ");
-
-    for (const _scope of scopes) {
-      if (!SUPPORTED_SCOPES.includes(_scope)) {
-        return errorValidationClient(
-          "invalid_scope",
-          `The requested scope is invalid, unknown, or malformed. ${_scope} is not supported.`,
-          "scope",
-          req.url
-        );
-      }
-    }
-  }
-
-  // TODO: Refactor with yup
-  const responseTypesRaw = decodeURIComponent(
+  const responseTypes = decodeURIComponent(
     (response_type as string | string[]).toString()
-  ).split(" ");
-  let responseTypes: OIDCResponseType[];
-  try {
-    responseTypes = responseTypesRaw.map((responseType) => {
-      if (
-        !(Object.values(OIDCResponseType) as string[]).includes(responseType)
-      ) {
-        throw new Error("Invalid response type.");
-      } else {
-        return responseType as OIDCResponseType;
-      }
-    });
-  } catch {
+  ).split(" ") as OIDCResponseType[];
+
+  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+  //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
+  if (
+    response_mode === OIDCResponseMode.Query &&
+    (responseTypes.includes(OIDCResponseType.Token) ||
+      responseTypes.includes(OIDCResponseType.IdToken))
+  ) {
     return errorValidationClient(
       "invalid_request",
-      `Invalid response type`,
-      "response_type",
+      `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
+      "response_mode",
       req.url
     );
   }
 
-  let responseMode: OIDCResponseMode;
-  if (response_mode) {
-    if (
-      !(Object.values(OIDCResponseMode) as string[]).includes(
-        response_mode as string
-      )
-    ) {
-      return errorValidationClient(
-        "invalid_request",
-        `Invalid response mode: ${response_mode}.`,
-        "response_mode",
-        req.url
-      );
-    } else {
-      responseMode = response_mode as OIDCResponseMode;
-
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
-      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
-      if (
-        responseMode === OIDCResponseMode.Query &&
-        (responseTypes.includes(OIDCResponseType.Token) ||
-          responseTypes.includes(OIDCResponseType.IdToken))
-      ) {
-        return errorValidationClient(
-          "invalid_request",
-          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
-          "response_mode",
-          req.url
-        );
-      }
-    }
-  } else {
-    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
-    switch (response_type) {
-      case OIDCResponseType.Code:
-        responseMode = OIDCResponseMode.Query;
-        break;
-      default:
-        responseMode = OIDCResponseMode.Fragment;
-    }
-  }
-
   const params = new URLSearchParams({
     response_type,
-    response_mode: responseMode,
+    response_mode: response_mode as OIDCResponseMode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
