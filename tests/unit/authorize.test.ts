@@ -44,39 +44,27 @@ const testAuthorize = async (
 
 describe("/authorize response_types and response_modes", () => {
   const validTestCases = [
-    {
-      responseType: "code", // Authorization Code Flow
+    // Authorization Code Flow
+    ...AUTHORIZE_CODE_RESPONSE_TYPES.map((responseType) => ({
+      responseType,
       responseModes: [
         OIDCResponseMode.Query,
         OIDCResponseMode.Fragment,
         OIDCResponseMode.FormPost,
       ],
-    },
+    })),
 
-    {
-      responseType: "id_token", // Implicit Flow
+    // Implicit Flow
+    ...IMPLICIT_RESPONSE_TYPES.map((responseType) => ({
+      responseType,
       responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
-    },
+    })),
 
-    {
-      responseType: "id_token token", // Implicit Flow
+    // Hybrid Flow
+    ...HYBRID_RESPONSE_TYPES.map((responseType) => ({
+      responseType,
       responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
-    },
-
-    {
-      responseType: "code id_token", // Hybrid Flow
-      responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
-    },
-
-    {
-      responseType: "code token", // Hybrid Flow
-      responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
-    },
-
-    {
-      responseType: "code id_token token", // Hybrid Flow
-      responseModes: [OIDCResponseMode.Fragment, OIDCResponseMode.FormPost],
-    },
+    })),
 
     {
       responseType: "token", // Not directly part of OIDC (OAuth 2.0)
