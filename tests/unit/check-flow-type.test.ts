@@ -1,37 +1,27 @@
 import { checkFlowType } from "@/api-helpers/utils";
 import { OIDCFlowType } from "@/types";
 
+import {
+  AUTHORIZE_CODE_RESPONSE_TYPES,
+  HYBRID_RESPONSE_TYPES,
+  IMPLICIT_RESPONSE_TYPES,
+} from "tests/__mocks__/authenticate.mock";
+
 describe("Check flow type", () => {
   test("Detects authorization code flow", () => {
-    const validResponseTypes = ["code"];
-
-    validResponseTypes.forEach((responseType) => {
+    AUTHORIZE_CODE_RESPONSE_TYPES.forEach((responseType) => {
       expect(checkFlowType(responseType)).toBe(OIDCFlowType.AuthorizationCode);
     });
   });
 
   test("Detects implicit flow", () => {
-    const validResponseTypes = ["token id_token", "id_token token", "id_token"];
-    validResponseTypes.forEach((responseType) => {
+    IMPLICIT_RESPONSE_TYPES.forEach((responseType) => {
       expect(checkFlowType(responseType)).toBe(OIDCFlowType.Implicit);
     });
   });
 
   test("Detects hybrid flow", () => {
-    const validResponseTypes = [
-      "code id_token",
-      "id_token code",
-      "code token",
-      "token code",
-      "code id_token token",
-      "code token id_token",
-      "token code id_token",
-      "token id_token code",
-      "id_token code token",
-      "id_token token code",
-    ];
-
-    validResponseTypes.forEach((responseType) => {
+    HYBRID_RESPONSE_TYPES.forEach((responseType) => {
       expect(checkFlowType(responseType)).toBe(OIDCFlowType.Hybrid);
     });
   });

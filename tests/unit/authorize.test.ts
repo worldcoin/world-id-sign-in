@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GET } from "@/app/authorize/route";
 import fetchMock from "jest-fetch-mock";
-import { AUTHENTICATE_MOCK } from "tests/__mocks__/authenticate.mock";
+
+import {
+  AUTHENTICATE_MOCK,
+  AUTHORIZE_CODE_RESPONSE_TYPES,
+  HYBRID_RESPONSE_TYPES,
+  IMPLICIT_RESPONSE_TYPES,
+} from "tests/__mocks__/authenticate.mock";
+
 import { OIDCResponseMode } from "@/types";
 import { OIDCErrorCodes } from "@/api-helpers/errors";
 
@@ -145,56 +152,101 @@ describe("/authorize response_types and response_modes", () => {
   }
 });
 
-describe("having a nonce for the /authorize endpoint with implicit flow", () => {
-  test("Implicit flow authorize request with nonce", async () => {
-    const params = {
-      response_type: "id_token",
-      response_mode: OIDCResponseMode.Fragment,
-    };
+describe("/authorize nonce", () => {
+  const responseTypesWithNonce = IMPLICIT_RESPONSE_TYPES;
 
-    const response = await testAuthorize({
-      ...defaultAuthorizeParams,
-      ...params,
+  const responseTypesWithoutNonce = [
+    ...AUTHORIZE_CODE_RESPONSE_TYPES,
+    ...HYBRID_RESPONSE_TYPES,
+  ];
+
+  for (const response_type of responseTypesWithNonce) {
+    test(`Nonce required for implicit flow | response_type: ${response_type}`, async () => {
+      const params = {
+        response_type,
+        response_mode: OIDCResponseMode.Fragment,
+      };
+
+      const response = await testAuthorize({
+        ...defaultAuthorizeParams,
+        ...params,
+      });
+
+      expect(response.status).toBe(302);
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/login");
+
+      expect(redirectUrl.searchParams.get("response_mode")).toEqual(
+        OIDCResponseMode.Fragment
+      );
+
+      expect(redirectUrl.searchParams.get("response_type")).toEqual(
+        response_type
+      );
+
+      expect(redirectUrl.searchParams.get("ready")).toEqual("true");
     });
+  }
 
-    expect(response.status).toBe(302);
-    const redirectUrl = new URL(response.headers.get("location")!);
-    expect(redirectUrl.pathname).toEqual("/login");
+  for (const response_type of responseTypesWithNonce) {
+    test(`Missing nonce error for implicit flow | response_type: ${response_type}`, async () => {
+      const defaultParams = defaultAuthorizeParams;
+      delete defaultParams.nonce;
 
-    expect(redirectUrl.searchParams.get("response_mode")).toEqual(
-      OIDCResponseMode.Fragment
-    );
+      const params = {
+        response_type,
+        response_mode: OIDCResponseMode.Fragment,
+      };
 
-    expect(redirectUrl.searchParams.get("response_type")).toEqual("id_token");
-    expect(redirectUrl.searchParams.get("ready")).toEqual("true");
-  });
+      const response = await testAuthorize({
+        ...defaultParams,
+        ...params,
+      });
 
-  test("Implicit flow authorize request without nonce", async () => {
-    const defaultParams = defaultAuthorizeParams;
-    delete defaultParams.nonce;
+      expect(response.status).toBe(302);
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/error");
 
-    const params = {
-      response_type: "id_token",
-      response_mode: OIDCResponseMode.Fragment,
-    };
+      expect(redirectUrl.searchParams.get("code")).toEqual(
+        OIDCErrorCodes.InvalidRequest
+      );
 
-    const response = await testAuthorize({
-      ...defaultParams,
-      ...params,
+      expect(redirectUrl.searchParams.get("detail")).toEqual(
+        "This attribute is required"
+      );
+
+      expect(redirectUrl.searchParams.get("attribute")).toEqual("nonce");
     });
+  }
 
-    expect(response.status).toBe(302);
-    const redirectUrl = new URL(response.headers.get("location")!);
-    expect(redirectUrl.pathname).toEqual("/error");
+  for (const response_type of responseTypesWithoutNonce) {
+    test(`Non-implicit flow works without nonce | response_type: ${response_type}`, async () => {
+      const defaultParams = defaultAuthorizeParams;
+      delete defaultParams.nonce;
 
-    expect(redirectUrl.searchParams.get("code")).toEqual(
-      OIDCErrorCodes.InvalidRequest
-    );
+      const params = {
+        response_type,
+        response_mode: OIDCResponseMode.Fragment,
+      };
 
-    expect(redirectUrl.searchParams.get("detail")).toEqual(
-      "This attribute is required"
-    );
+      const response = await testAuthorize({
+        ...defaultParams,
+        ...params,
+      });
 
-    expect(redirectUrl.searchParams.get("attribute")).toEqual("nonce");
-  });
+      expect(response.status).toBe(302);
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/login");
+
+      expect(redirectUrl.searchParams.get("response_mode")).toEqual(
+        OIDCResponseMode.Fragment
+      );
+
+      expect(redirectUrl.searchParams.get("response_type")).toEqual(
+        response_type
+      );
+
+      expect(redirectUrl.searchParams.get("ready")).toEqual("true");
+    });
+  }
 });
