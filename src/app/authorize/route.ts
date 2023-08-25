@@ -99,7 +99,6 @@ const schema = yup.object({
     }),
 });
 
-// FIXME: should we add a CSRF token to the request?
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
     schema,
