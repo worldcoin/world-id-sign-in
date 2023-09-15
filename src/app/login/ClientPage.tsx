@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import Balancer from "react-wrap-balancer";
-import { FC, useCallback, useState } from "react";
+import { FC, MouseEvent, ReactNode, useCallback, useState } from "react";
 import { ISuccessResult, internal } from "@worldcoin/idkit";
 import IDKitBridge from "@/components/IDKitBridge";
 import { internal as IDKitInternal } from "@worldcoin/idkit";
@@ -10,15 +10,22 @@ import {
   IconArrowRight,
   IconBadge,
   IconBadgeX,
+  IconExternal,
   IconWorldcoin,
 } from "@/components/icons";
 import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
 import Image from "next/image";
+import { Dialog } from "@headlessui/react";
+import { Button } from "@/components/Button";
 
 type Meta = {
   name: string;
   is_verified: boolean;
   verified_app_logo: string;
+  action: {
+    privacy_policy_uri: string | null;
+    terms_uri: string | null;
+  };
 };
 
 const fetchMeta = async (client_id: string) => {
@@ -133,6 +140,22 @@ const IDKitQR: FC<Props> = ({
           setDeeplink={setDeeplink}
           onSuccess={handleIDKitSuccess}
         />
+
+        {app_data?.action.privacy_policy_uri && app_data?.action.terms_uri && (
+          <div className="mt-6 flex gap-x-4 items-center">
+            {app_data?.action.terms_uri && (
+              <ExternalLink href={app_data?.action.terms_uri}>
+                Terms
+              </ExternalLink>
+            )}
+
+            {app_data?.action.privacy_policy_uri && (
+              <ExternalLink href={app_data?.action.privacy_policy_uri}>
+                Privacy Policy
+              </ExternalLink>
+            )}
+          </div>
+        )}
       </div>
       {![
         IDKitInternal.VerificationState.AwaitingVerification,
@@ -204,5 +227,78 @@ const Header = ({
       </div>
     </div>
   ) : null;
+
+const ExternalLink = ({
+  children,
+  href,
+}: {
+  children: ReactNode;
+  href: string;
+}) => {
+  const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
+
+  const handleClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setIsOpenConfirmation(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpenConfirmation(false);
+  }, []);
+
+  return (
+    <>
+      <a
+        className="flex gap-x-1 items-center"
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={handleClick}
+      >
+        {children} <IconExternal />
+      </a>
+
+      {isOpenConfirmation && (
+        <Dialog
+          className="relative z-50"
+          open={isOpenConfirmation}
+          onClose={handleClose}
+        >
+          <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+            <Dialog.Panel className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:w-auto md:h-auto p-8 md:p-12 border border-gray-200 relative shadow-xl">
+              <Dialog.Title className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
+                You are now leaving this site
+              </Dialog.Title>
+
+              <Dialog.Description className="mt-4">
+                You are now leaving this site and being redirected to an
+                external site.
+              </Dialog.Description>
+
+              <div className="flex gap-x-4 mt-6">
+                <Button
+                  className="text-white bg-text border-text"
+                  onClick={handleClose}
+                >
+                  Stay here
+                </Button>
+
+                <a
+                  className="font-medium bg-gray-100 p-2 rounded-lg border text-sm border-gray-200"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleClose}
+                >
+                  Continue
+                </a>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      )}
+    </>
+  );
+};
 
 export default IDKitQR;
