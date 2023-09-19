@@ -4,6 +4,7 @@ import { DEVELOPER_PORTAL } from "@/consts";
 import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseMode, ValidationMessage } from "@/types";
+import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 
 const schema = yup.object({
   proof: yup.string().required(ValidationMessage.Required),
@@ -15,7 +16,7 @@ const schema = yup.object({
   scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
   state: yup.string(),
   response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
-  response_mode: yup.string().required(ValidationMessage.Required),
+  response_mode: OIDCResponseModeValidation,
   redirect_uri: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
 });
 
