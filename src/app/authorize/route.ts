@@ -10,6 +10,7 @@ import {
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
+import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 
 enum OIDCScope {
   OpenID = "openid",
@@ -74,29 +75,7 @@ const schema = yup.object({
     then: (field) => field.required(ValidationMessage.Required),
   }),
 
-  response_mode: yup
-    .string<OIDCResponseMode>()
-    .when("response_type", {
-      is: OIDCResponseType.Code,
-      // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
-      then: (schema) => schema.default(OIDCResponseMode.Query),
-      otherwise: (schema) => schema.default(OIDCResponseMode.Fragment),
-    })
-    .test({
-      name: "is-valid-response-mode",
-      message: "Invalid response mode.",
-      test: (value) => {
-        if (!value) {
-          return true;
-        }
-
-        if (!(Object.values(OIDCResponseMode) as string[]).includes(value)) {
-          return false;
-        }
-
-        return true;
-      },
-    }),
+  response_mode: OIDCResponseModeValidation,
 });
 
 // FIXME: should we add a CSRF token to the request?
