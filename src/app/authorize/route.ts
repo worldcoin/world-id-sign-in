@@ -70,7 +70,7 @@ const schema = yup.object({
 
   nonce: yup.string().when("response_type", {
     // NOTE: we only require a nonce for the implicit flow
-    is: (value: ResponseType) =>
+    is: (value: string) =>
       checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
     then: (field) => field.required(ValidationMessage.Required),
   }),
@@ -78,7 +78,6 @@ const schema = yup.object({
   response_mode: OIDCResponseModeValidation,
 });
 
-// FIXME: should we add a CSRF token to the request?
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
     schema,
