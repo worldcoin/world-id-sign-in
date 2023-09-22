@@ -236,14 +236,14 @@ const ExternalLink = ({
   href: string;
 }) => {
   return (
-      <a
-          className="flex gap-x-1 items-center"
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-      >
-          {children} <IconExternal />
-      </a>
+    <a
+      className="flex gap-x-1 items-center"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children} <IconExternal />
+    </a>
   );
 };
 
