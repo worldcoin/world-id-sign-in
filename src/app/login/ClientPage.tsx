@@ -235,69 +235,15 @@ const ExternalLink = ({
   children: ReactNode;
   href: string;
 }) => {
-  const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
-
-  const handleClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    setIsOpenConfirmation(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setIsOpenConfirmation(false);
-  }, []);
-
   return (
-    <>
       <a
-        className="flex gap-x-1 items-center"
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleClick}
+          className="flex gap-x-1 items-center"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
       >
-        {children} <IconExternal />
+          {children} <IconExternal />
       </a>
-
-      {isOpenConfirmation && (
-        <Dialog
-          className="relative z-50"
-          open={isOpenConfirmation}
-          onClose={handleClose}
-        >
-          <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-            <Dialog.Panel className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:w-auto md:h-auto p-8 md:p-12 border border-gray-200 relative shadow-xl">
-              <Dialog.Title className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
-                You are now leaving this site
-              </Dialog.Title>
-
-              <Dialog.Description className="mt-4">
-                You are now leaving this site and being redirected to an
-                external site.
-              </Dialog.Description>
-
-              <div className="flex gap-x-4 mt-6">
-                <Button
-                  className="text-white bg-text border-text"
-                  onClick={handleClose}
-                >
-                  Stay here
-                </Button>
-
-                <a
-                  className="font-medium bg-gray-100 p-2 rounded-lg border text-sm border-gray-200"
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleClose}
-                >
-                  Continue
-                </a>
-              </div>
-            </Dialog.Panel>
-          </div>
-        </Dialog>
-      )}
-    </>
   );
 };
 
