@@ -88,10 +88,9 @@ const IDKitBridge = ({
                 <IDKitInternal.QRCode data={qrData?.default} size={280} />
               </div>
               <LazyMotion
+                // only load framer if displaying QR code for mobile performance
                 features={async () => (await import("./animations")).default}
               >
-                {" "}
-                {/* only load framer if displaying QR code for mobile performance */}
                 <AnimatePresence>
                   {copiedLink && (
                     <m.div
