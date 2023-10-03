@@ -139,24 +139,24 @@ const IDKitQR: FC<Props> = ({
         IDKitInternal.VerificationState.LoadingWidget,
         IDKitInternal.VerificationState.Confirmed,
       ].includes(wcStage) && (
-          <>
-            <div className="text-center text-gray-400 mt-2">or</div>
-            <a
-              href={deeplink ? deeplink : "https://worldcoin.org/download"}
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center border border-gray-200 cursor-pointer">
-                <div className="bg-text rounded p-1 mr-2">
-                  <IconWorldcoin className="text-white text-sm" />
-                </div>
-                <div className="flex-grow hidden md:block">Manually open app</div>
-                <div className="flex-grow md:hidden">Sign up in the app</div>
-                <IconArrowRight className="text-2xl text-gray-400" />
+        <>
+          <div className="text-center text-gray-400 mt-2">or</div>
+          <a
+            href={deeplink ? deeplink : "https://worldcoin.org/download"}
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center border border-gray-200 cursor-pointer">
+              <div className="bg-text rounded p-1 mr-2">
+                <IconWorldcoin className="text-white text-sm" />
               </div>
-            </a>
-          </>
-        )}
+              <div className="flex-grow hidden md:block">Manually open app</div>
+              <div className="flex-grow md:hidden">Sign up in the app</div>
+              <IconArrowRight className="text-2xl text-gray-400" />
+            </div>
+          </a>
+        </>
+      )}
     </>
   );
 };
