@@ -83,6 +83,9 @@ const IDKitBridge = ({
             {qrData?.default && (
               <>
                 {/* .qr-code className used for remote synthetic tests */}
+                <div className="hidden md:block qr-code" onClick={copyLink}>
+                  <IDKitInternal.QRCode data={qrData?.default} size={280} />
+                </div>
                 <LazyMotion features={async () => (await import('./animations')).default}> {/* only load framer if displaying QR code for mobile performance */}
                   <AnimatePresence>
                     {copiedLink && (
@@ -93,9 +96,9 @@ const IDKitBridge = ({
                         animate="visible"
                         exit="exit"
                         variants={{
-                          visible: { opacity: 1, height: 'auto', marginBottom: 16, transition: { opacity: { duration: 0.25, delay: 0.1 }, height: { duration: 0.25 }, marginBottom: { duration: 0.25 }, ease: 'easeInOut' } },
-                          hidden: { opacity: 0, height: 0, marginBottom: 0 },
-                          exit: { opacity: 0, height: 0, marginBottom: 0, transition: { opacity: { duration: 0.25 }, height: { delay: 0.2, duration: 0.25 }, marginBottom: { delay: 0.2, duration: 0.25 }, ease: "easeInOut" } },
+                          hidden: { opacity: 0, height: 0, marginTop: 0, y: 0 },
+                          visible: { opacity: 1, height: 'auto', marginTop: 16, y: 12, transition: { duration: 0.25, opacity: { delay: 0.1 }, ease: 'easeInOut' } },
+                          exit: { opacity: 0, height: 0, marginTop: 0, y: 0, transition: { duration: 0.4, delay: 0.1, opacity: { duration: 0.25, delay: 0 }, ease: "easeInOut" } },
                         }}
                       >
                         <span className="border-f1f5f8 rounded-lg border py-1 px-2 text-sm">
@@ -105,9 +108,6 @@ const IDKitBridge = ({
                     )}
                   </AnimatePresence>
                 </LazyMotion>
-                <div className="hidden md:block qr-code" onClick={copyLink}>
-                  <IDKitInternal.QRCode data={qrData?.default} size={280} />
-                </div>
                 <div className="md:hidden mt-10 md:mt-0">
                   <Spinner />
                   <div className="text-text-muted pt-4">
