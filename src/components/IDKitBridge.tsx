@@ -7,7 +7,7 @@ import {
   internal as IDKitInternal,
 } from "@worldcoin/idkit";
 import copy from "copy-to-clipboard";
-import { AnimatePresence, LazyMotion, m, domAnimation } from "framer-motion";
+import { AnimatePresence, LazyMotion, m } from "framer-motion";
 
 interface IIDKitBridge {
   nonce: string;
@@ -62,14 +62,17 @@ const IDKitBridge = ({
     if (qrData?.mobile) setDeeplink(qrData.mobile);
   }, [qrData, setDeeplink]);
 
+  const isStaging = (/^app_staging_/).test(client_id) // naively check if staging app to enable click-to-copy QR code
 
   const [copiedLink, setCopiedLink] = useState(false)
   const copyLink = useCallback(() => {
-    copy(qrData?.default ?? '')
+    if (isStaging && qrData?.default) { // only copy if staging app and qrData is available
+      copy(qrData?.default)
 
-    setCopiedLink(true)
-    setTimeout(() => setCopiedLink(false), 2000)
-  }, [qrData])
+      setCopiedLink(true)
+      setTimeout(() => setCopiedLink(false), 2000)
+    }
+  }, [qrData, isStaging])
 
   return (
     <div className="md:mt-8">
@@ -80,7 +83,7 @@ const IDKitBridge = ({
             {qrData?.default && (
               <>
                 {/* .qr-code className used for remote synthetic tests */}
-                <LazyMotion features={async () => (await import('./animations')).default}> {/* only load framer if displaying QR code */}
+                <LazyMotion features={async () => (await import('./animations')).default}> {/* only load framer if displaying QR code for mobile performance */}
                   <AnimatePresence>
                     {copiedLink && (
                       <m.div
