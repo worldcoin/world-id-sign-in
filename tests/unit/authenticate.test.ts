@@ -30,12 +30,15 @@ beforeAll(() => {
 });
 
 const testAuthenticate = async (
-  params: Record<string, string>
+  params: Record<string, string | null | undefined>
 ): Promise<NextResponse> => {
   const formData = new FormData();
   const mergedParams = { ...AUTHENTICATE_MOCK, ...params };
   for (const key of Object.keys(mergedParams)) {
-    formData.append(key, mergedParams[key]);
+    const value = mergedParams[key];
+    if (value) {
+      formData.append(key, value);
+    }
   }
   const authenticateReq = new NextRequest(`http://localhost/authorize`, {
     method: "POST",
@@ -120,4 +123,27 @@ describe("/authorize response_types and response_modes", () => {
       });
     }
   }
+});
+
+describe("/authorize PKCE mode", () => {
+  test("passes PKCE params and params are not sent back in response", async () => {
+    const params = {
+      code_challenge_method: "S256",
+      code_challenge: "test_hash_123",
+    };
+
+    fetchMock.mockIf(/\/api\/v1\/oidc\/authorize/, async (req) => {
+      const json = await req.json();
+      expect(json.code_challenge_method).toEqual("S256");
+      expect(json.code_challenge).toEqual("test_hash_123");
+      return JSON.stringify({ code: "12345678" });
+    });
+
+    const response = await testAuthenticate(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.searchParams.get("code_challenge_method")).toBeNull();
+    expect(redirectUrl.searchParams.get("code_challenge")).toBeNull();
+  });
 });

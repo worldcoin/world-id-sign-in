@@ -38,10 +38,8 @@ const schema = yup.object({
         return true;
       },
     }),
-
   client_id: yup.string().strict().required(ValidationMessage.Required),
   redirect_uri: yup.string().strict().required(ValidationMessage.Required),
-
   scope: yup
     .string()
     .strict()
@@ -65,17 +63,22 @@ const schema = yup.object({
         return true;
       },
     }),
-
   state: yup.string(),
-
   nonce: yup.string().when("response_type", {
     // NOTE: we only require a nonce for the implicit flow
     is: (value: string) =>
       checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
     then: (field) => field.required(ValidationMessage.Required),
   }),
-
   response_mode: OIDCResponseModeValidation,
+  code_challenge: yup.string().when("code_challenge_method", {
+    is: (value: string) => Boolean(value),
+    then: (field) =>
+      field.required(
+        "This attribute is required when code_challenge_method is provided (PKCE)."
+      ),
+  }),
+  code_challenge_method: yup.string(),
 });
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
@@ -97,6 +100,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     state,
     nonce,
     response_mode,
+    code_challenge,
+    code_challenge_method,
   } = parsedParams;
 
   let url: URL | undefined;
@@ -155,29 +160,18 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  const responseTypes = decodeURIComponent(
-    (response_type as string | string[]).toString()
-  ).split(" ") as OIDCResponseType[];
-
-  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
-  //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
-  if (
-    response_mode === OIDCResponseMode.Query &&
-    (responseTypes.includes(OIDCResponseType.Token) ||
-      responseTypes.includes(OIDCResponseType.IdToken))
-  ) {
+  if (code_challenge && code_challenge_method !== "S256") {
     return errorValidationClient(
       "invalid_request",
-      `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
-      "response_mode",
+      `Invalid code_challenge_method: ${code_challenge_method}.`,
+      "code_challenge_method",
       req.url
     );
   }
 
   const params = new URLSearchParams({
     response_type,
-    response_mode: response_mode as OIDCResponseMode,
+    response_mode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
@@ -185,8 +179,21 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     ready: "true", // for UX purposes, to avoid users getting to the login page without verifying their request
   });
 
-  if (scope) params.append("scope", scope.toString());
-  if (state) params.append("state", state.toString());
+  if (scope) {
+    params.append("scope", scope.toString());
+  }
+
+  if (state) {
+    params.append("state", state.toString());
+  }
+
+  if (code_challenge) {
+    params.append("code_challenge", code_challenge.toString());
+  }
+
+  if (code_challenge_method) {
+    params.append("code_challenge_method", code_challenge_method.toString());
+  }
 
   return NextResponse.redirect(
     new URL(`/login?${params.toString()}`, req.url),

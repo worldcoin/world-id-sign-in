@@ -12,13 +12,30 @@ export const OIDCResponseModeValidation = yup
   .test({
     name: "is-valid-response-mode",
     message: "Invalid response mode.",
-    test: (value) => {
+    test: (value, context) => {
       if (!value) {
         return true;
       }
 
       if (!(Object.values(OIDCResponseMode) as string[]).includes(value)) {
         return false;
+      }
+
+      const rawResponseType = context.parent.response_type as string;
+
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
+      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
+      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
+      if (value === OIDCResponseMode.Query) {
+        if (
+          rawResponseType.includes(OIDCResponseType.IdToken) ||
+          rawResponseType.includes(OIDCResponseType.Token)
+        ) {
+          throw context.createError({
+            path: "response_mode",
+            message: `Invalid response mode: ${value}. For response type ${rawResponseType}, query is not supported for security reasons.`,
+          });
+        }
       }
 
       return true;

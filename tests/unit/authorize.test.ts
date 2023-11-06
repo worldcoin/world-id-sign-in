@@ -178,7 +178,7 @@ describe("/authorize nonce", () => {
 
   for (const response_type of responseTypesWithNonce) {
     test(`Missing nonce error for implicit flow | response_type: ${response_type}`, async () => {
-      const defaultParams = defaultAuthorizeParams;
+      const defaultParams = { ...defaultAuthorizeParams };
       delete defaultParams.nonce;
 
       const params = {
@@ -209,7 +209,7 @@ describe("/authorize nonce", () => {
 
   for (const response_type of responseTypesWithoutNonce) {
     test(`Non-implicit flow works without nonce | response_type: ${response_type}`, async () => {
-      const defaultParams = defaultAuthorizeParams;
+      const defaultParams = { ...defaultAuthorizeParams };
       delete defaultParams.nonce;
 
       const params = {
@@ -237,4 +237,107 @@ describe("/authorize nonce", () => {
       expect(redirectUrl.searchParams.get("ready")).toEqual("true");
     });
   }
+});
+
+describe("/authorize default response_modes", () => {
+  test("default response_mode for authorization flow is query", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+    };
+    // @ts-expect-error sanity check to make sure it's not set by default
+    expect(params.response_mode).toBeUndefined();
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/login");
+    expect(redirectUrl.searchParams.get("response_mode")).toEqual("query");
+  });
+
+  test("default response_mode for non-authorization flow is form_post", async () => {
+    const nonAuthorizationCodeOptions = [
+      "code token",
+      "code id_token",
+      "id_token token",
+      "code id_token token",
+      "id_token",
+      "token",
+    ];
+
+    for (const response_type of nonAuthorizationCodeOptions) {
+      const params = {
+        ...defaultAuthorizeParams,
+        response_type,
+      };
+      // @ts-expect-error sanity check to make sure it's not set by default
+      expect(params.response_mode).toBeUndefined();
+
+      const response = await testAuthorize(params);
+
+      expect(response.status).toEqual(302);
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/login");
+      expect(redirectUrl.searchParams.get("response_mode")).toEqual("fragment");
+    }
+  });
+});
+
+describe("/authorize PKCE params", () => {
+  test("invalid code_challenge_method is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge_method: "R256",
+      code_challenge: "123",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("detail")).toEqual(
+      "Invalid code_challenge_method: R256."
+    );
+  });
+
+  test("missing code_challenge_method on PKCE flow is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge: "123",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("attribute")).toEqual(
+      "code_challenge_method"
+    );
+  });
+
+  test("missing code_challenge on PKCE flow is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge_method: "S256",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("detail")).toEqual(
+      "This attribute is required when code_challenge_method is provided (PKCE)."
+    );
+    expect(redirectUrl.searchParams.get("attribute")).toEqual("code_challenge");
+  });
 });
