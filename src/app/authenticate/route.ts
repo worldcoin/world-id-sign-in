@@ -51,8 +51,8 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     scope,
     merkle_root,
     nullifier_hash,
-    code_challenge,
     credential_type,
+    code_challenge,
     code_challenge_method,
   } = parsedParams;
 
@@ -100,10 +100,12 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       client_id,
       redirect_uri,
       code: "authentication_failed",
+      nonce,
     });
 
-    if (state) searchParams.append("state", state.toString());
-    if (nonce) searchParams.append("nonce", nonce.toString());
+    if (state) {
+      searchParams.append("state", state.toString());
+    }
 
     return NextResponse.redirect(
       new URL(`/error?${searchParams.toString()}`, req.url),

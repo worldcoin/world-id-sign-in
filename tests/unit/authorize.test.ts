@@ -178,7 +178,7 @@ describe("/authorize nonce", () => {
 
   for (const response_type of responseTypesWithNonce) {
     test(`Missing nonce error for implicit flow | response_type: ${response_type}`, async () => {
-      const defaultParams = defaultAuthorizeParams;
+      const defaultParams = { ...defaultAuthorizeParams };
       delete defaultParams.nonce;
 
       const params = {
@@ -209,7 +209,7 @@ describe("/authorize nonce", () => {
 
   for (const response_type of responseTypesWithoutNonce) {
     test(`Non-implicit flow works without nonce | response_type: ${response_type}`, async () => {
-      const defaultParams = defaultAuthorizeParams;
+      const defaultParams = { ...defaultAuthorizeParams };
       delete defaultParams.nonce;
 
       const params = {
@@ -237,4 +237,49 @@ describe("/authorize nonce", () => {
       expect(redirectUrl.searchParams.get("ready")).toEqual("true");
     });
   }
+});
+
+describe("/authorize default response_modes", () => {
+  test("default response_mode for authorization flow is query", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+    };
+    // @ts-expect-error sanity check to make sure it's not set by default
+    expect(params.response_mode).toBeUndefined();
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/login");
+    expect(redirectUrl.searchParams.get("response_mode")).toEqual("query");
+  });
+
+  test("default response_mode for non-authorization flow is form_post", async () => {
+    const nonAuthorizationCodeOptions = [
+      "code token",
+      "code id_token",
+      "id_token token",
+      "code id_token token",
+      "id_token",
+      "token",
+    ];
+
+    for (const response_type of nonAuthorizationCodeOptions) {
+      const params = {
+        ...defaultAuthorizeParams,
+        response_type,
+      };
+      // @ts-expect-error sanity check to make sure it's not set by default
+      expect(params.response_mode).toBeUndefined();
+
+      const response = await testAuthorize(params);
+
+      expect(response.status).toEqual(302);
+      const redirectUrl = new URL(response.headers.get("location")!);
+      expect(redirectUrl.pathname).toEqual("/login");
+      expect(redirectUrl.searchParams.get("response_mode")).toEqual("fragment");
+    }
+  });
 });

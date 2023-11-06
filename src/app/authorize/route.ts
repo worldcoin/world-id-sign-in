@@ -154,69 +154,6 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
-  const responseTypes = decodeURIComponent(
-    (response_type as string | string[]).toString()
-  ).split(" ") as OIDCResponseType[];
-
-  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-  //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
-  //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
-  if (
-    response_mode === OIDCResponseMode.Query &&
-    (responseTypes.includes(OIDCResponseType.Token) ||
-      responseTypes.includes(OIDCResponseType.IdToken))
-  ) {
-    return errorValidationClient(
-      "invalid_request",
-      `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
-      "response_mode",
-      req.url
-    );
-  }
-
-  let responseMode: OIDCResponseMode;
-  if (response_mode) {
-    if (
-      !(Object.values(OIDCResponseMode) as string[]).includes(
-        response_mode as string
-      )
-    ) {
-      return errorValidationClient(
-        "invalid_request",
-        `Invalid response mode: ${response_mode}.`,
-        "response_mode",
-        req.url
-      );
-    } else {
-      responseMode = response_mode as OIDCResponseMode;
-
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-      //  REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#id_token
-      //  To prevent access token leakage we also prevent `query` mode when requesting only an access token (OAuth 2.0 flow)
-      if (
-        responseMode === OIDCResponseMode.Query &&
-        (responseTypes.includes(OIDCResponseType.Token) ||
-          responseTypes.includes(OIDCResponseType.IdToken))
-      ) {
-        return errorValidationClient(
-          "invalid_request",
-          `Invalid response mode: ${response_mode}. For response type ${response_type}, query is not supported for security reasons.`,
-          "response_mode",
-          req.url
-        );
-      }
-    }
-  } else {
-    // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
-    switch (response_type) {
-      case OIDCResponseType.Code:
-        responseMode = OIDCResponseMode.Query;
-        break;
-      default:
-        responseMode = OIDCResponseMode.Fragment;
-    }
-  }
-
   if (code_challenge && code_challenge_method !== "S256") {
     return errorValidationClient(
       "invalid",
@@ -228,7 +165,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   const params = new URLSearchParams({
     response_type,
-    response_mode: response_mode as OIDCResponseMode,
+    response_mode,
     client_id,
     redirect_uri,
     nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
