@@ -3,24 +3,24 @@ import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 import * as yup from "yup";
 import { validateRequestSchema } from "@/api-helpers/utils";
-import { OIDCResponseMode } from "@/types";
+import { OIDCResponseMode, ValidationMessage } from "@/types";
+import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 
 const schema = yup.object({
-  proof: yup.string().required("This attribute is required."),
-  nullifier_hash: yup.string().required("This attribute is required."),
-  merkle_root: yup.string().required("This attribute is required."),
-  credential_type: yup.string().required("This attribute is required."),
-  client_id: yup.string().required("This attribute is required."),
-  nonce: yup.string().required("This attribute is required."), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
+  proof: yup.string().required(ValidationMessage.Required),
+  nullifier_hash: yup.string().required(ValidationMessage.Required),
+  merkle_root: yup.string().required(ValidationMessage.Required),
+  credential_type: yup.string().required(ValidationMessage.Required),
+  client_id: yup.string().required(ValidationMessage.Required),
+  nonce: yup.string().required(ValidationMessage.Required), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
   scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
   state: yup.string(),
-  response_type: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
-  response_mode: yup.string().required("This attribute is required."),
-  redirect_uri: yup.string().required("This attribute is required."), // NOTE: Content verified in the Developer Portal
+  response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
+  response_mode: OIDCResponseModeValidation,
+  redirect_uri: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
   code_challenge: yup.string(), // NOTE: Content verified in the Developer Portal
   code_challenge_method: yup.string(), // NOTE: Content verified in the Developer Portal
 });
-type ParamsType = yup.InferType<typeof schema>;
 
 /**
  * Receives the ZKP from the frontend, verifies with Developer Portal and redirects the user.
@@ -30,12 +30,11 @@ type ParamsType = yup.InferType<typeof schema>;
  * @returns
  */
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
-  const { parsedParams, isValid, errorResponse } =
-    await validateRequestSchema<ParamsType>({
-      schema,
-      req,
-      bodySource: "formData",
-    });
+  const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
+    schema,
+    req,
+    bodySource: "formData",
+  });
 
   if (!isValid) {
     return errorResponse;
@@ -51,7 +50,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     proof,
     scope,
     merkle_root,
-    response_type,
     nullifier_hash,
     code_challenge,
     credential_type,
@@ -101,7 +99,6 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       response_mode,
       client_id,
       redirect_uri,
-      response_type,
       code: "authentication_failed",
     });
 

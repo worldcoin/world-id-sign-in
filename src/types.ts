@@ -19,3 +19,14 @@ export interface IAuthorizeRequest {
   scope?: string;
   state?: string;
 }
+
+export enum ValidationMessage {
+  Required = "This attribute is required",
+}
+
+export enum OIDCFlowType {
+  AuthorizationCode = "authorization_code",
+  Implicit = "implicit",
+  Hybrid = "hybrid",
+  Token = "token",
+}

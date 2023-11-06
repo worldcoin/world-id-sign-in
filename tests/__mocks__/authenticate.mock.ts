@@ -1,3 +1,5 @@
+import { OIDCFlowType, OIDCResponseType } from "@/types";
+
 export const AUTHENTICATE_MOCK: {
   [key: string]: string;
   response_type: string;
@@ -24,3 +26,24 @@ export const AUTHENTICATE_MOCK: {
   nullifier_hash:
     "0x2978b7ab28667fc641e0a38af57b6d177592d268a6d97aec19205a97bf456f23",
 };
+
+export const AUTHORIZE_CODE_RESPONSE_TYPES = [OIDCResponseType.Code];
+
+export const IMPLICIT_RESPONSE_TYPES = [
+  `${OIDCResponseType.IdToken}`,
+  `${OIDCResponseType.IdToken} ${OIDCResponseType.Token}`,
+  `${OIDCResponseType.Token} ${OIDCResponseType.IdToken}`,
+];
+
+export const HYBRID_RESPONSE_TYPES = [
+  `${OIDCResponseType.Code} ${OIDCResponseType.IdToken}`,
+  `${OIDCResponseType.IdToken} ${OIDCResponseType.Code}`,
+  `${OIDCResponseType.Code} ${OIDCResponseType.Token}`,
+  `${OIDCResponseType.Token} ${OIDCResponseType.Code}`,
+  `${OIDCResponseType.Code} ${OIDCResponseType.IdToken} ${OIDCResponseType.Token}`,
+  `${OIDCResponseType.Code} ${OIDCResponseType.Token} ${OIDCResponseType.IdToken}`,
+  `${OIDCResponseType.Token} ${OIDCResponseType.Code} ${OIDCResponseType.IdToken}`,
+  `${OIDCResponseType.Token} ${OIDCResponseType.IdToken} ${OIDCResponseType.Code}`,
+  `${OIDCResponseType.IdToken} ${OIDCResponseType.Code} ${OIDCResponseType.Token}`,
+  `${OIDCResponseType.IdToken} ${OIDCResponseType.Token} ${OIDCResponseType.Code}`,
+];
