@@ -71,7 +71,13 @@ const schema = yup.object({
     then: (field) => field.required(ValidationMessage.Required),
   }),
   response_mode: OIDCResponseModeValidation,
-  code_challenge: yup.string(),
+  code_challenge: yup.string().when("code_challenge_method", {
+    is: (value: string) => Boolean(value),
+    then: (field) =>
+      field.required(
+        "This attribute is required when code_challenge_method is provided (PKCE)."
+      ),
+  }),
   code_challenge_method: yup.string(),
 });
 
@@ -156,8 +162,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
 
   if (code_challenge && code_challenge_method !== "S256") {
     return errorValidationClient(
-      "invalid",
-      `Invalid code challenge method: ${code_challenge_method}.`,
+      "invalid_request",
+      `Invalid code_challenge_method: ${code_challenge_method}.`,
       "code_challenge_method",
       req.url
     );

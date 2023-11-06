@@ -283,3 +283,61 @@ describe("/authorize default response_modes", () => {
     }
   });
 });
+
+describe("/authorize PKCE params", () => {
+  test("invalid code_challenge_method is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge_method: "R256",
+      code_challenge: "123",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("detail")).toEqual(
+      "Invalid code_challenge_method: R256."
+    );
+  });
+
+  test("missing code_challenge_method on PKCE flow is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge: "123",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("attribute")).toEqual(
+      "code_challenge_method"
+    );
+  });
+
+  test("missing code_challenge on PKCE flow is rejected", async () => {
+    const params = {
+      ...defaultAuthorizeParams,
+      response_type: "code",
+      code_challenge_method: "S256",
+    };
+
+    const response = await testAuthorize(params);
+
+    expect(response.status).toEqual(302);
+    const redirectUrl = new URL(response.headers.get("location")!);
+    expect(redirectUrl.pathname).toEqual("/error");
+    expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
+    expect(redirectUrl.searchParams.get("detail")).toEqual(
+      "This attribute is required when code_challenge_method is provided (PKCE)."
+    );
+    expect(redirectUrl.searchParams.get("attribute")).toEqual("code_challenge");
+  });
+});
