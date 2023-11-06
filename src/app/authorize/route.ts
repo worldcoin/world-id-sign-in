@@ -236,11 +236,18 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     ready: "true", // for UX purposes, to avoid users getting to the login page without verifying their request
   });
 
-  if (scope) params.append("scope", scope.toString());
-  if (state) params.append("state", state.toString());
+  if (scope) {
+    params.append("scope", scope.toString());
+  }
+
+  if (state) {
+    params.append("state", state.toString());
+  }
+
   if (code_challenge) {
     params.append("code_challenge", code_challenge.toString());
   }
+
   if (code_challenge_method) {
     params.append("code_challenge_method", code_challenge_method.toString());
   }

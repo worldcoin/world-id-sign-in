@@ -93,7 +93,17 @@ const IDKitQR: FC<Props> = ({
 
       form.submit();
     },
-    [client_id, nonce, redirect_uri, response_mode, response_type, scope, state, code_challenge, code_challenge_method]
+    [
+      client_id,
+      nonce,
+      redirect_uri,
+      response_mode,
+      response_type,
+      scope,
+      state,
+      code_challenge,
+      code_challenge_method,
+    ]
   );
 
   return (
