@@ -43,6 +43,8 @@ type Props = {
   redirect_uri: string;
   response_type: string;
   response_mode: string;
+  code_challenge?: string;
+  code_challenge_method?: string;
 };
 
 const IDKitQR: FC<Props> = ({
@@ -53,6 +55,8 @@ const IDKitQR: FC<Props> = ({
   redirect_uri,
   response_type,
   response_mode,
+  code_challenge,
+  code_challenge_method,
 }) => {
   const { data: app_data } = useSWR<Meta>(client_id, fetchMeta);
   const [deeplink, setDeeplink] = useState("");
@@ -74,6 +78,8 @@ const IDKitQR: FC<Props> = ({
         redirect_uri,
         response_type,
         response_mode,
+        code_challenge,
+        code_challenge_method,
       };
 
       Object.entries(inputs).forEach(([key, value]) => {
@@ -87,7 +93,17 @@ const IDKitQR: FC<Props> = ({
 
       form.submit();
     },
-    [client_id, nonce, redirect_uri, response_mode, response_type, scope, state]
+    [
+      client_id,
+      nonce,
+      redirect_uri,
+      response_mode,
+      response_type,
+      scope,
+      state,
+      code_challenge,
+      code_challenge_method,
+    ]
   );
 
   return (

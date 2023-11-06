@@ -24,6 +24,7 @@
     "NextJS",
     "nullifer",
     "OIDC",
+    "PKCE",
     "Worldcoin"
   ]
 }

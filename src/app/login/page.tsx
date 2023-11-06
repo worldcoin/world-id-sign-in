@@ -16,6 +16,8 @@ const LoginPage = ({ searchParams }: Props) => {
     scope,
     state,
     response_mode,
+    code_challenge,
+    code_challenge_method,
   } = searchParams;
 
   if (!ready || !client_id) {
@@ -38,8 +40,10 @@ const LoginPage = ({ searchParams }: Props) => {
           nonce={nonce as string}
           client_id={client_id as string}
           redirect_uri={redirect_uri as string}
-          response_type={response_type as string}
           response_mode={response_mode as string}
+          response_type={response_type as string}
+          code_challenge={code_challenge as string}
+          code_challenge_method={code_challenge_method as string}
         />
         <Footer />
       </div>
