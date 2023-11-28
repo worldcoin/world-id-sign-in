@@ -26,6 +26,8 @@ const IDKitBridge = ({
   onSuccess,
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
+  const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
+
   const {
     createClient,
     connectorURI,
@@ -34,6 +36,7 @@ const IDKitBridge = ({
     errorCode,
     verificationState,
     reset,
+    pollForUpdates,
   } = useWorldBridgeStore();
 
   useEffect(() => {
@@ -48,12 +51,33 @@ const IDKitBridge = ({
       bridge_url,
       [CredentialType.Orb, CredentialType.Device],
       "Sign in with Worldcoin"
-    ).catch((error) => {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Error creating bridge client:", error);
-      }
-    });
-  }, [bridge_url, client_id, createClient, nonce, verificationState]);
+    )
+      .then(() => {
+        const intervalId = setInterval(() => {
+          pollForUpdates();
+        }, 2000);
+
+        setIntervalId(intervalId);
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === "development") {
+          console.error(error);
+        }
+      });
+  }, [
+    bridge_url,
+    client_id,
+    createClient,
+    nonce,
+    pollForUpdates,
+    verificationState,
+  ]);
+
+  useEffect(() => {
+    if (verificationState === VerificationState.WaitingForApp && intervalId) {
+      clearInterval(intervalId);
+    }
+  }, [verificationState, intervalId]);
 
   useEffect(() => {
     setStage(verificationState);
