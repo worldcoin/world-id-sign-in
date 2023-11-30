@@ -1,3 +1,4 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import * as yup from "yup";
 import { OIDCErrorCodes } from "./errors";
@@ -14,8 +15,18 @@ export const validateRequestSchema = async <T extends yup.Schema>({
   req: NextRequest;
   bodySource?: BodySource;
 }): Promise<
-  | { isValid: true; parsedParams: yup.InferType<T>; errorResponse?: null }
-  | { isValid: false; parsedParams?: null; errorResponse: NextResponse }
+  | {
+      isValid: true;
+      parsedParams: yup.InferType<T>;
+      errorResponse?: null;
+      error?: null;
+    }
+  | {
+      isValid: false;
+      parsedParams?: null;
+      errorResponse: NextResponse;
+      error: { code: string; detail: string; attr?: string };
+    }
 > => {
   let parsedParams: yup.InferType<typeof schema>;
   let rawParams: Record<string, string> = {};
@@ -38,10 +49,10 @@ export const validateRequestSchema = async <T extends yup.Schema>({
     parsedParams = await schema.validate(rawParams);
   } catch (error) {
     if (error instanceof yup.ValidationError) {
+      const code = OIDCErrorCodes.InvalidRequest;
       const errorParams = new URLSearchParams({
         ...rawParams,
-        code: OIDCErrorCodes.InvalidRequest,
-        detail: error.message ?? "",
+        code,
       });
 
       if (error.path) {
@@ -54,15 +65,18 @@ export const validateRequestSchema = async <T extends yup.Schema>({
           new URL(`/error?${errorParams.toString()}`, req.url),
           { status: 302 }
         ),
+        error: { code, detail: error.message, attr: error.path || undefined },
       };
     }
 
     console.error("Unhandled yup validation error.", { error, req });
 
+    const code = OIDCErrorCodes.ServerError;
+    const detail = "Something went wrong. Please try again or contact support.";
     const errorParams = new URLSearchParams({
       ...rawParams,
-      code: OIDCErrorCodes.ServerError,
-      detail: "Something went wrong. Please try again or contact support.",
+      code,
+      detail,
     });
     return {
       isValid: false,
@@ -70,6 +84,7 @@ export const validateRequestSchema = async <T extends yup.Schema>({
         new URL(`/error?${errorParams.toString()}`, req.url),
         { status: 302 }
       ),
+      error: { code, detail },
     };
   }
 

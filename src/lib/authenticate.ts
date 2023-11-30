@@ -1,7 +1,7 @@
-"use server";
 /**
  * Authenticates a user to Sign in with Worldcoin using a World ID ZKP.
  */
+import "server-only";
 import * as yup from "yup";
 import { ValidationMessage } from "@/types";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";

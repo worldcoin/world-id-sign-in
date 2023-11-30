@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
   const { parsedParams, isValid, error } = await validateRequestSchema({
     schema: authenticateSchema,
     req,
-    bodySource: "formData",
+    bodySource: "body",
   });
 
   if (parsedParams?.response_mode === OIDCResponseMode.FormPost) {
@@ -46,5 +46,5 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     redirect_uri.hash = result.url_params.toString();
   }
 
-  return NextResponse.json(redirect_uri);
+  return NextResponse.json({ redirect_uri });
 };

@@ -1,3 +1,4 @@
+import "server-only";
 import { NextResponse } from "next/server";
 
 export enum OIDCErrorCodes {
