@@ -59,6 +59,10 @@ export const validateRequestSchema = async <T extends yup.Schema>({
         errorParams.append("attribute", error.path);
       }
 
+      if (error.message) {
+        errorParams.append("detail", error.message);
+      }
+
       return {
         isValid: false,
         errorResponse: NextResponse.redirect(
