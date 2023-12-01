@@ -54,8 +54,12 @@ const IDKitBridge = ({
     )
       .then(() => {
         const intervalId = setInterval(() => {
-          pollForUpdates();
-        }, 2000);
+          pollForUpdates().catch((error) => {
+            console.error(error);
+            setIntervalId(null);
+            clearInterval(intervalId);
+          });
+        }, 3000);
 
         setIntervalId(intervalId);
       })
