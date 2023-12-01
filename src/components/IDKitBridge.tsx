@@ -2,7 +2,7 @@ import { Spinner } from "./Spinner";
 import { memo, useCallback, useEffect, useState } from "react";
 import copy from "copy-to-clipboard";
 import { AnimatePresence, LazyMotion, m } from "framer-motion";
-import { internal as IDKitInternal } from "@worldcoin/idkit";
+import { QRCode } from "@worldcoin/idkit/internal";
 
 import {
   VerificationState,
@@ -152,7 +152,7 @@ const IDKitBridge = ({
                     className="hidden md:block qr-code cursor-pointer"
                     onClick={copyLink}
                   >
-                    <IDKitInternal.QRCode data={connectorURI} size={280} />
+                    <QRCode data={connectorURI} size={280} />
                   </div>
                   <LazyMotion
                     // only load framer if displaying QR code for mobile performance
@@ -212,7 +212,7 @@ const IDKitBridge = ({
                 <>
                   {/* .qr-code className used for remote synthetic tests */}
                   <div className="hidden md:block qr-code">
-                    <IDKitInternal.QRCode data={connectorURI} size={280} />
+                    <QRCode data={connectorURI} size={280} />
                   </div>{" "}
                 </>
               )}
