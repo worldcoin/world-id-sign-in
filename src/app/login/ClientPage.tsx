@@ -20,6 +20,7 @@ type Meta = {
   verified_app_logo: string;
 };
 
+// TODO: Move to SSR, use request on /authorize call
 const fetchMeta = async (client_id: string) => {
   return fetch(`https://developer.worldcoin.org/api/v1/precheck/${client_id}`, {
     method: "POST",
@@ -116,7 +117,6 @@ const IDKitQR: FC<Props> = ({
         className="md:hidden"
         headerShown={
           ![
-            // REVIEW: Is AwaitingVerification === WaitingForApp ?
             VerificationState.WaitingForApp,
             VerificationState.PreparingClient,
             VerificationState.Confirmed,
@@ -132,7 +132,6 @@ const IDKitQR: FC<Props> = ({
           meta={app_data}
           headerShown={
             ![
-              // REVIEW: Is AwaitingVerification === WaitingForApp ?
               VerificationState.WaitingForApp,
               VerificationState.PreparingClient,
               VerificationState.Confirmed,
@@ -150,7 +149,6 @@ const IDKitQR: FC<Props> = ({
         />
       </div>
       {![
-        // REVIEW: Is AwaitingVerification === WaitingForApp ?
         VerificationState.WaitingForApp,
         VerificationState.PreparingClient,
         VerificationState.Confirmed,

@@ -73,8 +73,19 @@ const IDKitBridge = ({
     verificationState,
   ]);
 
+  const stopInterval = useCallback(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  }, [intervalId]);
+
   useEffect(() => {
-    if (verificationState === VerificationState.WaitingForApp && intervalId) {
+    if (
+      [VerificationState.Failed, VerificationState.Confirmed].includes(
+        verificationState
+      ) &&
+      intervalId
+    ) {
       clearInterval(intervalId);
     }
   }, [verificationState, intervalId]);
@@ -85,24 +96,33 @@ const IDKitBridge = ({
     if (verificationState === VerificationState.Failed) {
       console.error("Sign in with Worldcoin failed.", errorCode);
       reset();
+      stopInterval();
     }
 
     if (verificationState === VerificationState.Confirmed && result) {
       onSuccess(result);
+      stopInterval();
     }
-  }, [verificationState, reset, setStage, onSuccess, result, errorCode]);
+  }, [
+    verificationState,
+    reset,
+    setStage,
+    onSuccess,
+    result,
+    errorCode,
+    stopInterval,
+  ]);
 
   useEffect(() => {
     const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
 
     if (isMobile && connectorURI) {
-      setTimeout(
-        () => window.open(connectorURI, "_blank", "noopener,noreferrer"),
-        1000 // Wait for WalletConnect session to be established
-      );
+      window.open(connectorURI, "_blank", "noopener,noreferrer");
     }
 
-    if (connectorURI) setDeeplink(connectorURI);
+    if (connectorURI) {
+      setDeeplink(connectorURI);
+    }
   }, [connectorURI, setDeeplink]);
 
   const isStaging = /^app_staging_/.test(client_id); // naively check if staging app to enable click-to-copy QR code
@@ -222,7 +242,6 @@ const IDKitBridge = ({
             </>
           )}
 
-          {/* REVIEW: Is AwaitingVerification === WaitingForApp ? */}
           {verificationState === VerificationState.WaitingForApp && (
             <>
               <h1 className="font-medium text-3xl mt-12">

@@ -22,13 +22,11 @@ const generateCsp = () => {
       values: [
         "'self'",
         "https://app.posthog.com",
-        "https://docs.worldcoin.org/",
-        "wss://www.walletlink.org/rpc",
+        "https://docs.worldcoin.org",
         "https://status.worldcoin.org",
         "https://developer.worldcoin.org",
         "https://rum.browser-intake-datadoghq.com",
         "https://bridge.worldcoin.org",
-        "https://wallet-bridge.stage-crypto.worldcoin.org",
       ],
     },
     {
