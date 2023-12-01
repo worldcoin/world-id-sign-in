@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import "@/styles/globals.css";
 import { Metadata } from "next";
-import DataDog from "./Providers/DataDog";
-import PostHog from "./Providers/Posthog";
+import { PostHog } from "@/providers/posthog";
 import { FC, PropsWithChildren } from "react";
 import { IBM_Plex_Mono, Rubik, Sora } from "next/font/google";
 
@@ -74,7 +73,6 @@ const BaseLayout: FC<PropsWithChildren<{}>> = ({ children }) => (
     >
       {children}
       <PostHog />
-      <DataDog />
     </body>
   </html>
 );

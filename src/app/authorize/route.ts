@@ -1,12 +1,7 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import {
-  OIDCResponseMode,
-  OIDCResponseType,
-  ValidationMessage,
-  OIDCFlowType,
-} from "@/types";
+import { ValidationMessage, OIDCFlowType } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
