@@ -4,7 +4,17 @@ import { useEffect } from "react";
 import { posthog } from "posthog-js";
 import { usePostHog } from "@/hooks/usePostHog";
 
-const PostHog = () => {
+const allowedSearchParameters = [
+  "code",
+  "detail",
+  "error_description",
+  "client_id",
+  "response_type",
+  "response_mode",
+  "scope",
+];
+
+export const PostHog = () => {
   usePostHog();
 
   useEffect(() => {
@@ -18,11 +28,10 @@ const PostHog = () => {
         if (props?.$current_url) {
           try {
             const currentUrl = new URL(props.$current_url);
-            if (currentUrl.searchParams.get("nonce")) {
-              currentUrl.searchParams.set("nonce", "redacted");
-            }
-            if (currentUrl.searchParams.get("state")) {
-              currentUrl.searchParams.set("state", "redacted");
+            for (const param of Object.keys(currentUrl.searchParams)) {
+              if (!allowedSearchParameters.includes(param)) {
+                currentUrl.searchParams.set(param, "redacted");
+              }
             }
             props.$current_url = currentUrl.toString();
           } catch {}
@@ -34,5 +43,3 @@ const PostHog = () => {
 
   return null;
 };
-
-export default PostHog;

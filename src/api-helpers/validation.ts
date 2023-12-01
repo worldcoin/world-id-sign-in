@@ -1,3 +1,4 @@
+import "server-only";
 import { OIDCResponseMode, OIDCResponseType } from "@/types";
 import * as yup from "yup";
 
