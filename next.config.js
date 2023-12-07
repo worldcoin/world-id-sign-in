@@ -3,7 +3,6 @@ const OIDC_ROUTES = [
   "/token",
   "/userinfo",
   "/introspect",
-  "/register",
   "/.well-known/openid-configuration",
   "/jwks.json",
 ];
