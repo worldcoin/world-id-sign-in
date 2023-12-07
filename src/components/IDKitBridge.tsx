@@ -44,14 +44,14 @@ const IDKitBridge = ({
       return;
     }
 
-    createClient(
-      client_id,
-      "",
-      nonce,
+    createClient({
+      app_id: client_id,
+      action: "",
+      signal: nonce,
       bridge_url,
-      [CredentialType.Orb, CredentialType.Device],
-      "Sign in with Worldcoin"
-    )
+      credential_types: [CredentialType.Orb, CredentialType.Device],
+      action_description: "Sign in with Worldcoin",
+    })
       .then(() => {
         const intervalId = setInterval(() => {
           pollForUpdates().catch((error) => {
