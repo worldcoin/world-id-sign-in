@@ -128,7 +128,7 @@ const IDKitQR: FC<Props> = ({
       <div className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative">
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
           <IconWorldcoin className="w-4 h-4" />
-          <p className="text-sm font-rubik">Sign in with Worldcoin</p>
+          <p className="text-sm font-rubik">Sign in with World ID</p>
         </div>
         <Header
           meta={app_data}
