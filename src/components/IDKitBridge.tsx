@@ -50,7 +50,7 @@ const IDKitBridge = ({
       action: "",
       signal: nonce,
       bridge_url,
-      verification_level: VerificationLevel.Lite,
+      verification_level: VerificationLevel.Device,
       action_description: "Sign in with Worldcoin",
     })
       .then(() => {
