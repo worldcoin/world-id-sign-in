@@ -7,8 +7,9 @@ import { QRCode } from "@worldcoin/idkit/internal";
 import {
   VerificationState,
   ISuccessResult,
-  CredentialType,
   useWorldBridgeStore,
+  IDKitConfig,
+  VerificationLevel,
 } from "@worldcoin/idkit-core";
 
 interface IIDKitBridge {
@@ -45,11 +46,11 @@ const IDKitBridge = ({
     }
 
     createClient({
-      app_id: client_id,
+      app_id: client_id as IDKitConfig["app_id"],
       action: "",
       signal: nonce,
       bridge_url,
-      credential_types: [CredentialType.Orb, CredentialType.Device],
+      verification_level: VerificationLevel.Lite,
       action_description: "Sign in with Worldcoin",
     })
       .then(() => {
