@@ -30,7 +30,7 @@ const IDKitBridge = ({
       "",
       nonce,
       [CredentialType.Orb, CredentialType.Phone],
-      "Sign in with Worldcoin",
+      "Sign in with World ID",
       "4e15bfc7b9842886c4e49d8f8ef04cf1"
     );
 
@@ -38,7 +38,7 @@ const IDKitBridge = ({
     setStage(verificationState);
 
     if (verificationState === IDKitInternal.VerificationState.Failed) {
-      console.error("Sign in with Worldcoin failed.", errorCode);
+      console.error("Sign in with World ID failed.", errorCode);
       reset();
     }
 
