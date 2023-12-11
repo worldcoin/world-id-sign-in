@@ -1,5 +1,5 @@
 /**
- * Authenticates a user to Sign in with Worldcoin using a World ID ZKP.
+ * Authenticates a user to Sign in with World ID using a World ID ZKP.
  */
 import "server-only";
 import * as yup from "yup";

@@ -98,7 +98,7 @@ const IDKitBridge = ({
     setStage(verificationState);
 
     if (verificationState === VerificationState.Failed) {
-      console.error("Sign in with Worldcoin failed.", errorCode);
+      console.error("Sign in with World ID failed.", errorCode);
       reset();
       stopInterval();
     }
