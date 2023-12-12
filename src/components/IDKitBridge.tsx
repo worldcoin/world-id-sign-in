@@ -211,14 +211,14 @@ const IDKitBridge = ({
                         </m.div>
                       )}
                     </AnimatePresence>
-                  </LazyMotion>{" "}
+                  </LazyMotion>
                 </>
               ) : (
                 <>
                   {/* .qr-code className used for remote synthetic tests */}
                   <div className="hidden md:block qr-code">
                     <QRCode data={connectorURI} size={280} />
-                  </div>{" "}
+                  </div>
                 </>
               )}
 
