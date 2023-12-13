@@ -1,13 +1,16 @@
 import { Spinner } from "./Spinner";
 import { memo, useCallback, useEffect, useState } from "react";
-import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
-import {
-  ISuccessResult,
-  CredentialType,
-  internal as IDKitInternal,
-} from "@worldcoin/idkit";
 import copy from "copy-to-clipboard";
 import { AnimatePresence, LazyMotion, m } from "framer-motion";
+import { QRCode } from "@worldcoin/idkit/internal";
+
+import {
+  VerificationState,
+  ISuccessResult,
+  useWorldBridgeStore,
+  IDKitConfig,
+  VerificationLevel,
+} from "@worldcoin/idkit-core";
 
 interface IIDKitBridge {
   nonce: string;
@@ -24,64 +27,128 @@ const IDKitBridge = ({
   onSuccess,
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
-  const { reset, qrData, result, errorCode, verificationState } =
-    IDKitInternal.useAppConnection(
-      client_id,
-      "",
-      nonce,
-      [CredentialType.Orb, CredentialType.Phone],
-      "Sign in with World ID",
-      "4e15bfc7b9842886c4e49d8f8ef04cf1"
-    );
+  const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
+
+  const {
+    createClient,
+    connectorURI,
+    bridge_url,
+    result,
+    errorCode,
+    verificationState,
+    reset,
+    pollForUpdates,
+  } = useWorldBridgeStore();
+
+  useEffect(() => {
+    if (verificationState !== VerificationState.PreparingClient) {
+      return;
+    }
+
+    createClient({
+      app_id: client_id as IDKitConfig["app_id"],
+      action: "",
+      signal: nonce,
+      bridge_url,
+      verification_level: VerificationLevel.Device,
+      action_description: "Sign in with Worldcoin",
+    })
+      .then(() => {
+        const intervalId = setInterval(() => {
+          pollForUpdates().catch((error) => {
+            console.error(error);
+            setIntervalId(null);
+            clearInterval(intervalId);
+          });
+        }, 3000);
+
+        setIntervalId(intervalId);
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === "development") {
+          console.error(error);
+        }
+      });
+  }, [
+    bridge_url,
+    client_id,
+    createClient,
+    nonce,
+    pollForUpdates,
+    verificationState,
+  ]);
+
+  const stopInterval = useCallback(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  }, [intervalId]);
+
+  useEffect(() => {
+    if (
+      [VerificationState.Failed, VerificationState.Confirmed].includes(
+        verificationState
+      ) &&
+      intervalId
+    ) {
+      clearInterval(intervalId);
+    }
+  }, [verificationState, intervalId]);
 
   useEffect(() => {
     setStage(verificationState);
 
-    if (verificationState === IDKitInternal.VerificationState.Failed) {
+    if (verificationState === VerificationState.Failed) {
       console.error("Sign in with World ID failed.", errorCode);
       reset();
+      stopInterval();
     }
 
-    if (
-      verificationState === IDKitInternal.VerificationState.Confirmed &&
-      result
-    ) {
+    if (verificationState === VerificationState.Confirmed && result) {
       onSuccess(result);
+      stopInterval();
     }
-  }, [verificationState, reset, setStage, onSuccess, result, errorCode]);
+  }, [
+    verificationState,
+    reset,
+    setStage,
+    onSuccess,
+    result,
+    errorCode,
+    stopInterval,
+  ]);
 
   useEffect(() => {
     const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
-    if (isMobile && qrData?.mobile) {
-      setTimeout(
-        () => window.open(qrData.mobile, "_blank", "noopener,noreferrer"),
-        1000 // Wait for WalletConnect session to be established
-      );
+
+    if (isMobile && connectorURI) {
+      window.open(connectorURI, "_blank", "noopener,noreferrer");
     }
 
-    if (qrData?.mobile) setDeeplink(qrData.mobile);
-  }, [qrData, setDeeplink]);
+    if (connectorURI) {
+      setDeeplink(connectorURI);
+    }
+  }, [connectorURI, setDeeplink]);
 
   const isStaging = /^app_staging_/.test(client_id); // naively check if staging app to enable click-to-copy QR code
-
   const [copiedLink, setCopiedLink] = useState(false);
-  const copyLink = useCallback(() => {
-    if (isStaging && qrData?.default) {
-      // only copy if staging app and qrData is available
-      copy(qrData?.default);
 
+  const copyLink = useCallback(() => {
+    if (isStaging && connectorURI) {
+      // only copy if staging app and qrData is available
+      copy(connectorURI);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     }
-  }, [qrData, isStaging]);
+  }, [connectorURI, isStaging]);
 
   return (
     <div className="md:mt-8">
-      {verificationState ===
-        IDKitInternal.VerificationState.AwaitingConnection && (
+      {verificationState === VerificationState.WaitingForConnection && (
         <>
-          {!qrData?.default && !qrData?.mobile && <Spinner />}
-          {qrData?.default && (
+          {!connectorURI && <Spinner />}
+
+          {connectorURI && (
             <>
               {isStaging ? (
                 <>
@@ -90,7 +157,7 @@ const IDKitBridge = ({
                     className="hidden md:block qr-code cursor-pointer"
                     onClick={copyLink}
                   >
-                    <IDKitInternal.QRCode data={qrData?.default} size={280} />
+                    <QRCode data={connectorURI} size={280} />
                   </div>
                   <LazyMotion
                     // only load framer if displaying QR code for mobile performance
@@ -144,18 +211,20 @@ const IDKitBridge = ({
                         </m.div>
                       )}
                     </AnimatePresence>
-                  </LazyMotion>{" "}
+                  </LazyMotion>
                 </>
               ) : (
                 <>
                   {/* .qr-code className used for remote synthetic tests */}
                   <div className="hidden md:block qr-code">
-                    <IDKitInternal.QRCode data={qrData?.default} size={280} />
-                  </div>{" "}
+                    <QRCode data={connectorURI} size={280} />
+                  </div>
                 </>
               )}
+
               <div className="md:hidden mt-10 md:mt-0">
                 <Spinner />
+
                 <div className="text-text-muted pt-4">
                   Wait a few seconds, automatically opening World App
                 </div>
@@ -164,12 +233,12 @@ const IDKitBridge = ({
           )}
         </>
       )}
-      {verificationState !==
-        IDKitInternal.VerificationState.AwaitingConnection && (
+
+      {verificationState !== VerificationState.WaitingForConnection && (
         <>
           <Spinner />
-          {verificationState ===
-            IDKitInternal.VerificationState.LoadingWidget && (
+
+          {verificationState === VerificationState.PreparingClient && (
             <>
               <h1 className="font-medium text-3xl mt-12">Loading...</h1>
               <div className="text-text-muted text-xl mt-2">
@@ -177,8 +246,8 @@ const IDKitBridge = ({
               </div>
             </>
           )}
-          {verificationState ===
-            IDKitInternal.VerificationState.AwaitingVerification && (
+
+          {verificationState === VerificationState.WaitingForApp && (
             <>
               <h1 className="font-medium text-3xl mt-12">
                 Confirm in World App
@@ -188,7 +257,8 @@ const IDKitBridge = ({
               </div>
             </>
           )}
-          {verificationState === IDKitInternal.VerificationState.Confirmed && (
+
+          {verificationState === VerificationState.Confirmed && (
             <>
               <h1 className="font-medium text-3xl mt-12">Identity Confirmed</h1>
               <div className="text-text-muted text-xl mt-2">
