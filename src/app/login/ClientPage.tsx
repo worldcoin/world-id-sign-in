@@ -3,17 +3,16 @@
 import useSWR from "swr";
 import Balancer from "react-wrap-balancer";
 import { FC, useCallback, useState } from "react";
-import { ISuccessResult, internal } from "@worldcoin/idkit";
+import { VerificationState, ISuccessResult } from "@worldcoin/idkit-core";
 import IDKitBridge from "@/components/IDKitBridge";
-import { internal as IDKitInternal } from "@worldcoin/idkit";
+import Image from "next/image";
+
 import {
   IconArrowRight,
   IconBadge,
   IconBadgeX,
   IconWorldcoin,
 } from "@/components/icons";
-import { VerificationState } from "@worldcoin/idkit/build/src/types/app";
-import Image from "next/image";
 
 type Meta = {
   name: string;
@@ -21,6 +20,7 @@ type Meta = {
   verified_app_logo: string;
 };
 
+// TODO: Move to SSR, use request on /authorize call
 const fetchMeta = async (client_id: string) => {
   return fetch(`https://developer.worldcoin.org/api/v1/precheck/${client_id}`, {
     method: "POST",
@@ -29,8 +29,6 @@ const fetchMeta = async (client_id: string) => {
     },
     body: JSON.stringify({
       action: "",
-      external_nullifier: internal.generateExternalNullifier(client_id, "")
-        .digest,
     }),
   }).then((res) => res.json());
 };
@@ -61,7 +59,7 @@ const IDKitQR: FC<Props> = ({
   const { data: app_data } = useSWR<Meta>(client_id, fetchMeta);
   const [deeplink, setDeeplink] = useState("");
   const [wcStage, setWCStage] = useState<VerificationState>(
-    IDKitInternal.VerificationState.LoadingWidget
+    VerificationState.PreparingClient
   );
 
   const handleIDKitSuccess = useCallback(
@@ -119,9 +117,9 @@ const IDKitQR: FC<Props> = ({
         className="md:hidden"
         headerShown={
           ![
-            IDKitInternal.VerificationState.AwaitingVerification,
-            IDKitInternal.VerificationState.LoadingWidget,
-            IDKitInternal.VerificationState.Confirmed,
+            VerificationState.WaitingForApp,
+            VerificationState.PreparingClient,
+            VerificationState.Confirmed,
           ].includes(wcStage)
         }
       />
@@ -134,9 +132,9 @@ const IDKitQR: FC<Props> = ({
           meta={app_data}
           headerShown={
             ![
-              IDKitInternal.VerificationState.AwaitingVerification,
-              IDKitInternal.VerificationState.LoadingWidget,
-              IDKitInternal.VerificationState.Confirmed,
+              VerificationState.WaitingForApp,
+              VerificationState.PreparingClient,
+              VerificationState.Confirmed,
             ].includes(wcStage)
           }
           className="hidden md:block"
@@ -151,9 +149,9 @@ const IDKitQR: FC<Props> = ({
         />
       </div>
       {![
-        IDKitInternal.VerificationState.AwaitingVerification,
-        IDKitInternal.VerificationState.LoadingWidget,
-        IDKitInternal.VerificationState.Confirmed,
+        VerificationState.WaitingForApp,
+        VerificationState.PreparingClient,
+        VerificationState.Confirmed,
       ].includes(wcStage) && (
         <>
           <div className="text-center text-gray-400 mt-2">or</div>

@@ -5,7 +5,6 @@ const generateCsp = () => {
 
   const csp = [
     { name: "default-src", values: ["'self'"] },
-    { name: "frame-src", values: ["https://verify.walletconnect.com/"] },
     {
       name: "script-src",
       values: ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"],
@@ -23,13 +22,11 @@ const generateCsp = () => {
       values: [
         "'self'",
         "https://app.posthog.com",
-        "https://docs.worldcoin.org/",
-        "wss://www.walletlink.org/rpc",
+        "https://docs.worldcoin.org",
         "https://status.worldcoin.org",
-        "wss://relay.walletconnect.com",
         "https://developer.worldcoin.org",
-        "wss://*.bridge.walletconnect.org",
         "https://rum.browser-intake-datadoghq.com",
+        "https://bridge.worldcoin.org",
       ],
     },
     {

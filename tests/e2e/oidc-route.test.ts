@@ -71,6 +71,9 @@ describe("e2e OIDC tests", () => {
         likely_human: "strong",
         credential_type: "orb",
       },
+      "https://id.worldcoin.org/v1": {
+        verification_level: "orb",
+      },
     });
   });
 
