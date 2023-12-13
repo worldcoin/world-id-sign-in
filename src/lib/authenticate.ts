@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { ValidationMessage } from "@/types";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { VerificationLevel } from "@worldcoin/idkit-core";
+import { CredentialType, VerificationLevel } from "@worldcoin/idkit-core";
 
 export const authenticateSchema = yup.object({
   proof: yup.string().required(ValidationMessage.Required),
@@ -15,7 +15,15 @@ export const authenticateSchema = yup.object({
   verification_level: yup
     .string()
     .oneOf(Object.values(VerificationLevel))
-    .required(ValidationMessage.Required),
+    .when("credential_type", {
+      is: undefined,
+      then: (verification_level) =>
+        verification_level.required(
+          "`verification_level` required unless deprecated `credential_type` is used."
+        ),
+    }),
+  // TODO: Remove in favor of verification_level once it's supported in all app versions
+  credential_type: yup.string().oneOf(Object.values(CredentialType)),
   client_id: yup.string().required(ValidationMessage.Required),
   nonce: yup.string().required(ValidationMessage.Required), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
   scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
@@ -45,7 +53,6 @@ export const authenticate = async (
   const {
     state,
     response_type,
-    response_mode,
     client_id,
     redirect_uri,
     nonce,
@@ -54,6 +61,7 @@ export const authenticate = async (
     merkle_root,
     nullifier_hash,
     verification_level,
+    credential_type,
     code_challenge,
     code_challenge_method,
   } = params;
@@ -70,7 +78,7 @@ export const authenticate = async (
       signal: nonce,
       nullifier_hash,
       code_challenge,
-      verification_level,
+      verification_level: verification_level ?? credential_type,
       app_id: client_id,
       code_challenge_method,
     }),
