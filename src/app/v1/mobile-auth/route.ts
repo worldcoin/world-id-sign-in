@@ -42,7 +42,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
 
   if (parsedParams.response_mode === OIDCResponseMode.Query) {
     redirect_uri.search = result.url_params.toString();
-  } else if (parsedParams.response_mode === OIDCResponseMode.Fragment) {
+  } else {
     redirect_uri.hash = result.url_params.toString();
   }
 
