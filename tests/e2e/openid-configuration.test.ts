@@ -3,9 +3,12 @@ import { NextRequest } from "next/server";
 
 describe("/.well-known/openid-configuration", () => {
   test("can fetch params", async () => {
-    const req = new NextRequest("http://localhost/authenticate", {
-      method: "GET",
-    });
+    const req = new NextRequest(
+      "http://localhost/.well-known/openid-configuration",
+      {
+        method: "GET",
+      }
+    );
     const response = await GET(req);
     expect(response.status).toBe(200);
 
