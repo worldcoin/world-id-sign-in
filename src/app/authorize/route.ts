@@ -1,17 +1,11 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
-import { ValidationMessage, OIDCFlowType } from "@/types";
+import { ValidationMessage, OIDCFlowType, OIDCScope } from "@/types";
 import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";
-
-enum OIDCScope {
-  OpenID = "openid",
-  Profile = "profile",
-  Email = "email",
-}
 
 const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
 

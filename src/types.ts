@@ -30,3 +30,9 @@ export enum OIDCFlowType {
   Hybrid = "hybrid",
   Token = "token",
 }
+
+export enum OIDCScope {
+  OpenID = "openid",
+  Profile = "profile",
+  Email = "email",
+}
