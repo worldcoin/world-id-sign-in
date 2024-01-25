@@ -25,7 +25,6 @@ const generateCsp = () => {
         "https://docs.worldcoin.org",
         "https://status.worldcoin.org",
         "https://developer.worldcoin.org",
-        "https://rum.browser-intake-datadoghq.com",
         "https://bridge.worldcoin.org",
       ],
     },
