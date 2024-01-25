@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "NODE_OPTIONS='-r next-logger -r ./datadog' next start",
+    "start": "NODE_OPTIONS='-r next-logger' next start",
     "lint": "next lint",
     "format": "prettier -w ./",
     "format:check": "prettier --check ./",
@@ -16,13 +16,11 @@
     "node": ">=18.16.0"
   },
   "dependencies": {
-    "@datadog/browser-rum": "^4.36.0",
     "@types/node": "18.14.0",
     "@worldcoin/idkit": "^1.1.1",
     "@worldcoin/idkit-core": "^1.1.1",
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.3",
-    "dd-trace": "^3.15.0",
     "eslint": "8.34.0",
     "eslint-config-next": "14.0.1",
     "framer-motion": "^10.16.4",
