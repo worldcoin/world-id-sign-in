@@ -35,10 +35,7 @@ WORKDIR /app
 
 # Install next-logger to log to JSON
 # TODO: Optimize for image size
-RUN corepack enable pnpm && pnpm i next-logger
-
-ENV NODE_OPTIONS='-r next-logger'
-ENV NODE_ENV production
+RUN corepack enable pnpm && pnpm i next-logger dd-trace
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -54,6 +51,9 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+
+ENV NODE_OPTIONS='-r next-logger -r dd-trace/init'
+ENV NODE_ENV production
 
 # Final config
 USER nextjs
