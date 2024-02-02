@@ -20,7 +20,7 @@ describe("e2e OIDC tests", () => {
       body: formData,
     });
     const authenticateResponse = await POST(authenticateReq);
-    expect(authenticateResponse.status).toBe(302);
+    expect(authenticateResponse.status).toBe(303);
 
     const redirectUrl = new URL(authenticateResponse.headers.get("location")!);
     console.log(redirectUrl);
@@ -93,7 +93,7 @@ describe("e2e OIDC tests", () => {
       body: formData,
     });
     const authenticateResponse = await POST(authenticateReq);
-    expect(authenticateResponse.status).toBe(302);
+    expect(authenticateResponse.status).toBe(303);
 
     const redirectUrl = new URL(authenticateReq.headers.get("location")!);
     const code = redirectUrl.searchParams.get("code");

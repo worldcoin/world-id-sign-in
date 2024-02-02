@@ -6,6 +6,7 @@ import { errorValidationClient } from "@/api-helpers/errors";
 import * as yup from "yup";
 import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";
+import { internalRedirect } from "@/lib/utils";
 
 enum OIDCScope {
   OpenID = "openid",
@@ -190,11 +191,5 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     params.append("code_challenge_method", code_challenge_method.toString());
   }
 
-  return NextResponse.redirect(
-    new URL(
-      `${process.env.NEXT_PUBLIC_URL}/login?${params.toString()}`,
-      req.url
-    ),
-    { status: 302 }
-  );
+  return internalRedirect(`/login?${params.toString()}`, req.url);
 };

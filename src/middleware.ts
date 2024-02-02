@@ -11,7 +11,7 @@ const generateCsp = () => {
     },
     {
       name: "font-src",
-      values: ["'self'", "https://world-id-public.s3.amazonaws.com"],
+      values: ["'self'", "https://world-id-assets.com"],
     },
     {
       name: "style-src",
@@ -33,7 +33,7 @@ const generateCsp = () => {
       values: [
         "'self'",
         "https://worldcoin.org",
-        "https://world-id-public.s3.amazonaws.com",
+        "https://world-id-assets.com",
       ],
     },
   ];

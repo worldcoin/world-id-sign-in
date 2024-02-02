@@ -102,7 +102,7 @@ describe("/authorize response_types and response_modes", () => {
             /<input type="hidden" name=".+?" value=".+?" \/>/
           );
         } else {
-          expect(response.status).toEqual(302);
+          expect(response.status).toEqual(303);
           const redirectUrl = new URL(response.headers.get("location")!);
           const expectedKeys = testCase.responseType.split(" ");
           const urlParams = new URLSearchParams(redirectUrl.search);
@@ -141,7 +141,7 @@ describe("/authorize PKCE mode", () => {
 
     const response = await testAuthenticate(params);
 
-    expect(response.status).toEqual(302);
+    expect(response.status).toEqual(303);
     const redirectUrl = new URL(response.headers.get("location")!);
     expect(redirectUrl.searchParams.get("code_challenge_method")).toBeNull();
     expect(redirectUrl.searchParams.get("code_challenge")).toBeNull();

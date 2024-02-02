@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseMode } from "@/types";
 import { authenticate, authenticateSchema } from "@/lib/authenticate";
+import { internalRedirect } from "@/lib/utils";
 
 /**
  * Receives the ZKP from the frontend, verifies with Developer Portal and redirects the user.
@@ -29,13 +30,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       code: result.code,
       detail: result.detail,
     });
-    return NextResponse.redirect(
-      new URL(
-        `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
-        req.url
-      ),
-      { status: 302 }
-    );
+    return internalRedirect(`/error?${errorParams.toString()}`, req.url);
   }
 
   const url = new URL(result.redirect_uri);
@@ -74,5 +69,5 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     });
   }
 
-  return NextResponse.redirect(url, { status: 302 });
+  return NextResponse.redirect(url, { status: 303 });
 };
