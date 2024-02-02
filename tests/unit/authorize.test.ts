@@ -85,8 +85,8 @@ describe("/authorize response_types and response_modes", () => {
           ...params,
         });
 
-        // Check if status is 302 Found (redirection)
-        expect(response.status).toBe(302);
+        // Check if status is 303 See Other (redirection)
+        expect(response.status).toBe(303);
         const redirectUrl = new URL(response.headers.get("location")!);
         expect(redirectUrl.pathname).toEqual("/login");
 
@@ -126,9 +126,9 @@ describe("/authorize response_types and response_modes", () => {
         ...params,
       });
 
-      // Check if status is 302 Found (redirection)
+      // Check if status is 303 See Other (redirection)
       // NOTE: Errors are rendered to the user in the /error page
-      expect(response.status).toBe(302);
+      expect(response.status).toBe(303);
       const redirectUrl = new URL(response.headers.get("location")!);
       expect(redirectUrl.pathname).toEqual("/error");
       expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
@@ -160,7 +160,7 @@ describe("/authorize nonce", () => {
         ...params,
       });
 
-      expect(response.status).toBe(302);
+      expect(response.status).toBe(303);
       const redirectUrl = new URL(response.headers.get("location")!);
       expect(redirectUrl.pathname).toEqual("/login");
 
@@ -191,7 +191,7 @@ describe("/authorize nonce", () => {
         ...params,
       });
 
-      expect(response.status).toBe(302);
+      expect(response.status).toBe(303);
       const redirectUrl = new URL(response.headers.get("location")!);
       expect(redirectUrl.pathname).toEqual("/error");
 
@@ -222,7 +222,7 @@ describe("/authorize nonce", () => {
         ...params,
       });
 
-      expect(response.status).toBe(302);
+      expect(response.status).toBe(303);
       const redirectUrl = new URL(response.headers.get("location")!);
       expect(redirectUrl.pathname).toEqual("/login");
 
@@ -250,7 +250,7 @@ describe("/authorize default response_modes", () => {
 
     const response = await testAuthorize(params);
 
-    expect(response.status).toEqual(302);
+    expect(response.status).toEqual(303);
     const redirectUrl = new URL(response.headers.get("location")!);
     expect(redirectUrl.pathname).toEqual("/login");
     expect(redirectUrl.searchParams.get("response_mode")).toEqual("query");
@@ -276,7 +276,7 @@ describe("/authorize default response_modes", () => {
 
       const response = await testAuthorize(params);
 
-      expect(response.status).toEqual(302);
+      expect(response.status).toEqual(303);
       const redirectUrl = new URL(response.headers.get("location")!);
       expect(redirectUrl.pathname).toEqual("/login");
       expect(redirectUrl.searchParams.get("response_mode")).toEqual("fragment");
@@ -295,7 +295,7 @@ describe("/authorize PKCE params", () => {
 
     const response = await testAuthorize(params);
 
-    expect(response.status).toEqual(302);
+    expect(response.status).toEqual(303);
     const redirectUrl = new URL(response.headers.get("location")!);
     expect(redirectUrl.pathname).toEqual("/error");
     expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
@@ -313,7 +313,7 @@ describe("/authorize PKCE params", () => {
 
     const response = await testAuthorize(params);
 
-    expect(response.status).toEqual(302);
+    expect(response.status).toEqual(303);
     const redirectUrl = new URL(response.headers.get("location")!);
     expect(redirectUrl.pathname).toEqual("/error");
     expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
@@ -331,7 +331,7 @@ describe("/authorize PKCE params", () => {
 
     const response = await testAuthorize(params);
 
-    expect(response.status).toEqual(302);
+    expect(response.status).toEqual(303);
     const redirectUrl = new URL(response.headers.get("location")!);
     expect(redirectUrl.pathname).toEqual("/error");
     expect(redirectUrl.searchParams.get("code")).toEqual("invalid_request");
