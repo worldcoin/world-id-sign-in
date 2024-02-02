@@ -9,6 +9,7 @@ const OIDC_ROUTES = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push({
