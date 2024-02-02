@@ -42,15 +42,17 @@ const ErrorPage = ({
     errorState = ErrorState.UserError;
   }
 
-  const retryLink = `/login?${new URLSearchParams({
-    client_id,
-    response_type,
-    redirect_uri,
-    scope,
-    state,
-    nonce,
-    ready,
-  } as Record<string, string>)}`;
+  const retryLink = `${process.env.NEXT_PUBLIC_URL}/login?${new URLSearchParams(
+    {
+      client_id,
+      response_type,
+      redirect_uri,
+      scope,
+      state,
+      nonce,
+      ready,
+    } as Record<string, string>
+  )}`;
 
   return (
     <div className="flex justify-center items-center w-full h-full px-6">

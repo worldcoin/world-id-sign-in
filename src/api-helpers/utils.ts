@@ -66,7 +66,10 @@ export const validateRequestSchema = async <T extends yup.Schema>({
       return {
         isValid: false,
         errorResponse: NextResponse.redirect(
-          new URL(`/error?${errorParams.toString()}`, req.url),
+          new URL(
+            `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
+            req.url
+          ),
           { status: 302 }
         ),
         error: { code, detail: error.message, attr: error.path || undefined },
@@ -85,7 +88,10 @@ export const validateRequestSchema = async <T extends yup.Schema>({
     return {
       isValid: false,
       errorResponse: NextResponse.redirect(
-        new URL(`/error?${errorParams.toString()}`, req.url),
+        new URL(
+          `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
+          req.url
+        ),
         { status: 302 }
       ),
       error: { code, detail },

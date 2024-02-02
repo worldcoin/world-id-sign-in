@@ -57,7 +57,10 @@ export function errorValidationClient(
   }
 
   return NextResponse.redirect(
-    new URL(`/error?${params.toString()}`, baseUrl),
+    new URL(
+      `${process.env.NEXT_PUBLIC_URL}/error?${params.toString()}`,
+      baseUrl
+    ),
     { status: 302 }
   );
 }

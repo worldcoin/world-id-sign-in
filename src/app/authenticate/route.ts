@@ -30,7 +30,10 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       detail: result.detail,
     });
     return NextResponse.redirect(
-      new URL(`/error?${errorParams.toString()}`, req.url),
+      new URL(
+        `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
+        req.url
+      ),
       { status: 302 }
     );
   }

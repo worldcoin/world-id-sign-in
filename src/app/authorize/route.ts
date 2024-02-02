@@ -191,7 +191,10 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   }
 
   return NextResponse.redirect(
-    new URL(`/login?${params.toString()}`, req.url),
+    new URL(
+      `${process.env.NEXT_PUBLIC_URL}/login?${params.toString()}`,
+      req.url
+    ),
     { status: 302 }
   );
 };
