@@ -1,5 +1,6 @@
 import "server-only";
 import { NextResponse } from "next/server";
+import { internalRedirect } from "@/lib/utils";
 
 export enum OIDCErrorCodes {
   ServerError = "server_error",
@@ -56,11 +57,5 @@ export function errorValidationClient(
     params.append("attribute", attribute);
   }
 
-  return NextResponse.redirect(
-    new URL(
-      `${process.env.NEXT_PUBLIC_URL}/error?${params.toString()}`,
-      baseUrl
-    ),
-    { status: 302 }
-  );
+  return internalRedirect(`/error?${params.toString()}`, baseUrl);
 }

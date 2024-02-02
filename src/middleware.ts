@@ -11,20 +11,11 @@ const generateCsp = () => {
     },
     {
       name: "font-src",
-      values: [
-        "'self'",
-        "https://world-id-public.s3.amazonaws.com",
-        "https://world-id-assets.com",
-      ],
+      values: ["'self'", "https://world-id-assets.com"],
     },
     {
       name: "style-src",
-      values: [
-        "'self'",
-        "'unsafe-inline'",
-        "fonts.googleapis.com",
-        "https://world-id-assets.com",
-      ],
+      values: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
     },
     {
       name: "connect-src",
@@ -42,7 +33,6 @@ const generateCsp = () => {
       values: [
         "'self'",
         "https://worldcoin.org",
-        "https://world-id-public.s3.amazonaws.com",
         "https://world-id-assets.com",
       ],
     },

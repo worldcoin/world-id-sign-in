@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as yup from "yup";
 import { OIDCErrorCodes } from "./errors";
 import { OIDCFlowType, OIDCResponseType } from "@/types";
+import { internalRedirect } from "@/lib/utils";
 
 type BodySource = "query" | "body" | "formData";
 
@@ -65,12 +66,9 @@ export const validateRequestSchema = async <T extends yup.Schema>({
 
       return {
         isValid: false,
-        errorResponse: NextResponse.redirect(
-          new URL(
-            `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
-            req.url
-          ),
-          { status: 302 }
+        errorResponse: internalRedirect(
+          `/error?${errorParams.toString()}`,
+          req.url
         ),
         error: { code, detail: error.message, attr: error.path || undefined },
       };
@@ -87,12 +85,9 @@ export const validateRequestSchema = async <T extends yup.Schema>({
     });
     return {
       isValid: false,
-      errorResponse: NextResponse.redirect(
-        new URL(
-          `${process.env.NEXT_PUBLIC_URL}/error?${errorParams.toString()}`,
-          req.url
-        ),
-        { status: 302 }
+      errorResponse: internalRedirect(
+        `/error?${errorParams.toString()}`,
+        req.url
       ),
       error: { code, detail },
     };
