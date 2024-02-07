@@ -16,6 +16,8 @@ const nextConfig = {
         "utf-8-validate": "utf-8-validate",
         bufferutil: "bufferutil",
       });
+      // NOTE: enables server-side source maps for debugging
+      config.devtool = "source-map";
     }
     return config;
   },
