@@ -4,7 +4,6 @@ import { DEVELOPER_PORTAL } from "@/consts";
 
 const SPECIAL_MAPPING: Record<string, string> = {
   "/jwks.json": "/api/v1/jwks",
-  "/.well-known/openid-configuration": "/api/v1/oidc/openid-configuration",
 };
 
 /// Routes OIDC requests to the Developer Portal

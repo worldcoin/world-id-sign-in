@@ -1,11 +1,5 @@
 // NOTE: /authorize endpoint is processed in this app, so there's no routing
-const OIDC_ROUTES = [
-  "/token",
-  "/userinfo",
-  "/introspect",
-  "/.well-known/openid-configuration",
-  "/jwks.json",
-];
+const OIDC_ROUTES = ["/token", "/userinfo", "/introspect", "/jwks.json"];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

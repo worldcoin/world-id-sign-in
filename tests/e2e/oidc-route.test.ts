@@ -130,19 +130,6 @@ describe("e2e OIDC tests", () => {
     );
   });
 
-  test("can fetch OIDC config", async () => {
-    const req = new NextRequest(
-      "http://localhost/.well-known/openid-configuration"
-    );
-
-    const authenticateResponse = await handlerOIDCRoute(req);
-    expect(authenticateResponse.status).toBe(200);
-
-    const json = await authenticateResponse.json();
-
-    expect(json.issuer).toEqual("https://id.worldcoin.org");
-  });
-
   test("can fetch JWKs", async () => {
     const req = new NextRequest("http://localhost/jwks.json");
 
