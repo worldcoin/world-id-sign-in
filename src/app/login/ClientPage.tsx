@@ -13,6 +13,7 @@ import {
   IconBadgeX,
   IconWorldcoin,
 } from "@/components/icons";
+import { DEVELOPER_PORTAL } from "@/consts";
 
 type Meta = {
   name: string;
@@ -22,7 +23,7 @@ type Meta = {
 
 // TODO: Move to SSR, use request on /authorize call
 const fetchMeta = async (client_id: string) => {
-  return fetch(`https://developer.worldcoin.org/api/v1/precheck/${client_id}`, {
+  return fetch(new URL(`/api/v1/precheck/${client_id}`, DEVELOPER_PORTAL), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
