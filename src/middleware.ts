@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { DEVELOPER_PORTAL } from "./consts";
 
 const generateCsp = () => {
   const nonce = crypto.randomUUID();
@@ -24,8 +25,8 @@ const generateCsp = () => {
         "https://app.posthog.com",
         "https://docs.worldcoin.org",
         "https://status.worldcoin.org",
-        "https://developer.worldcoin.org",
         "https://bridge.worldcoin.org",
+        DEVELOPER_PORTAL,
       ],
     },
     {
