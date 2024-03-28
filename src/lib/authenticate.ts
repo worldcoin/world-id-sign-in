@@ -26,7 +26,8 @@ export const authenticateSchema = yup.object({
   credential_type: yup.string().oneOf(Object.values(CredentialType)),
   client_id: yup.string().required(ValidationMessage.Required),
   nonce: yup.string().when("response_type", {
-    is: "code",
+    is: (response_type: string) =>
+      ["code", "code token"].includes(response_type),
     then: (nonce) => nonce.optional(),
     otherwise: (nonce) => nonce.required(ValidationMessage.Required),
   }),
