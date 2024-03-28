@@ -25,7 +25,11 @@ export const authenticateSchema = yup.object({
   // TODO: Remove in favor of verification_level once it's supported in all app versions
   credential_type: yup.string().oneOf(Object.values(CredentialType)),
   client_id: yup.string().required(ValidationMessage.Required),
-  nonce: yup.string().required(ValidationMessage.Required), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
+  nonce: yup.string().when("response_type", {
+    is: "code",
+    then: (nonce) => nonce.optional(),
+    otherwise: (nonce) => nonce.required(ValidationMessage.Required),
+  }),
   scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
   state: yup.string(),
   response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
