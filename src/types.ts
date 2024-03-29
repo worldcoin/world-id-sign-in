@@ -15,7 +15,7 @@ export interface IAuthorizeRequest {
   redirect_uri: string;
   response_type: string;
   response_mode?: OIDCResponseMode;
-  nonce: string;
+  nonce?: string;
   scope?: string;
   state?: string;
 }

@@ -164,13 +164,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     response_mode,
     client_id,
     redirect_uri,
-    nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
-    // TODO: should enforce one time use for nonces
+    scope,
     ready: "true", // for UX purposes, to avoid users getting to the login page without verifying their request
   });
 
-  if (scope) {
-    params.append("scope", scope.toString());
+  if (nonce) {
+    params.append("nonce", nonce.toString());
   }
 
   if (state) {
