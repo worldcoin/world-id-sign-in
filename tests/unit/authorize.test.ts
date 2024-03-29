@@ -9,7 +9,7 @@ import {
   IMPLICIT_RESPONSE_TYPES,
 } from "tests/__mocks__/authenticate.mock";
 
-import { OIDCResponseMode } from "@/types";
+import { OIDCResponseMode, OIDCResponseType } from "@/types";
 import { OIDCErrorCodes } from "@/api-helpers/errors";
 
 beforeAll(() => {
@@ -141,12 +141,17 @@ describe("/authorize response_types and response_modes", () => {
 });
 
 describe("/authorize nonce", () => {
-  const responseTypesWithNonce = IMPLICIT_RESPONSE_TYPES;
-
   const responseTypesWithoutNonce = [
-    ...AUTHORIZE_CODE_RESPONSE_TYPES,
-    ...HYBRID_RESPONSE_TYPES,
+    // only 'code' and 'code token' response types do not require nonce per OIDC Spec 3.1.2.1 and 3.3.2.1
+    `${OIDCResponseType.Code}`,
+    `${OIDCResponseType.Code} ${OIDCResponseType.Token}`,
   ];
+
+  const responseTypesWithNonce = [
+    // All other response types require nonce
+    ...IMPLICIT_RESPONSE_TYPES,
+    ...HYBRID_RESPONSE_TYPES,
+  ].filter((responseType) => !responseTypesWithoutNonce.includes(responseType));
 
   for (const response_type of responseTypesWithNonce) {
     test(`Nonce required for implicit flow | response_type: ${response_type}`, async () => {
