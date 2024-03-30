@@ -1,45 +1,52 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import { internalRedirect } from "@/lib/utils";
+import { OIDCResponseMode } from "@/types";
 
 export enum OIDCErrorCodes {
-  ServerError = "server_error",
   InvalidRequest = "invalid_request",
+  UnauthorizedClient = "unauthorized_client",
+  AccessDenied = "access_denied",
+  UnsupportedResponseType = "unsupported_response_type",
+  InvalidScope = "invalid_scope",
+  ServerError = "server_error",
+  TemporarilyUnavailable = "temporarily_unavailable",
+  InteractionRequired = "interaction_required",
+  LoginRequired = "login_required",
+  AccountSelectionRequired = "account_selection_required",
+  ConsentRequired = "consent_required",
+  RequestNotSupported = "request_not_supported",
+  RequestURINotSupported = "request_uri_not_supported",
+  RegistrationNotSupported = "registration_not_supported",
 }
 
-export function errorOIDCResponse(
-  statusCode: number,
-  code: string,
-  detail: string = "Something went wrong",
-  attribute: string | null = null
+export function errorOIDCRedirect(
+  redirect_uri: string,
+  response_mode: OIDCResponseMode,
+  error: OIDCErrorCodes,
+  state?: string,
+  error_description?: string
 ): NextResponse {
-  return NextResponse.json(
-    {
-      code,
-      detail,
-      attribute,
-      error: code, // OAuth 2.0 spec
-      error_description: detail, // OAuth 2.0 spec
-    },
-    { status: statusCode }
-  );
-}
+  const url = new URL(redirect_uri);
 
-export function errorNotAllowed(method: string = ""): NextResponse {
-  return errorOIDCResponse(
-    405,
-    "method_not_allowed",
-    `HTTP method '${method}' is not allowed for this endpoint.`
-  );
-}
+  if (response_mode === OIDCResponseMode.Query) {
+    url.searchParams.append("error", error);
+    error_description &&
+      url.searchParams.append("error_description", error_description);
+    state && url.searchParams.append("state", state);
+  } else if (response_mode === OIDCResponseMode.Fragment) {
+    const params = new URLSearchParams({
+      error,
+    });
+    error_description && params.append("error_description", error_description);
+    state && params.append("state", state);
 
-export function errorRequiredAttribute(attribute: string): NextResponse {
-  return errorOIDCResponse(
-    400,
-    "required",
-    `This attribute is required: ${attribute}.`,
-    attribute
-  );
+    url.hash = params.toString();
+  } else if (response_mode === OIDCResponseMode.FormPost) {
+    // TODO: Implement FormPost response mode for errors
+  }
+
+  return NextResponse.redirect(url.toString());
 }
 
 /**

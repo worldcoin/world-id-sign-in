@@ -2,11 +2,16 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { DEVELOPER_PORTAL } from "@/consts";
 import { ValidationMessage, OIDCFlowType, OIDCScope } from "@/types";
-import { errorValidationClient } from "@/api-helpers/errors";
+import {
+  errorOIDCRedirect,
+  errorValidationClient,
+  OIDCErrorCodes,
+} from "@/api-helpers/errors";
 import * as yup from "yup";
 import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 import { internalRedirect } from "@/lib/utils";
+import { request } from "http";
 
 const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
 
@@ -69,6 +74,8 @@ const schema = yup.object({
       ),
   }),
   code_challenge_method: yup.string(),
+  request: yup.string(),
+  request_uri: yup.string(),
 });
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
@@ -92,6 +99,8 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     response_mode,
     code_challenge,
     code_challenge_method,
+    request,
+    request_uri,
   } = parsedParams;
 
   let url: URL | undefined;
@@ -150,12 +159,33 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     );
   }
 
+  if (request) {
+    return errorOIDCRedirect(
+      redirect_uri,
+      response_mode,
+      OIDCErrorCodes.RequestNotSupported,
+      state,
+      "This provider does not support the request parameter."
+    );
+  }
+
+  if (request_uri) {
+    return errorOIDCRedirect(
+      redirect_uri,
+      response_mode,
+      OIDCErrorCodes.RequestURINotSupported,
+      state,
+      "This provider does not support the request_uri parameter."
+    );
+  }
+
   if (code_challenge && code_challenge_method !== "S256") {
-    return errorValidationClient(
-      "invalid_request",
-      `Invalid code_challenge_method: ${code_challenge_method}.`,
-      "code_challenge_method",
-      req.url
+    return errorOIDCRedirect(
+      redirect_uri,
+      response_mode,
+      OIDCErrorCodes.InvalidRequest,
+      state,
+      "This provider only supports the S256 code challenge method."
     );
   }
 
