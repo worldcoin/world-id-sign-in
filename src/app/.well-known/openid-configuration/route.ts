@@ -34,5 +34,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
       "id_token token", // Implicit flow
       "code id_token", // Hybrid flow
     ],
+    request_parameter_supported: false,
+    request_uri_parameter_supported: false,
   });
 };
