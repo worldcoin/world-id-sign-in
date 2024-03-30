@@ -13,6 +13,10 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     issuer: JWT_ISSUER,
     jwks_uri: `${OIDC_BASE_URL}/jwks.json`,
     token_endpoint: `${OIDC_BASE_URL}/token`,
+    token_endpoint_auth_methods_supported: [
+      "client_secret_post",
+      "client_secret_basic",
+    ],
     code_challenge_methods_supported: ["S256"],
     scopes_supported: Object.values(OIDCScope),
     id_token_signing_alg_values_supported: ["RSA"],
