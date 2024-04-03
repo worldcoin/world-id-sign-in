@@ -72,6 +72,14 @@ const schema = yup.object({
 });
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
+  if (
+    req.headers.get("user-agent")?.includes("Mobile") &&
+    (req.headers.get("user-agent")?.includes("iPhone") ||
+      req.headers.get("user-agent")?.includes("Android"))
+  ) {
+    return NextResponse.redirect("https://worldcoin.org/download?worldid=true");
+  }
+
   const { parsedParams, isValid, errorResponse } = await validateRequestSchema({
     schema,
     req,
