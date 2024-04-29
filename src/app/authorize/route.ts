@@ -55,10 +55,10 @@ const schema = yup.object({
     }),
   state: yup.string(),
   nonce: yup.string().when("response_type", {
-    // NOTE: we only require a nonce for the implicit flow
-    is: (value: string) =>
-      checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
-    then: (field) => field.required(ValidationMessage.Required),
+    is: (response_type: string) =>
+      ["code", "code token"].includes(response_type),
+    then: (nonce) => nonce.optional(),
+    otherwise: (nonce) => nonce.required(ValidationMessage.Required),
   }),
   response_mode: OIDCResponseModeValidation,
   code_challenge: yup.string().when("code_challenge_method", {
@@ -172,13 +172,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     response_mode,
     client_id,
     redirect_uri,
-    nonce: nonce || new Date().getTime().toString(), // NOTE: given the nature of our proofs, if a nonce is not passed, we generate one
-    // TODO: should enforce one time use for nonces
+    scope,
     ready: "true", // for UX purposes, to avoid users getting to the login page without verifying their request
   });
 
-  if (scope) {
-    params.append("scope", scope.toString());
+  if (nonce) {
+    params.append("nonce", nonce.toString());
   }
 
   if (state) {
