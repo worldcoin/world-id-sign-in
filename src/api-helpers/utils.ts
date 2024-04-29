@@ -47,19 +47,7 @@ export const validateRequestSchema = async <T extends yup.Schema>({
       }
     }
 
-    console.log("pre yup validation response_type: ", rawParams.response_type);
-    console.log("pre yup validation response_mode: ", rawParams.response_mode);
-
     parsedParams = await schema.validate(rawParams);
-
-    console.log(
-      "post yup validation response_type: ",
-      parsedParams.response_type
-    );
-    console.log(
-      "post yup validation response_mode: ",
-      parsedParams.response_mode
-    );
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       const code = OIDCErrorCodes.InvalidRequest;
