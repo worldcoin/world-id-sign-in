@@ -26,7 +26,10 @@ export const authenticateSchema = yup.object({
   credential_type: yup.string().oneOf(Object.values(CredentialType)),
   client_id: yup.string().required(ValidationMessage.Required),
   nonce: yup.string().required(ValidationMessage.Required), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
-  scope: yup.string().required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
+  scope: yup
+    .string()
+    .transform((string) => string.replace(/\+/g, "%20")) // NOTE: Replaces '+' with '%20' so Developer Portal can parse the scope(s) correctly
+    .required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
   state: yup.string(),
   response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
   response_mode: OIDCResponseModeValidation,
