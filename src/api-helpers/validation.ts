@@ -4,8 +4,6 @@ import * as yup from "yup";
 
 export const OIDCResponseModeValidation = yup
   .string<OIDCResponseMode>()
-  .ensure() // cast null and undefined to "", for next step
-  .transform((value) => (value === "" ? undefined : value)) // transform "" to undefined, so default applies
   .when("response_type", {
     is: OIDCResponseType.Code,
     // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
