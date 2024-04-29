@@ -4,12 +4,16 @@ import * as yup from "yup";
 
 export const OIDCResponseModeValidation = yup
   .string<OIDCResponseMode>()
+  .nullable() // we might as well allow null since we'll handle it properly
+  .ensure() // cast null and undefined to "", for next step
+  .transform((value) => (value === "" ? undefined : value)) // transform "" to undefined, so default applies
   .when("response_type", {
     is: OIDCResponseType.Code,
     // REFERENCE: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html
     then: (schema) => schema.default(OIDCResponseMode.Query),
     otherwise: (schema) => schema.default(OIDCResponseMode.Fragment),
   })
+  .oneOf(Object.values(OIDCResponseMode))
   .test({
     name: "is-valid-response-mode",
     message: "Invalid response mode.",
