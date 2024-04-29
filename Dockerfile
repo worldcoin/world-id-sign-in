@@ -23,7 +23,7 @@ WORKDIR /app
 
 # TODO: Version tagging
 # TODO: Can be further optimized to remove next peer dependency
-RUN yarn add next-logger dd-trace
+RUN yarn add next-logger dd-trace@5.12.0
 
 # Rebuild the source code only when needed
 FROM base AS builder
