@@ -31,6 +31,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Add env to build time 
+ARG NEXT_PUBLIC_URL=""
+ARG NEXT_PUBLIC_DEVELOPER_PORTAL=""
+ARG NEXT_PUBLIC_JWT_ISSUER=""
+ENV NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
+ENV NEXT_PUBLIC_DEVELOPER_PORTAL=${NEXT_PUBLIC_DEVELOPER_PORTAL}
+ENV NEXT_PUBLIC_JWT_ISSUER=${NEXT_PUBLIC_JWT_ISSUER}
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
