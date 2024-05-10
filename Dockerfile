@@ -1,6 +1,3 @@
-# https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
-FROM --platform=linux/amd64 node:20-alpine AS base
-
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -30,14 +27,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Add env to build time 
-ARG NEXT_PUBLIC_URL=""
-ARG NEXT_PUBLIC_DEVELOPER_PORTAL=""
-ARG NEXT_PUBLIC_JWT_ISSUER=""
-ENV NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
-ENV NEXT_PUBLIC_DEVELOPER_PORTAL=${NEXT_PUBLIC_DEVELOPER_PORTAL}
-ENV NEXT_PUBLIC_JWT_ISSUER=${NEXT_PUBLIC_JWT_ISSUER}
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
