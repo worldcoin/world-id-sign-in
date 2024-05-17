@@ -29,6 +29,16 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
     const errorParams = new URLSearchParams({
       code: result.code,
       detail: result.detail,
+      client_id: parsedParams.client_id,
+      nonce: parsedParams.nonce,
+      response_type: parsedParams.response_type,
+      ready: "true",
+      redirect_uri: parsedParams.redirect_uri,
+      scope: parsedParams.scope,
+      state: parsedParams.state!,
+      response_mode: parsedParams.response_mode!,
+      code_challenge: parsedParams.code_challenge!,
+      code_challenge_method: parsedParams.code_challenge_method!,
     });
     return internalRedirect(`/error?${errorParams.toString()}`, req.url);
   }
