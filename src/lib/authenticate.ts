@@ -30,7 +30,16 @@ export const authenticateSchema = yup.object({
     .string()
     .transform((string) => string.replace(/\+/g, "%20")) // NOTE: Replaces '+' with '%20' so Developer Portal can parse the scope(s) correctly
     .required("The openid scope is always required."), // NOTE: Content verified in the Developer Portal
-  state: yup.string(),
+  state: yup
+    .string()
+    .test(
+      "state",
+      "State parameter must be 256 characters or less and contain only alphanumeric, comma, period, underscore, and hyphen characters.",
+      (state) => {
+        if (!state) return true;
+        return /^[a-zA-Z0-9,._-]+$/.test(state) && state.length <= 256;
+      }
+    ),
   response_type: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
   response_mode: OIDCResponseModeValidation,
   redirect_uri: yup.string().required(ValidationMessage.Required), // NOTE: Content verified in the Developer Portal
