@@ -220,7 +220,7 @@ const IDKitBridge = ({
                 <Spinner />
 
                 <div className="text-text-muted pt-4">
-                  Wait a few seconds, automatically opening World App
+                  Waiting for connection to World App...
                 </div>
               </div>
             </>
