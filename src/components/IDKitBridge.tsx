@@ -119,12 +119,6 @@ const IDKitBridge = ({
   ]);
 
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
-
-    if (isMobile && connectorURI) {
-      window.open(connectorURI, "_blank", "noopener,noreferrer");
-    }
-
     if (connectorURI) {
       setDeeplink(connectorURI);
     }
