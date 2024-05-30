@@ -216,8 +216,11 @@ const Header = ({
           </div>
         </div>
       </div>
-      <div className="text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
-        <Balancer>Scan with World App to continue to {meta?.name}</Balancer>
+      <div className="hidden md:block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Scan with World App to sign in to {meta?.name}</Balancer>
+      </div>
+      <div className="md:hidden block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Use World App to sign in to {meta?.name}</Balancer>
       </div>
     </div>
   ) : null;
