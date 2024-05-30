@@ -165,8 +165,10 @@ const IDKitQR: FC<Props> = ({
               <div className="bg-text rounded p-1 mr-2">
                 <IconWorldcoin className="text-white text-sm" />
               </div>
-              <div className="flex-grow hidden md:block">Manually open app</div>
-              <div className="flex-grow md:hidden">Sign up in the app</div>
+              <div className="flex-grow md:hidden">Manually open World App</div>
+              <div className="flex-grow hidden md:block">
+                Sign up in World App
+              </div>
               <IconArrowRight className="text-2xl text-gray-400" />
             </div>
           </a>
