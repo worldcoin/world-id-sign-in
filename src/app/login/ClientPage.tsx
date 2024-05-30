@@ -115,7 +115,7 @@ const IDKitQR: FC<Props> = ({
       ></form>
       <Header
         meta={app_data}
-        className="md:hidden"
+        className="md:hidden flex flex-col items-center "
         headerShown={
           ![
             VerificationState.WaitingForApp,
