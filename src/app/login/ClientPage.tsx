@@ -155,7 +155,7 @@ const IDKitQR: FC<Props> = ({
         VerificationState.Confirmed,
       ].includes(wcStage) && (
         <>
-          <div className="text-center text-gray-400 mt-2">or</div>
+          {/* <div className="text-center text-gray-400 mt-2">or</div> */}
           <a
             href={deeplink ? deeplink : "https://worldcoin.org/download"}
             rel="noreferrer noopener"
