@@ -115,7 +115,7 @@ const IDKitQR: FC<Props> = ({
       ></form>
       <Header
         meta={app_data}
-        className="md:hidden"
+        className="md:hidden flex flex-col items-center "
         headerShown={
           ![
             VerificationState.WaitingForApp,
@@ -155,7 +155,6 @@ const IDKitQR: FC<Props> = ({
         VerificationState.Confirmed,
       ].includes(wcStage) && (
         <>
-          <div className="text-center text-gray-400 mt-2">or</div>
           <a
             href={deeplink ? deeplink : "https://worldcoin.org/download"}
             rel="noreferrer noopener"
@@ -165,8 +164,10 @@ const IDKitQR: FC<Props> = ({
               <div className="bg-text rounded p-1 mr-2">
                 <IconWorldcoin className="text-white text-sm" />
               </div>
-              <div className="flex-grow hidden md:block">Manually open app</div>
-              <div className="flex-grow md:hidden">Sign up in the app</div>
+              <div className="flex-grow md:hidden">Manually open World App</div>
+              <div className="flex-grow hidden md:block">
+                Sign up in World App
+              </div>
               <IconArrowRight className="text-2xl text-gray-400" />
             </div>
           </a>
@@ -214,8 +215,11 @@ const Header = ({
           </div>
         </div>
       </div>
-      <div className="text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
-        <Balancer>Scan with World App to continue to {meta?.name}</Balancer>
+      <div className="hidden md:block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Scan with World App to sign in to {meta?.name}</Balancer>
+      </div>
+      <div className="md:hidden block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+        <Balancer>Use World App to sign in to {meta?.name}</Balancer>
       </div>
     </div>
   ) : null;

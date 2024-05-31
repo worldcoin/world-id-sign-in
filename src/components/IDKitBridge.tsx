@@ -119,12 +119,6 @@ const IDKitBridge = ({
   ]);
 
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)").matches; // to use the same logic as UI (Tailwind)
-
-    if (isMobile && connectorURI) {
-      window.open(connectorURI, "_blank", "noopener,noreferrer");
-    }
-
     if (connectorURI) {
       setDeeplink(connectorURI);
     }
@@ -226,7 +220,7 @@ const IDKitBridge = ({
                 <Spinner />
 
                 <div className="text-text-muted pt-4">
-                  Wait a few seconds, automatically opening World App
+                  Waiting for connection to World App...
                 </div>
               </div>
             </>
