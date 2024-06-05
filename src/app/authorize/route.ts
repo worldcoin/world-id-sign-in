@@ -73,7 +73,6 @@ const schema = yup.object({
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   if (
-    !req.cookies.get("web-only") &&
     req.headers.get("user-agent")?.includes("Mobile") &&
     (req.headers.get("user-agent")?.includes("iPhone") ||
       req.headers.get("user-agent")?.includes("Android"))
