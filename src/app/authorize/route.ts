@@ -73,6 +73,7 @@ const schema = yup.object({
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
   if (
+    new URL(req.url).pathname === "/authorize" && // exclude authorize-web
     req.headers.get("user-agent")?.includes("Mobile") &&
     (req.headers.get("user-agent")?.includes("iPhone") ||
       req.headers.get("user-agent")?.includes("Android"))
