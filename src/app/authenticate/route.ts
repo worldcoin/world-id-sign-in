@@ -64,7 +64,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
         <form id="formRedirect" method="post" action="${url}">    
           ${Array.from(result.url_params.entries()).map(
             ([key, value]) =>
-              `<input type="hidden" name="${key}" value="${value}" />`
+              `<input type="hidden" name="${key.replace(/[^a-zA-Z0-9,._-]/g, "")}" value="${value.replace(/[^a-zA-Z0-9,._-]/g, "")}" />`
           )}    
           <noscript>  
             <button type="submit">Submit</button>  
