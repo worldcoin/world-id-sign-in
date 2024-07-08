@@ -16,8 +16,9 @@
     "node": ">=18.16.0"
   },
   "dependencies": {
+    "@prisma/client": "^5.16.1",
     "@types/node": "18.14.0",
-    "@worldcoin/idkit": "^1.1.4",
+    "@worldcoin/idkit": "^1.2.0",
     "@worldcoin/idkit-core": "^1.1.1",
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.3",

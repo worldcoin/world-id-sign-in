@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:16.2
+    restart: on-failure
+    environment:
+      POSTGRES_USER: testUser
+      POSTGRES_DB: sign-in
+      POSTGRES_PASSWORD: testPassword
+    ports:
+      - "5432:5432"
