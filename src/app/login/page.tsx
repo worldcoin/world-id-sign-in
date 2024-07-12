@@ -6,6 +6,8 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
+export const dynamic = "force-dynamic";
+
 const LoginPage = ({ searchParams }: Props) => {
   const {
     client_id,
