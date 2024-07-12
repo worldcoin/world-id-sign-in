@@ -8,7 +8,12 @@ const generateCsp = () => {
     { name: "default-src", values: ["'self'"] },
     {
       name: "script-src",
-      values: ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"],
+      values: [
+        "'self'",
+        `'nonce-${nonce}'`,
+        "'strict-dynamic'",
+        "https://app.posthog.com",
+      ],
     },
     {
       name: "font-src",
