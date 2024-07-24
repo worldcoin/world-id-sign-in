@@ -104,7 +104,6 @@ const IDKitQR: FC<Props> = ({
       code_challenge_method,
     ]
   );
-
   return (
     <>
       <form
@@ -201,7 +200,7 @@ const Header = ({
           ) : (
             <p className="text-xl tracking-wider">
               {meta?.name
-                .split(" ")
+                ?.split(" ")
                 .map((word) => word[0])
                 .join("")}
             </p>
@@ -215,7 +214,7 @@ const Header = ({
           </div>
         </div>
       </div>
-      <div className="hidden md:block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
+      <div className="hidden md:block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px] break-words">
         <Balancer>Scan with World App to sign in to {meta?.name}</Balancer>
       </div>
       <div className="md:hidden block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">

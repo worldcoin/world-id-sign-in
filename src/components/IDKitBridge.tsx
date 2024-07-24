@@ -11,6 +11,7 @@ import {
   IDKitConfig,
   VerificationLevel,
 } from "@worldcoin/idkit-core";
+import clsx from "clsx";
 
 interface IIDKitBridge {
   nonce: string;
@@ -28,6 +29,8 @@ const IDKitBridge = ({
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
+  const isMobileDevice = () =>
+    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
   const {
     createClient,
@@ -148,7 +151,9 @@ const IDKitBridge = ({
                 <>
                   {/* .qr-code className used for remote synthetic tests */}
                   <div
-                    className="hidden md:block qr-code cursor-pointer"
+                    className={clsx("qr-code cursor-pointer max-md:mt-8", {
+                      hidden: isMobileDevice(),
+                    })}
                     onClick={copyLink}
                   >
                     <QRCode data={connectorURI} size={280} />
@@ -210,13 +215,21 @@ const IDKitBridge = ({
               ) : (
                 <>
                   {/* .qr-code className used for remote synthetic tests */}
-                  <div className="hidden md:block qr-code">
+                  <div
+                    className={clsx("qr-code max-md:mt-8", {
+                      hidden: isMobileDevice(),
+                    })}
+                  >
                     <QRCode data={connectorURI} size={280} />
                   </div>
                 </>
               )}
 
-              <div className="md:hidden mt-10 md:mt-0">
+              <div
+                className={clsx("mt-10 md:mt-0", {
+                  hidden: !isMobileDevice(),
+                })}
+              >
                 <Spinner />
 
                 <div className="text-text-muted pt-4">
