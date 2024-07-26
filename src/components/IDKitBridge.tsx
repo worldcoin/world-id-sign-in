@@ -140,7 +140,7 @@ const IDKitBridge = ({
   }, [connectorURI, isStaging]);
 
   return (
-    <div className="md:mt-8">
+    <div className="md:mt-8 mt-7">
       {verificationState === VerificationState.WaitingForConnection && (
         <>
           {!connectorURI && <Spinner />}
@@ -224,18 +224,6 @@ const IDKitBridge = ({
                   </div>
                 </>
               )}
-
-              <div
-                className={clsx("mt-10 md:mt-0", {
-                  hidden: !isMobileDevice(),
-                })}
-              >
-                <Spinner />
-
-                <div className="text-text-muted pt-4">
-                  Waiting for connection to World App...
-                </div>
-              </div>
             </>
           )}
         </>
@@ -247,7 +235,7 @@ const IDKitBridge = ({
 
           {verificationState === VerificationState.PreparingClient && (
             <>
-              <h1 className="font-medium text-3xl mt-12">Loading...</h1>
+              <h1 className="font-medium text-3xl md:mt-12 mt-4">Loading...</h1>
               <div className="text-text-muted text-xl mt-2">
                 Please wait a moment
               </div>

@@ -7,13 +7,9 @@ import { VerificationState, ISuccessResult } from "@worldcoin/idkit-core";
 import IDKitBridge from "@/components/IDKitBridge";
 import Image from "next/image";
 
-import {
-  IconArrowRight,
-  IconBadge,
-  IconBadgeX,
-  IconWorldcoin,
-} from "@/components/icons";
+import { IconBadge, IconBadgeX, IconWorldcoin } from "@/components/icons";
 import { DEVELOPER_PORTAL } from "@/consts";
+import clsx from "clsx";
 
 type Meta = {
   name: string;
@@ -62,6 +58,8 @@ const IDKitQR: FC<Props> = ({
   const [wcStage, setWCStage] = useState<VerificationState>(
     VerificationState.PreparingClient
   );
+  const isMobileDevice = () =>
+    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
   const handleIDKitSuccess = useCallback(
     async (result: ISuccessResult) => {
@@ -123,7 +121,12 @@ const IDKitQR: FC<Props> = ({
           ].includes(wcStage)
         }
       />
-      <div className="bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative">
+      <div
+        className={clsx(
+          "bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative",
+          { hidden: isMobileDevice() }
+        )}
+      >
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
           <IconWorldcoin className="w-4 h-4" />
           <p className="text-sm font-rubik">Sign in with World ID</p>
@@ -155,19 +158,14 @@ const IDKitQR: FC<Props> = ({
       ].includes(wcStage) && (
         <>
           <a
-            href={deeplink ? deeplink : "https://worldcoin.org/download"}
-            rel="noreferrer noopener"
-            target="_blank"
+            href={deeplink}
+            className={clsx("mt-3 md:mt-", {
+              hidden: !isMobileDevice(),
+            })}
           >
-            <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center border border-gray-200 cursor-pointer">
-              <div className="bg-text rounded p-1 mr-2">
-                <IconWorldcoin className="text-white text-sm" />
-              </div>
-              <div className="flex-grow md:hidden">Manually open World App</div>
-              <div className="flex-grow hidden md:block">
-                Sign up in World App
-              </div>
-              <IconArrowRight className="text-2xl text-gray-400" />
+            <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
+              <IconWorldcoin className="text-white text-sm" />
+              <p className="text-white">Continue in World App</p>
             </div>
           </a>
         </>
