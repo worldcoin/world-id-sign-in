@@ -12,7 +12,6 @@ import {
   VerificationLevel,
 } from "@worldcoin/idkit-core";
 import clsx from "clsx";
-import { IconWorldcoin } from "./icons";
 
 interface IIDKitBridge {
   nonce: string;
@@ -225,18 +224,6 @@ const IDKitBridge = ({
                   </div>
                 </>
               )}
-
-              <a
-                href={connectorURI}
-                className={clsx("mt-3 md:mt-", {
-                  hidden: !isMobileDevice(),
-                })}
-              >
-                <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
-                  <IconWorldcoin className="text-white text-sm" />
-                  <p className="text-white">Continue in World App</p>
-                </div>
-              </a>
             </>
           )}
         </>
