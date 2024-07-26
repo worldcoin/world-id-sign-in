@@ -7,12 +7,7 @@ import { VerificationState, ISuccessResult } from "@worldcoin/idkit-core";
 import IDKitBridge from "@/components/IDKitBridge";
 import Image from "next/image";
 
-import {
-  IconArrowRight,
-  IconBadge,
-  IconBadgeX,
-  IconWorldcoin,
-} from "@/components/icons";
+import { IconBadge, IconBadgeX, IconWorldcoin } from "@/components/icons";
 import { DEVELOPER_PORTAL } from "@/consts";
 
 type Meta = {
@@ -148,30 +143,6 @@ const IDKitQR: FC<Props> = ({
           onSuccess={handleIDKitSuccess}
         />
       </div>
-      {![
-        VerificationState.WaitingForApp,
-        VerificationState.PreparingClient,
-        VerificationState.Confirmed,
-      ].includes(wcStage) && (
-        <>
-          <a
-            href={deeplink ? deeplink : "https://worldcoin.org/download"}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            <div className="bg-white rounded-lg mt-2 px-4 py-3 flex items-center border border-gray-200 cursor-pointer">
-              <div className="bg-text rounded p-1 mr-2">
-                <IconWorldcoin className="text-white text-sm" />
-              </div>
-              <div className="flex-grow md:hidden">Manually open World App</div>
-              <div className="flex-grow hidden md:block">
-                Sign up in World App
-              </div>
-              <IconArrowRight className="text-2xl text-gray-400" />
-            </div>
-          </a>
-        </>
-      )}
     </>
   );
 };
