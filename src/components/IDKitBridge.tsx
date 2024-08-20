@@ -29,9 +29,10 @@ const IDKitBridge = ({
   setDeeplink,
 }: IIDKitBridge): JSX.Element => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
-  const isMobileDevice = () =>
-    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
+  const isMobileDevice = () =>
+    typeof navigator !== "undefined" &&
+    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
   const {
     createClient,
     connectorURI,
