@@ -59,6 +59,7 @@ const IDKitQR: FC<Props> = ({
     VerificationState.PreparingClient
   );
   const isMobileDevice = () =>
+    typeof navigator !== "undefined" &&
     /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
   const handleIDKitSuccess = useCallback(
