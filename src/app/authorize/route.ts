@@ -54,13 +54,15 @@ const schema = yup.object({
       },
     }),
   state: yup.string(),
-  nonce: yup.string().when("response_type", {
-    // NOTE: we only require a nonce for the implicit flow
-    is: (value: string) =>
-      checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
-    then: (field) => field.required(ValidationMessage.Required),
-    otherwise: (field) => field.default(""),
-  }),
+  nonce: yup
+    .string()
+    .ensure()
+    .when("response_type", {
+      // NOTE: we only require a nonce for the implicit flow
+      is: (value: string) =>
+        checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
+      then: (field) => field.required(ValidationMessage.Required),
+    }),
   response_mode: OIDCResponseModeValidation,
   code_challenge: yup.string().when("code_challenge_method", {
     is: (value: string) => Boolean(value),
