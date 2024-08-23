@@ -41,7 +41,7 @@ export const POST = async (req: NextRequest): Promise<NextResponse> => {
       code: result.code,
       detail: result.detail,
       client_id: parsedParams.client_id,
-      nonce: parsedParams.nonce,
+      nonce: parsedParams.nonce!,
       response_type: parsedParams.response_type,
       ready: "true",
       redirect_uri: parsedParams.redirect_uri,
