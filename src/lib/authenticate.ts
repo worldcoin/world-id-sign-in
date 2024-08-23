@@ -25,7 +25,14 @@ export const authenticateSchema = yup.object({
   // TODO: Remove in favor of verification_level once it's supported in all app versions
   credential_type: yup.string().oneOf(Object.values(CredentialType)),
   client_id: yup.string().required(ValidationMessage.Required),
-  nonce: yup.string().required(ValidationMessage.Required), // NOTE: While technically not required by the OIDC spec, we require it as a security best practice
+  nonce: yup.string().when("response_type", {
+    is: (response_type: string) =>
+      !["code", "code token"].includes(response_type),
+    then: (nonce) =>
+      nonce.required(
+        "`nonce` required for all response types except `code` and `code token`."
+      ),
+  }), // NOTE: nonce is required for all response types except `code` and `code token`
   scope: yup
     .string()
     .transform((string) => string.replace(/\+/g, "%20")) // NOTE: Replaces '+' with '%20' so Developer Portal can parse the scope(s) correctly
