@@ -59,6 +59,7 @@ const schema = yup.object({
     is: (value: string) =>
       checkFlowType(decodeURIComponent(value)) === OIDCFlowType.Implicit,
     then: (field) => field.required(ValidationMessage.Required),
+    otherwise: (field) => field.default(""),
   }),
   response_mode: OIDCResponseModeValidation,
   code_challenge: yup.string().when("code_challenge_method", {
