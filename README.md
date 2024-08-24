@@ -10,7 +10,6 @@ First, run the development server:
 
 ```bash
 cp .env.sample .env
-# update your env vars
 pnpm dev
 ```
 
