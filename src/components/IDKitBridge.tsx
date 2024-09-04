@@ -12,6 +12,7 @@ import {
   VerificationLevel,
 } from "@worldcoin/idkit-core";
 import clsx from "clsx";
+import { isMobileDevice } from "@/lib/utils";
 
 interface IIDKitBridge {
   nonce: string;
@@ -30,9 +31,6 @@ const IDKitBridge = ({
 }: IIDKitBridge): JSX.Element => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
-  const isMobileDevice = () =>
-    typeof navigator !== "undefined" &&
-    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
   const {
     createClient,
     connectorURI,

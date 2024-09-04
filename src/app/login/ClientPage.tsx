@@ -10,6 +10,7 @@ import Image from "next/image";
 import { IconBadge, IconBadgeX, IconWorldcoin } from "@/components/icons";
 import { DEVELOPER_PORTAL } from "@/consts";
 import clsx from "clsx";
+import { isMobileDevice } from "@/lib/utils";
 
 type Meta = {
   name: string;
@@ -58,9 +59,6 @@ const IDKitQR: FC<Props> = ({
   const [wcStage, setWCStage] = useState<VerificationState>(
     VerificationState.PreparingClient
   );
-  const isMobileDevice = () =>
-    typeof navigator !== "undefined" &&
-    /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
   const handleIDKitSuccess = useCallback(
     async (result: ISuccessResult) => {
@@ -125,7 +123,7 @@ const IDKitQR: FC<Props> = ({
       <div
         className={clsx(
           "bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative",
-          { hidden: isMobileDevice() }
+          { hidden: !isMobileDevice() }
         )}
       >
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
