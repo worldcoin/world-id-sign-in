@@ -1,14 +1,14 @@
-import IDKitQR from "./ClientPage";
 import Footer from "@/components/Footer";
 import { redirect } from "next/navigation";
+import { DEVELOPER_PORTAL } from "@/consts";
+import dynamic from "next/dynamic";
+import IDKitQR from "./IDKitQR";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export const dynamic = "force-dynamic";
-
-const LoginPage = ({ searchParams }: Props) => {
+const LoginPage = async ({ searchParams }: Props) => {
   const {
     client_id,
     nonce,
@@ -33,6 +33,25 @@ const LoginPage = ({ searchParams }: Props) => {
     redirect(`/error?${urlParams}`);
   }
 
+  const fetchMeta = async (client_id: string) => {
+    const res = await fetch(
+      new URL(`/api/v1/precheck/${client_id}`, DEVELOPER_PORTAL),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "",
+        }),
+      }
+    );
+
+    return await res.json();
+  };
+
+  const app_data = await fetchMeta(client_id as string);
+
   return (
     <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-fit">
@@ -40,6 +59,7 @@ const LoginPage = ({ searchParams }: Props) => {
           scope={scope as string}
           state={state as string}
           nonce={nonce as string}
+          app_data={app_data}
           client_id={client_id as string}
           redirect_uri={redirect_uri as string}
           response_mode={response_mode as string}
