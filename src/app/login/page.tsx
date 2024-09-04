@@ -2,12 +2,13 @@ import Footer from "@/components/Footer";
 import { redirect } from "next/navigation";
 import { DEVELOPER_PORTAL } from "@/consts";
 import dynamic from "next/dynamic";
+import IDKitQR from "./IDKitQR";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-const IDKitQR = dynamic(() => import("./IDKitQR"), { ssr: false });
+// const IDKitQR = dynamic(() => import("./IDKitQR"), { ssr: false });
 
 const LoginPage = async ({ searchParams }: Props) => {
   const {

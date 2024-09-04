@@ -110,8 +110,7 @@ const IDKitQR: FC<Props> = ({
       />
       <div
         className={clsx(
-          "bg-white rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative",
-          { hidden: isMobile }
+          "bg-white max-sm:hidden rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative"
         )}
       >
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
@@ -144,12 +143,7 @@ const IDKitQR: FC<Props> = ({
         VerificationState.Confirmed,
       ].includes(wcStage) && (
         <>
-          <a
-            href={deeplink}
-            className={clsx("mt-3 md:mt-", {
-              hidden: !isMobile,
-            })}
-          >
+          <a href={deeplink} className={clsx("mt-3 sm:hidden")}>
             <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
               <IconWorldcoin className="text-white text-sm" />
               <p className="text-white">Continue in World App</p>
