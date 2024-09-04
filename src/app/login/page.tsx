@@ -8,8 +8,6 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-// const IDKitQR = dynamic(() => import("./IDKitQR"), { ssr: false });
-
 const LoginPage = async ({ searchParams }: Props) => {
   const {
     client_id,
