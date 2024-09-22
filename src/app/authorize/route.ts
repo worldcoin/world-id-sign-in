@@ -8,6 +8,8 @@ import { checkFlowType, validateRequestSchema } from "@/api-helpers/utils";
 import { OIDCResponseModeValidation } from "@/api-helpers/validation";
 import { internalRedirect } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const SUPPORTED_SCOPES = [OIDCScope.OpenID, OIDCScope.Profile, OIDCScope.Email];
 
 const schema = yup.object({
