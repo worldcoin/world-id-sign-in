@@ -108,13 +108,6 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     code_challenge_method,
   } = parsedParams;
 
-  // If window.WorldApp is defined redirect to /authorize again with the params
-  if (window.WorldApp) {
-    return NextResponse.redirect(
-      `/authorize?response_type=${response_type}&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}&nonce=${nonce}&response_mode=${response_mode}&code_challenge=${code_challenge}&code_challenge_method=${code_challenge_method}`
-    );
-  }
-
   let url: URL | undefined;
   try {
     url = new URL(redirect_uri);

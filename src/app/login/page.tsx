@@ -1,5 +1,5 @@
 import Footer from "@/components/Footer";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { DEVELOPER_PORTAL } from "@/consts";
 import dynamic from "next/dynamic";
 import IDKitQR from "./IDKitQR";
@@ -21,6 +21,15 @@ const LoginPage = async ({ searchParams }: Props) => {
     code_challenge,
     code_challenge_method,
   } = searchParams;
+
+  const router = useRouter();
+
+  // If window.WorldApp is defined redirect to /authorize again with the params
+  if (window.WorldApp) {
+    return router.replace(
+      `/authorize?response_type=${response_type}&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}&nonce=${nonce}&response_mode=${response_mode}&code_challenge=${code_challenge}&code_challenge_method=${code_challenge_method}`
+    );
+  }
 
   if (!ready || !client_id) {
     const urlParams = new URLSearchParams({
