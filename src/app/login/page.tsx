@@ -1,8 +1,8 @@
 import Footer from "@/components/Footer";
-import { redirect, useRouter } from "next/navigation";
 import { DEVELOPER_PORTAL } from "@/consts";
-import dynamic from "next/dynamic";
+import { redirect, useRouter } from "next/navigation";
 import IDKitQR from "./IDKitQR";
+import { MiniAppRouter } from "./MiniAppWrapper";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -64,6 +64,7 @@ const LoginPage = async ({ searchParams }: Props) => {
   return (
     <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-fit">
+        <MiniAppRouter {...searchParams} />
         <IDKitQR
           scope={scope as string}
           state={state as string}
