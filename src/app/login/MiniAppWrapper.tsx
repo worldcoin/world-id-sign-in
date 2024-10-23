@@ -40,7 +40,7 @@ export const MiniAppRouter = (props: MiniAppRouterProps) => {
     return `/authorize?${queryParams}`;
   }
 
-  if (window.WorldApp) {
+  if (typeof window !== "undefined" && window.WorldApp) {
     router.replace(
       buildAuthorizeUrl({
         response_type,
