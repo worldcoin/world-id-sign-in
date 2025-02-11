@@ -131,7 +131,25 @@ export const authenticate = async (
 
   const responseAuth = await response.json();
 
+  // Response Validation: If response_type is "code" or "code token", then we need to check if the response contains a authorization code
+  if (response_type === "code" || response_type === "code token") {
+    if (!responseAuth.code) {
+      console.error(
+        `Could not authenticate OIDC user: Missing 'code' in response.`,
+        responseAuth,
+        client_id
+      );
+
+      return {
+        success: false,
+        code: "invalid_response",
+        detail: "Missing `code` in response.",
+      };
+    }
+  }
+
   let url_params = new URLSearchParams();
+  // Authorization Code
   if (responseAuth.code) {
     url_params.append("code", responseAuth.code);
   }
@@ -146,6 +164,8 @@ export const authenticate = async (
 
   if (state) {
     url_params.append("state", state.toString());
+  } else {
+    console.warn(`Missing 'state' in response.`, responseAuth, client_id);
   }
 
   return { success: true, redirect_uri, url_params };
