@@ -1,6 +1,9 @@
 # https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 FROM --platform=linux/amd64 public.ecr.aws/docker/library/node:20-alpine AS base
 
+# Install pnpm as root
+RUN npm install --global pnpm@9.15.4
+
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -9,14 +12,14 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 # Server depencies are runtime depencies required for running the Node.JS server, bundled separately
 # this includes logging dependencies
 FROM base AS server_deps
 WORKDIR /app
 
 # TODO: Can be further optimized to remove next peer dependency
-RUN corepack enable pnpm && pnpm i next-logger@5.0.0 pino@9.2.0 dd-trace@5.12.0
+RUN pnpm i next-logger@5.0.0 pino@9.2.0 dd-trace@5.12.0
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -31,7 +34,7 @@ ENV NEXT_PUBLIC_DEVELOPER_PORTAL=${NEXT_PUBLIC_DEVELOPER_PORTAL}
 ENV NEXT_PUBLIC_JWT_ISSUER=${NEXT_PUBLIC_JWT_ISSUER}
 ENV NEXT_PUBLIC_URL=${NEXT_PUBLIC_URL}
 
-RUN corepack enable pnpm && pnpm run build;
+RUN pnpm run build;
 
 # Production image, copy all the files and run next
 FROM base AS runner
