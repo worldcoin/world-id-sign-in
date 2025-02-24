@@ -5,3 +5,6 @@ npm-debug.log
 README.md
 .next
 .git
+# Added by SEC-1406 patch
+.git
+.gitignore
