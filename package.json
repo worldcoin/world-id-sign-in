@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@types/node": "18.14.0",
-    "@worldcoin/idkit": "^1.1.4",
-    "@worldcoin/idkit-core": "^1.1.1",
+    "@worldcoin/idkit": "^2.0.2",
+    "@worldcoin/idkit-core": "^2.0.2",
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.3",
     "eslint": "8.34.0",
