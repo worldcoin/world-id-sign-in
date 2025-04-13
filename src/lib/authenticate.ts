@@ -43,9 +43,9 @@ export const authenticateSchema = yup.object({
   state: yup
     .string()
     .ensure() // undefined or null values are coerced to empty strings, to pass the regex validation
-    .matches(/^[a-zA-Z0-9,._+-/=]{0,256}$/, {
+    .matches(/^[a-zA-Z0-9,._+-/=]{0,1024}$/, {
       message:
-        "State parameter must be 256 characters or less and contain only alphanumeric, comma, period, underscore, and hyphen characters.",
+        "State parameter must be 1024 characters or less and contain only alphanumeric, comma, period, underscore, and hyphen characters.",
     }),
   response_type: yup.string().required(ValidationMessage.Required),
   response_mode: OIDCResponseModeValidation,
