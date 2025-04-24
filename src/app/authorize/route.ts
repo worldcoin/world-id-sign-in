@@ -112,6 +112,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   try {
     url = new URL(redirect_uri);
   } catch (err) {}
+  console.log("here", client_id);
 
   if (!url) {
     return errorValidationClient(
