@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { errorNotAllowed } from "@/api-helpers/errors";
-import { OIDC_BASE_URL, JWT_ISSUER } from "@/consts";
+import { OIDC_BASE_URL } from "@/consts";
 import { OIDCScope } from "@/types";
 
 export const GET = async (req: NextRequest): Promise<NextResponse> => {
@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
   }
 
   return NextResponse.json({
-    issuer: JWT_ISSUER,
+    issuer: OIDC_BASE_URL,
     jwks_uri: `${OIDC_BASE_URL}/jwks.json`,
     token_endpoint: `${OIDC_BASE_URL}/token`,
     code_challenge_methods_supported: ["S256"],
