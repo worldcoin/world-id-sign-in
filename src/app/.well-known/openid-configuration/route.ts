@@ -15,7 +15,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     token_endpoint: `${OIDC_BASE_URL}/token`,
     code_challenge_methods_supported: ["S256"],
     scopes_supported: Object.values(OIDCScope),
-    id_token_signing_alg_values_supported: ["RSA"],
+    id_token_signing_alg_values_supported: ["RSA", "RS256"],
     userinfo_endpoint: `${OIDC_BASE_URL}/userinfo`,
     authorization_endpoint: `${OIDC_BASE_URL}/authorize`,
     grant_types_supported: ["authorization_code", "implicit"],
