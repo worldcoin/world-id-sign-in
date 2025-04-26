@@ -33,10 +33,10 @@ const handlerOIDCRoute = async (req: NextRequest): Promise<NextResponse> => {
 
   if (
     req.body &&
-    req.headers.get("content-type") === "application/x-www-form-urlencoded"
+    req.headers.get("content-type")?.includes("application/x-www-form-urlencoded")
   ) {
     body = new URLSearchParams(await req.text());
-  } else if (req.headers.get("content-type") === "application/json") {
+  } else if (req.body && req.headers.get("content-type") === "application/json") {
     body = JSON.stringify(await req.json());
   }
 
