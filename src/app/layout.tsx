@@ -7,6 +7,7 @@ import { IBM_Plex_Mono, Rubik, Sora } from "next/font/google";
 
 export const metadata = {
   title: "Sign in with World ID",
+  robots: "noindex,nofollow",
 
   icons: [
     {
