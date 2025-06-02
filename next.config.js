@@ -9,6 +9,7 @@ const nextConfig = {
       config.externals.push({
         "utf-8-validate": "utf-8-validate",
         bufferutil: "bufferutil",
+        "dd-trace": "dd-trace",
       });
       // NOTE: enables server-side source maps for debugging
       config.devtool = "source-map";
@@ -16,6 +17,11 @@ const nextConfig = {
     return config;
   },
   reactStrictMode: true,
+  experimental: {
+    instrumentationHook: true,
+    serverComponentsExternalPackages: ["winston"],
+  },
+
   async rewrites() {
     return [
       ...OIDC_ROUTES.map((route) => ({
