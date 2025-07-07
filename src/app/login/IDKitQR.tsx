@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import { IconBadge, IconBadgeX, IconWorldcoin } from "@/components/icons";
 import clsx from "clsx";
-import { isMobileDevice } from "@/lib/utils";
+import { isMobileDevice, isIPad } from "@/lib/utils";
 
 type Meta = {
   name: string;
@@ -46,6 +46,7 @@ const IDKitQR: FC<Props> = ({
     VerificationState.PreparingClient
   );
   const isMobile = useMemo(() => isMobileDevice(), []);
+  const isIPadDevice = useMemo(() => isIPad(), []);
 
   const handleIDKitSuccess = useCallback(
     async (result: ISuccessResult) => {
@@ -110,7 +111,7 @@ const IDKitQR: FC<Props> = ({
       />
       <div
         className={clsx(
-          "bg-white max-sm:hidden rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative"
+          "bg-white max-md:hidden rounded-2xl w-full h-full mt-6 md:mt-0 md:min-w-[450px] md:min-h-[580px] max-h-[39rem] p-8 md:p-12 text-center flex flex-col justify-center items-center border border-gray-200 relative"
         )}
       >
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
@@ -141,9 +142,9 @@ const IDKitQR: FC<Props> = ({
         VerificationState.WaitingForApp,
         VerificationState.PreparingClient,
         VerificationState.Confirmed,
-      ].includes(wcStage) && (
+      ].includes(wcStage) && (isMobile || isIPadDevice) && (
         <>
-          <a href={deeplink} className={clsx("mt-3 sm:hidden")}>
+          <a href={deeplink} className={clsx("mt-3")}>
             <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
               <IconWorldcoin className="text-white text-sm" />
               <p className="text-white">Continue in World App</p>
