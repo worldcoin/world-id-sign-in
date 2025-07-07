@@ -17,8 +17,20 @@ export const isMobileDevice = () => {
   }
 
   // Define regex patterns for various mobile device types
+  // Exclude iPad to show QR code on iPads
   const mobileDeviceRegex =
-    /iPhone|iPad|iPod|Android|Mobile|BlackBerry|IEMobile|Opera Mini|Windows Phone/i;
+    /iPhone|iPod|Android|Mobile|BlackBerry|IEMobile|Opera Mini|Windows Phone/i;
 
-  return mobileDeviceRegex.test(navigator.userAgent); // Test against user agent
+  // Check if it's an iPad
+  const isIPad = /iPad/i.test(navigator.userAgent);
+
+  return !isIPad && mobileDeviceRegex.test(navigator.userAgent); // Test against user agent, excluding iPads
+};
+
+export const isIPad = () => {
+  if (typeof navigator === "undefined" || !navigator.userAgent) {
+    return false;
+  }
+
+  return /iPad/i.test(navigator.userAgent);
 };
