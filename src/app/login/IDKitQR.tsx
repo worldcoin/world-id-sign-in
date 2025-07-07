@@ -142,16 +142,17 @@ const IDKitQR: FC<Props> = ({
         VerificationState.WaitingForApp,
         VerificationState.PreparingClient,
         VerificationState.Confirmed,
-      ].includes(wcStage) && (isMobile || isIPadDevice) && (
-        <>
-          <a href={deeplink} className={clsx("mt-3")}>
-            <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
-              <IconWorldcoin className="text-white text-sm" />
-              <p className="text-white">Continue in World App</p>
-            </div>
-          </a>
-        </>
-      )}
+      ].includes(wcStage) &&
+        (isMobile || isIPadDevice) && (
+          <>
+            <a href={deeplink} className={clsx("mt-3")}>
+              <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
+                <IconWorldcoin className="text-white text-sm" />
+                <p className="text-white">Continue in World App</p>
+              </div>
+            </a>
+          </>
+        )}
     </>
   );
 };

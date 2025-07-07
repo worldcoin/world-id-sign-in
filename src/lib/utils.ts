@@ -20,7 +20,7 @@ export const isMobileDevice = () => {
   // Exclude iPad to show QR code on iPads
   const mobileDeviceRegex =
     /iPhone|iPod|Android(?!.*iPad)|Mobile|BlackBerry|IEMobile|Opera Mini|Windows Phone/i;
-  
+
   // Check if it's an iPad
   const isIPad = /iPad/i.test(navigator.userAgent);
 
@@ -31,6 +31,6 @@ export const isIPad = () => {
   if (typeof navigator === "undefined" || !navigator.userAgent) {
     return false;
   }
-  
+
   return /iPad/i.test(navigator.userAgent);
 };
