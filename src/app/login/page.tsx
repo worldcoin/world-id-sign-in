@@ -44,6 +44,7 @@ const LoginPage = async ({ searchParams }: Props) => {
         body: JSON.stringify({
           action: "",
         }),
+        next: { revalidate: 300 }, // Cache for 5 minutes (300 seconds)
       }
     );
 
