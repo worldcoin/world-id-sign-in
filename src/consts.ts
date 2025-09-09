@@ -1,5 +1,5 @@
 export const DEVELOPER_PORTAL =
-  process.env.NEXT_PUBLIC_DEVELOPER_PORTAL ?? "https://developer.worldcoin.org";
+  process.env.NEXT_PUBLIC_DEVELOPER_PORTAL ?? "https://developer.world.org";
 
 // ANCHOR: OIDC Base URL
 export const OIDC_BASE_URL =

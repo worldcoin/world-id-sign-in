@@ -35,7 +35,7 @@ const nextConfig = {
       {
         source: "/",
         permanent: false,
-        destination: "https://docs.worldcoin.org", // move to World ID docs
+        destination: "https://docs.world.org", // move to World ID docs
       },
     ];
   },
