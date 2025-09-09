@@ -101,7 +101,7 @@ const IDKitBridge = ({
     setStage(verificationState);
 
     if (verificationState === VerificationState.Failed) {
-      console.error("Sign in with World ID failed.", errorCode);
+      console.error("Sign in with World failed.", errorCode);
       reset();
       stopInterval();
     }
