@@ -44,7 +44,7 @@ const LoginPage = async ({ searchParams }: Props) => {
         body: JSON.stringify({
           action: "",
         }),
-        cache: "no-store", // Disable Next.js caching to always fetch fresh data
+        next: { revalidate: 300 }, // Cache for 5 minutes (300 seconds)
       }
     );
 
