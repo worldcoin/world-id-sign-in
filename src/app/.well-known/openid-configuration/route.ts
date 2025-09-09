@@ -19,9 +19,10 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     userinfo_endpoint: `${OIDC_BASE_URL}/userinfo`,
     authorization_endpoint: `${OIDC_BASE_URL}/authorize`,
     grant_types_supported: ["authorization_code", "implicit"],
-    service_documentation: "https://docs.worldcoin.org/id/sign-in",
-    op_policy_uri: "https://developer.worldcoin.org/privacy-statement",
-    op_tos_uri: "https://developer.worldcoin.org/tos",
+    service_documentation:
+      "https://docs.world.org/world-id/sign-in/getting-started",
+    op_policy_uri: "https://developer.world.org/privacy-statement",
+    op_tos_uri: "https://developer.world.org/tos",
     subject_types_supported: ["pairwise"], // subject is unique to each application, cannot be used across apps
     response_modes_supported: ["query", "fragment", "form_post"],
     response_types_supported: [

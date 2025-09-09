@@ -1,8 +1,8 @@
-# Sign in with World ID
+# Sign in with World
 
 Seamlessly use World ID as an authentication mechanism through [OIDC](https://openid.net/developers/how-connect-works/).
 
-Read more in [the docs](https://docs.worldcoin.org/id/sign-in).
+Read more in [the docs](https://docs.world.org/world-id/sign-in/getting-started).
 
 ## Developing locally
 

@@ -179,7 +179,7 @@ export const IconArrowRight = ({ className, style }: IIconType) => (
   </svg>
 );
 
-export const IconWorldcoin = ({ className, style }: IIconType) => (
+export const IconWorld = ({ className, style }: IIconType) => (
   <svg
     width="1em"
     height="1em"

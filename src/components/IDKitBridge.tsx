@@ -53,7 +53,7 @@ const IDKitBridge = ({
       signal: nonce,
       bridge_url,
       verification_level: VerificationLevel.Device,
-      action_description: "Sign in with Worldcoin",
+      action_description: "Sign in with World",
     })
       .then(() => {
         const intervalId = setInterval(() => {

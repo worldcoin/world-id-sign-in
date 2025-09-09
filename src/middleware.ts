@@ -23,7 +23,7 @@ const generateCsp = () => {
       values: [
         "'self'",
         "https://app.posthog.com",
-        "https://docs.worldcoin.org",
+        "https://docs.world.org",
         "https://status.worldcoin.org",
         "https://bridge.worldcoin.org",
         DEVELOPER_PORTAL,
@@ -35,6 +35,7 @@ const generateCsp = () => {
         "'self'",
         "https://worldcoin.org",
         "https://world-id-assets.com",
+        "https://world.org",
       ],
     },
   ];

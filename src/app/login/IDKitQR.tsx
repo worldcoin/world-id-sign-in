@@ -6,7 +6,7 @@ import { VerificationState, ISuccessResult } from "@worldcoin/idkit-core";
 import IDKitBridge from "@/components/IDKitBridge";
 import Image from "next/image";
 
-import { IconBadge, IconBadgeX, IconWorldcoin } from "@/components/icons";
+import { IconBadge, IconBadgeX, IconWorld } from "@/components/icons";
 import clsx from "clsx";
 import { isMobileDevice, isIPad } from "@/lib/utils";
 
@@ -115,7 +115,7 @@ const IDKitQR: FC<Props> = ({
         )}
       >
         <div className="absolute top-0 inset-x-0 px-4 py-2 space-x-2 flex items-center border-b">
-          <IconWorldcoin className="w-4 h-4" />
+          <IconWorld className="w-4 h-4" />
           <p className="text-sm font-rubik">Sign in with World ID</p>
         </div>
         <Header
@@ -147,7 +147,7 @@ const IDKitQR: FC<Props> = ({
           <>
             <a href={deeplink} className={clsx("mt-3")}>
               <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
-                <IconWorldcoin className="text-white text-sm" />
+                <IconWorld className="text-white text-sm" />
                 <p className="text-white">Continue in World App</p>
               </div>
             </a>

@@ -92,7 +92,7 @@ const ErrorPage = ({
         </div>
         {errorState === ErrorState.DevError && (
           <a
-            href="https://docs.worldcoin.org/id/sign-in"
+            href="https://docs.world.org/world-id/sign-in/getting-started"
             rel="noreferrer noopener"
             target="_blank"
           >

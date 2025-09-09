@@ -4,7 +4,7 @@ const Footer = () => (
   <div className="w-full flex mt-4 text-gray-400 text-sm">
     <div className="grid grid-flow-col gap-1 items-center">
       <IconLock /> Secured by{" "}
-      <a href="https://worldcoin.org/world-id" target="_blank" rel="noreferrer">
+      <a href="https://world.org/world-id" target="_blank" rel="noreferrer">
         World ID
       </a>
     </div>
@@ -13,7 +13,7 @@ const Footer = () => (
         target="_blank"
         rel="noopener noreferrer"
         className="cursor-pointer"
-        href="https://worldcoin.org/privacy"
+        href="https://world.org/privacy"
       >
         Privacy
       </a>
