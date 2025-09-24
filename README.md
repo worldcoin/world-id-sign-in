@@ -1,8 +1,9 @@
-# Sign in with World
+> [!WARNING]  
+> This repository is deprecated as Sign in with World ID v1 is being sunset. Stay tuned for upcoming releases.
+
+# Sign in with World ID
 
 Seamlessly use World ID as an authentication mechanism through [OIDC](https://openid.net/developers/how-connect-works/).
-
-Read more in [the docs](https://docs.world.org/world-id/sign-in/getting-started).
 
 ## Developing locally
 
