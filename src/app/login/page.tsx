@@ -3,6 +3,7 @@ import { DEVELOPER_PORTAL } from "@/consts";
 import { redirect } from "next/navigation";
 import IDKitQR from "./IDKitQR";
 import { MiniAppRouter } from "./MiniAppWrapper";
+import { IconArrowRight, IconRoadBarrier } from "@/components/icons";
 
 type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
@@ -57,6 +58,18 @@ const LoginPage = async ({ searchParams }: Props) => {
     <div className="flex justify-center items-center h-full w-full px-6">
       <div className="flex flex-grow flex-col max-w-fit">
         <MiniAppRouter {...searchParams} />
+        <a
+          href="https://docs.world.org/world-id/sign-in/deprecation"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <div className="bg-orange-100 text-red-800 rounded-lg mt-4 px-4 py-3 text-gray-400 flex items-center mb-8 max-w-md">
+            <div className="flex-grow">
+              Sign in with World ID is sunsetting in <b>December 2025</b>. If
+              you are a developer, please review the announcement.
+            </div>
+          </div>
+        </a>
         <IDKitQR
           scope={scope as string}
           state={state as string}

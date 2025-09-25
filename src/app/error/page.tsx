@@ -2,9 +2,9 @@ import Footer from "@/components/Footer";
 import { ButtonLink } from "@/components/Button";
 import {
   IconArrowRight,
-  IconBook,
   IconDanger,
   IconReload,
+  IconRoadBarrier,
 } from "@/components/icons";
 
 enum ErrorState {
@@ -92,13 +92,15 @@ const ErrorPage = ({
         </div>
         {errorState === ErrorState.DevError && (
           <a
-            href="https://docs.world.org/world-id/sign-in/getting-started"
+            href="https://docs.world.org/world-id/sign-in/deprecation"
             rel="noreferrer noopener"
             target="_blank"
           >
-            <div className="bg-white rounded-lg mt-4 px-4 py-3 text-gray-400 flex items-center">
-              <IconBook className="text-xl mr-1" />
-              <div className="flex-grow">Developer documentation</div>
+            <div className="bg-orange-100 text-red-800 rounded-lg mt-4 px-4 py-3 text-gray-400 flex items-center">
+              <IconRoadBarrier className="text-xl mr-3" />
+              <div className="flex-grow">
+                Sign in with World ID is shutting down. Read the announcement.
+              </div>
               <IconArrowRight className="text-2xl" />
             </div>
           </a>
