@@ -146,7 +146,7 @@ const IDKitQR: FC<Props> = ({
         (isMobile || isIPadDevice) && (
           <>
             <a href={deeplink} className={clsx("mt-3")}>
-              <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center border border-gray-200 cursor-pointer">
+              <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center justify-center border border-gray-200 cursor-pointer">
                 <IconWorld className="text-white text-sm" />
                 <p className="text-white">Continue in World App</p>
               </div>
