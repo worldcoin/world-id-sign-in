@@ -148,7 +148,7 @@ const IDKitQR: FC<Props> = ({
             <a href={deeplink} className={clsx("mt-3")}>
               <div className="bg-black rounded-lg mt-2 px-8 py-4 gap-x-4 flex items-center justify-center border border-gray-200 cursor-pointer">
                 <IconWorld className="text-white text-sm" />
-                <p className="text-white">Continue in World App</p>
+                <p className="text-white">Continue in World ID App</p>
               </div>
             </a>
           </>
@@ -196,10 +196,10 @@ const Header = ({
         </div>
       </div>
       <div className="hidden md:block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px] break-words">
-        <Balancer>Scan with World App to sign in to {meta?.name}</Balancer>
+        <Balancer>Scan with World ID App to sign in to {meta?.name}</Balancer>
       </div>
       <div className="md:hidden block text-xl md:text-2xl mt-2 text-center font-semibold font-sora max-w-[350px]">
-        <Balancer>Use World App to sign in to {meta?.name}</Balancer>
+        <Balancer>Use World ID App to sign in to {meta?.name}</Balancer>
       </div>
     </div>
   ) : null;
