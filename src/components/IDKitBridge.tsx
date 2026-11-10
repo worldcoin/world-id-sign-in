@@ -244,7 +244,7 @@ const IDKitBridge = ({
           {verificationState === VerificationState.WaitingForApp && (
             <>
               <h1 className="font-medium text-3xl mt-12">
-                Confirm in World App
+                Confirm in World ID App
               </h1>
               <div className="text-text-muted text-xl mt-2">
                 Waiting for your response
