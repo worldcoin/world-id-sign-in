@@ -30,5 +30,16 @@
         "E9:A6:54:85:0A:C4:6F:DD:B1:67:36:C8:0F:81:7E:FE:91:1C:0A:82:66:8A:6E:84:28:85:98:5E:72:0E:AB:24"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.world.id",
+      "sha256_cert_fingerprints": [
+        "9D:2A:D7:12:7F:09:91:92:97:14:C0:19:5B:43:47:84:34:53:1C:D8:B7:F1:81:36:5C:2B:D5:CD:85:E3:46:EF",
+        "E9:A6:54:85:0A:C4:6F:DD:B1:67:36:C8:0F:81:7E:FE:91:1C:0A:82:66:8A:6E:84:28:85:98:5E:72:0E:AB:24"
+      ]
+    }
   }
 ]
